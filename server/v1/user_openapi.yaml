@@ -1,0 +1,520 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/apps/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: TigrisDB API
+    version: 0.0.1
+paths:
+    /api/v1/databases/{db}/collections/{collection}/alter:
+        post:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_AlterCollection
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AlterCollectionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/AlterCollectionResponse'
+    /api/v1/databases/{db}/collections/{collection}/create:
+        post:
+            tags:
+                - TigrisDB
+            description: The following APIs are related to DDLs supported by TigrisDB
+            operationId: TigrisDB_CreateCollection
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateCollectionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateCollectionResponse'
+    /api/v1/databases/{db}/collections/{collection}/documents/delete:
+        delete:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_Delete
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteResponse'
+    /api/v1/databases/{db}/collections/{collection}/documents/insert:
+        post:
+            tags:
+                - TigrisDB
+            description: Following APIs are related to DMLs supported by TigrisDB
+            operationId: TigrisDB_Insert
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/InsertRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InsertResponse'
+    /api/v1/databases/{db}/collections/{collection}/documents/read:
+        post:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_Read
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReadRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ReadResponse'
+    /api/v1/databases/{db}/collections/{collection}/documents/replace:
+        put:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_Replace
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReplaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ReplaceResponse'
+    /api/v1/databases/{db}/collections/{collection}/documents/update:
+        put:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_Update
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateResponse'
+    /api/v1/databases/{db}/collections/{collection}/drop:
+        delete:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_DropCollection
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DropCollectionResponse'
+    /api/v1/databases/{db}/collections/{collection}/truncate:
+        delete:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_TruncateCollection
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TruncateCollectionResponse'
+    /api/v1/databases/{db}/transactions/begin:
+        post:
+            tags:
+                - TigrisDB
+            description: Transactional APIs
+            operationId: TigrisDB_BeginTransaction
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BeginTransactionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BeginTransactionResponse'
+    /api/v1/databases/{db}/transactions/commit:
+        post:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_CommitTransaction
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CommitTransactionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CommitTransactionResponse'
+    /api/v1/databases/{db}/transactions/rollback:
+        post:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_RollbackTransaction
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RollbackTransactionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RollbackTransactionResponse'
+components:
+    schemas:
+        AlterCollectionRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                collection:
+                    type: string
+                schema:
+                    type: object
+        AlterCollectionResponse:
+            type: object
+            properties:
+                msg:
+                    type: string
+        BeginTransactionRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+        BeginTransactionResponse:
+            type: object
+            properties:
+                tx:
+                    $ref: '#/components/schemas/Transaction'
+        Clause:
+            type: object
+            properties:
+                value:
+                    type: object
+        CommitTransactionRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                tx:
+                    $ref: '#/components/schemas/Transaction'
+        CommitTransactionResponse:
+            type: object
+            properties: {}
+        CreateCollectionRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                collection:
+                    type: string
+                schema:
+                    type: object
+        CreateCollectionResponse:
+            type: object
+            properties:
+                msg:
+                    type: string
+        DeleteResponse:
+            type: object
+            properties:
+                response:
+                    $ref: '#/components/schemas/WriteResponseHeader'
+        DocOption:
+            type: object
+            properties: {}
+        DropCollectionResponse:
+            type: object
+            properties:
+                msg:
+                    type: string
+        Filter:
+            type: object
+            properties:
+                clause:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Clause'
+        InsertRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                collection:
+                    type: string
+                documents:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserDocument'
+                options:
+                    $ref: '#/components/schemas/WriteOption'
+        InsertResponse:
+            type: object
+            properties:
+                response:
+                    $ref: '#/components/schemas/WriteResponseHeader'
+        ReadOption:
+            type: object
+            properties: {}
+        ReadRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                collection:
+                    type: string
+                filter:
+                    $ref: '#/components/schemas/Filter'
+                keys:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserDocument'
+                options:
+                    $ref: '#/components/schemas/ReadOption'
+        ReadResponse:
+            type: object
+            properties:
+                doc:
+                    type: object
+        ReplaceRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                collection:
+                    type: string
+                documents:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserDocument'
+                options:
+                    $ref: '#/components/schemas/WriteOption'
+        ReplaceResponse:
+            type: object
+            properties:
+                response:
+                    $ref: '#/components/schemas/WriteResponseHeader'
+        RollbackTransactionRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                tx:
+                    $ref: '#/components/schemas/Transaction'
+        RollbackTransactionResponse:
+            type: object
+            properties: {}
+        Transaction:
+            type: object
+            properties:
+                id:
+                    type: string
+                origin:
+                    type: string
+        TruncateCollectionResponse:
+            type: object
+            properties:
+                msg:
+                    type: string
+        UpdateRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                collection:
+                    type: string
+                fields:
+                    type: object
+                filter:
+                    $ref: '#/components/schemas/Filter'
+                options:
+                    $ref: '#/components/schemas/WriteOption'
+        UpdateResponse:
+            type: object
+            properties:
+                response:
+                    $ref: '#/components/schemas/WriteResponseHeader'
+        UserDocument:
+            type: object
+            properties:
+                doc:
+                    type: object
+                options:
+                    $ref: '#/components/schemas/DocOption'
+        WriteOption:
+            type: object
+            properties: {}
+        WriteResponseHeader:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    format: int32
+                msg:
+                    type: string
+tags:
+    - name: TigrisDB
