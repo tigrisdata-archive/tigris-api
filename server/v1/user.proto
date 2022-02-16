@@ -32,8 +32,8 @@ enum StatusCode {
 }
 
 message WriteResponseHeader {
-    int32 code = 1;
-    string msg = 2;
+  int32 code = 1;
+  string msg = 2;
 }
 
 message Filter {
@@ -44,16 +44,22 @@ message Clause {
   google.protobuf.Struct value = 1;
 }
 
-message WriteOption {}
-message ReadOption {}
+message WriteOption {
+  TransactionCtx tx_ctx = 1;
+}
+
+message ReadOption {
+  TransactionCtx tx_ctx = 1;
+}
+
 message DocOption {}
 
-message UserDocument {
+message Document {
   google.protobuf.Struct doc = 1;
   DocOption options = 2;
 }
 
-message Transaction {
+message TransactionCtx {
   string id = 1;
   string origin = 2;
 }
@@ -62,25 +68,25 @@ message BeginTransactionRequest {
   string db = 1;
 }
 message BeginTransactionResponse {
-  Transaction tx = 1;
+  TransactionCtx tx_ctx = 1;
 }
 
 message CommitTransactionRequest {
   string db = 1;
-  Transaction tx = 2;
+  TransactionCtx tx_ctx = 2;
 }
 message CommitTransactionResponse {}
 
 message RollbackTransactionRequest {
   string db = 1;
-  Transaction tx = 2;
+  TransactionCtx tx_ctx = 2;
 }
 message RollbackTransactionResponse {}
 
 message InsertRequest {
   string db = 1;
   string collection = 2;
-  repeated UserDocument documents = 3;
+  repeated Document documents = 3;
   WriteOption options = 4;
 }
 
@@ -102,7 +108,7 @@ message DeleteResponse {
 message ReplaceRequest {
   string db = 1;
   string collection = 2;
-  repeated UserDocument documents = 3;
+  repeated Document documents = 3;
   WriteOption options = 4;
 }
 
@@ -126,7 +132,7 @@ message ReadRequest {
   string db = 1;
   string collection = 2;
   Filter filter = 3;
-  repeated UserDocument keys = 4;
+  repeated Document keys = 4;
   ReadOption options = 5;
 }
 
@@ -171,6 +177,21 @@ message TruncateCollectionResponse {
   string msg = 1;
 }
 
+message ListDatabasesRequest {
+}
+
+message ListDatabasesResponse {
+  repeated string dbs = 1;
+}
+
+message ListCollectionsRequest {
+  string db = 1;
+}
+
+message ListCollectionsResponse {
+  repeated string collections = 1;
+}
+
 service TigrisDB {
   // Transactional APIs
   rpc BeginTransaction(BeginTransactionRequest) returns (BeginTransactionResponse) {
@@ -208,7 +229,8 @@ service TigrisDB {
   rpc Delete(DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
       delete : "/api/v1/databases/{db}/collections/{collection}/documents/delete"
-        };
+      body : "*"
+    };
   }
   rpc Update(UpdateRequest) returns (UpdateResponse) {
     option (google.api.http) = {
@@ -244,6 +266,18 @@ service TigrisDB {
   rpc TruncateCollection(TruncateCollectionRequest) returns (TruncateCollectionResponse) {
     option (google.api.http) = {
       delete : "/api/v1/databases/{db}/collections/{collection}/truncate"
+    };
+  }
+  rpc ListDatabases(ListDatabasesRequest) returns (ListDatabasesResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases"
+      body : "*"
+    };
+  }
+  rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/collections"
+      body : "*"
     };
   }
 }
