@@ -6,6 +6,48 @@ info:
     title: TigrisDB API
     version: 0.0.1
 paths:
+    /api/v1/databases/list:
+        post:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_ListDatabases
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListDatabasesRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListDatabasesResponse'
+    /api/v1/databases/{db}/collections/list:
+        post:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_ListCollections
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListCollectionsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListCollectionsResponse'
     /api/v1/databases/{db}/collections/{collection}/alter:
         post:
             tags:
@@ -81,6 +123,12 @@ paths:
                   required: true
                   schema:
                     type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -251,6 +299,54 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/TruncateCollectionResponse'
+    /api/v1/databases/{db}/create:
+        post:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_CreateDatabase
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateDatabaseRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateDatabaseResponse'
+    /api/v1/databases/{db}/drop:
+        delete:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_DropDatabase
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DropDatabaseRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DropDatabaseResponse'
     /api/v1/databases/{db}/transactions/begin:
         post:
             tags:
@@ -348,20 +444,15 @@ components:
         BeginTransactionResponse:
             type: object
             properties:
-                tx:
-                    $ref: '#/components/schemas/Transaction'
-        Clause:
-            type: object
-            properties:
-                value:
-                    type: object
+                tx_ctx:
+                    $ref: '#/components/schemas/TransactionCtx'
         CommitTransactionRequest:
             type: object
             properties:
                 db:
                     type: string
-                tx:
-                    $ref: '#/components/schemas/Transaction'
+                tx_ctx:
+                    $ref: '#/components/schemas/TransactionCtx'
         CommitTransactionResponse:
             type: object
             properties: {}
@@ -379,6 +470,34 @@ components:
             properties:
                 msg:
                     type: string
+        CreateDatabaseOption:
+            type: object
+            properties: {}
+        CreateDatabaseRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                options:
+                    $ref: '#/components/schemas/CreateDatabaseOption'
+        CreateDatabaseResponse:
+            type: object
+            properties:
+                msg:
+                    type: string
+        DeleteRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                collection:
+                    type: string
+                filter:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Filter'
+                options:
+                    $ref: '#/components/schemas/WriteOption'
         DeleteResponse:
             type: object
             properties:
@@ -387,7 +506,29 @@ components:
         DocOption:
             type: object
             properties: {}
+        Document:
+            type: object
+            properties:
+                doc:
+                    type: object
+                options:
+                    $ref: '#/components/schemas/DocOption'
         DropCollectionResponse:
+            type: object
+            properties:
+                msg:
+                    type: string
+        DropDatabaseOption:
+            type: object
+            properties: {}
+        DropDatabaseRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                options:
+                    $ref: '#/components/schemas/DropDatabaseOption'
+        DropDatabaseResponse:
             type: object
             properties:
                 msg:
@@ -395,10 +536,10 @@ components:
         Filter:
             type: object
             properties:
-                clause:
+                value:
                     type: array
                     items:
-                        $ref: '#/components/schemas/Clause'
+                        type: object
         InsertRequest:
             type: object
             properties:
@@ -409,7 +550,7 @@ components:
                 documents:
                     type: array
                     items:
-                        $ref: '#/components/schemas/UserDocument'
+                        $ref: '#/components/schemas/Document'
                 options:
                     $ref: '#/components/schemas/WriteOption'
         InsertResponse:
@@ -417,9 +558,33 @@ components:
             properties:
                 response:
                     $ref: '#/components/schemas/WriteResponseHeader'
-        ReadOption:
+        ListCollectionsRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+        ListCollectionsResponse:
+            type: object
+            properties:
+                collections:
+                    type: array
+                    items:
+                        type: string
+        ListDatabasesRequest:
             type: object
             properties: {}
+        ListDatabasesResponse:
+            type: object
+            properties:
+                dbs:
+                    type: array
+                    items:
+                        type: string
+        ReadOption:
+            type: object
+            properties:
+                tx_ctx:
+                    $ref: '#/components/schemas/TransactionCtx'
         ReadRequest:
             type: object
             properties:
@@ -428,11 +593,13 @@ components:
                 collection:
                     type: string
                 filter:
-                    $ref: '#/components/schemas/Filter'
+                    type: array
+                    items:
+                        type: object
                 keys:
                     type: array
                     items:
-                        $ref: '#/components/schemas/UserDocument'
+                        $ref: '#/components/schemas/Document'
                 options:
                     $ref: '#/components/schemas/ReadOption'
         ReadResponse:
@@ -450,7 +617,7 @@ components:
                 documents:
                     type: array
                     items:
-                        $ref: '#/components/schemas/UserDocument'
+                        $ref: '#/components/schemas/Document'
                 options:
                     $ref: '#/components/schemas/WriteOption'
         ReplaceResponse:
@@ -463,12 +630,12 @@ components:
             properties:
                 db:
                     type: string
-                tx:
-                    $ref: '#/components/schemas/Transaction'
+                tx_ctx:
+                    $ref: '#/components/schemas/TransactionCtx'
         RollbackTransactionResponse:
             type: object
             properties: {}
-        Transaction:
+        TransactionCtx:
             type: object
             properties:
                 id:
@@ -490,7 +657,9 @@ components:
                 fields:
                     type: object
                 filter:
-                    $ref: '#/components/schemas/Filter'
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Filter'
                 options:
                     $ref: '#/components/schemas/WriteOption'
         UpdateResponse:
@@ -498,16 +667,11 @@ components:
             properties:
                 response:
                     $ref: '#/components/schemas/WriteResponseHeader'
-        UserDocument:
-            type: object
-            properties:
-                doc:
-                    type: object
-                options:
-                    $ref: '#/components/schemas/DocOption'
         WriteOption:
             type: object
-            properties: {}
+            properties:
+                tx_ctx:
+                    $ref: '#/components/schemas/TransactionCtx'
         WriteResponseHeader:
             type: object
             properties:

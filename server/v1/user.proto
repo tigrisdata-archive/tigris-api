@@ -37,11 +37,7 @@ message WriteResponseHeader {
 }
 
 message Filter {
-  repeated Clause clause = 1;
-}
-
-message Clause {
-  google.protobuf.Struct value = 1;
+  repeated google.protobuf.Struct value = 1;
 }
 
 message WriteOption {
@@ -51,6 +47,10 @@ message WriteOption {
 message ReadOption {
   TransactionCtx tx_ctx = 1;
 }
+
+message CreateDatabaseOption {}
+
+message DropDatabaseOption {}
 
 message DocOption {}
 
@@ -97,7 +97,7 @@ message InsertResponse {
 message DeleteRequest {
   string db = 1;
   string collection = 2;
-  Filter filter = 3;
+  repeated Filter filter = 3;
   WriteOption options = 4;
 }
 
@@ -120,7 +120,7 @@ message UpdateRequest {
   string db = 1;
   string collection = 2;
   google.protobuf.Struct fields = 3;
-  Filter filter = 4;
+  repeated Filter filter = 4;
   WriteOption options = 5;
 }
 
@@ -131,13 +131,31 @@ message UpdateResponse {
 message ReadRequest {
   string db = 1;
   string collection = 2;
-  Filter filter = 3;
+  repeated google.protobuf.Struct filter = 3;
   repeated Document keys = 4;
   ReadOption options = 5;
 }
 
 message ReadResponse {
   google.protobuf.Struct doc = 1;
+}
+
+message CreateDatabaseRequest {
+  string db = 1;
+  CreateDatabaseOption options = 2;
+}
+
+message CreateDatabaseResponse {
+  string msg = 1;
+}
+
+message DropDatabaseRequest {
+  string db = 1;
+  DropDatabaseOption options = 2;
+}
+
+message DropDatabaseResponse {
+  string msg = 1;
 }
 
 message CreateCollectionRequest {
@@ -168,6 +186,7 @@ message DropCollectionRequest {
 message DropCollectionResponse {
   string msg = 1;
 }
+
 message TruncateCollectionRequest {
   string db = 1;
   string collection = 2;
@@ -270,13 +289,27 @@ service TigrisDB {
   }
   rpc ListDatabases(ListDatabasesRequest) returns (ListDatabasesResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases"
+      post : "/api/v1/databases/list"
       body : "*"
     };
   }
   rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections"
+      post : "/api/v1/databases/{db}/collections/list"
+      body : "*"
+    };
+  }
+
+  rpc CreateDatabase(CreateDatabaseRequest) returns (CreateDatabaseResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/create"
+      body : "*"
+    };
+  }
+
+  rpc DropDatabase(DropDatabaseRequest) returns (DropDatabaseResponse) {
+    option (google.api.http) = {
+      delete : "/api/v1/databases/{db}/drop"
       body : "*"
     };
   }
