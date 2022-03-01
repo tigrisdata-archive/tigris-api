@@ -1,22 +1,15 @@
 # Generated with protoc-gen-openapi
 # https://github.com/google/gnostic/tree/master/apps/protoc-gen-openapi
-
 openapi: 3.0.3
 info:
     title: TigrisDB API
     version: 0.0.1
 paths:
     /api/v1/databases/list:
-        post:
+        get:
             tags:
                 - TigrisDB
             operationId: TigrisDB_ListDatabases
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ListDatabasesRequest'
-                required: true
             responses:
                 "200":
                     description: OK
@@ -25,7 +18,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/ListDatabasesResponse'
     /api/v1/databases/{db}/collections/list:
-        post:
+        get:
             tags:
                 - TigrisDB
             operationId: TigrisDB_ListCollections
@@ -35,12 +28,6 @@ paths:
                   required: true
                   schema:
                     type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ListCollectionsRequest'
-                required: true
             responses:
                 "200":
                     description: OK
@@ -431,6 +418,8 @@ components:
                     type: string
                 schema:
                     type: object
+                options:
+                    $ref: '#/components/schemas/CollectionOption'
         AlterCollectionResponse:
             type: object
             properties:
@@ -441,11 +430,16 @@ components:
             properties:
                 db:
                     type: string
+                options:
+                    $ref: '#/components/schemas/TransactionOption'
         BeginTransactionResponse:
             type: object
             properties:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
+        CollectionOption:
+            type: object
+            properties: {}
         CommitTransactionRequest:
             type: object
             properties:
@@ -465,26 +459,28 @@ components:
                     type: string
                 schema:
                     type: object
+                options:
+                    $ref: '#/components/schemas/CollectionOption'
         CreateCollectionResponse:
             type: object
             properties:
                 msg:
                     type: string
-        CreateDatabaseOption:
-            type: object
-            properties: {}
         CreateDatabaseRequest:
             type: object
             properties:
                 db:
                     type: string
                 options:
-                    $ref: '#/components/schemas/CreateDatabaseOption'
+                    $ref: '#/components/schemas/DatabaseOption'
         CreateDatabaseResponse:
             type: object
             properties:
                 msg:
                     type: string
+        DatabaseOption:
+            type: object
+            properties: {}
         DeleteRequest:
             type: object
             properties:
@@ -493,53 +489,29 @@ components:
                 collection:
                     type: string
                 filter:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Filter'
+                    type: object
                 options:
                     $ref: '#/components/schemas/WriteOption'
         DeleteResponse:
             type: object
-            properties:
-                response:
-                    $ref: '#/components/schemas/WriteResponseHeader'
-        DocOption:
-            type: object
             properties: {}
-        Document:
-            type: object
-            properties:
-                doc:
-                    type: object
-                options:
-                    $ref: '#/components/schemas/DocOption'
         DropCollectionResponse:
             type: object
             properties:
                 msg:
                     type: string
-        DropDatabaseOption:
-            type: object
-            properties: {}
         DropDatabaseRequest:
             type: object
             properties:
                 db:
                     type: string
                 options:
-                    $ref: '#/components/schemas/DropDatabaseOption'
+                    $ref: '#/components/schemas/DatabaseOption'
         DropDatabaseResponse:
             type: object
             properties:
                 msg:
                     type: string
-        Filter:
-            type: object
-            properties:
-                value:
-                    type: array
-                    items:
-                        type: object
         InsertRequest:
             type: object
             properties:
@@ -550,19 +522,12 @@ components:
                 documents:
                     type: array
                     items:
-                        $ref: '#/components/schemas/Document'
+                        type: object
                 options:
                     $ref: '#/components/schemas/WriteOption'
         InsertResponse:
             type: object
-            properties:
-                response:
-                    $ref: '#/components/schemas/WriteResponseHeader'
-        ListCollectionsRequest:
-            type: object
-            properties:
-                db:
-                    type: string
+            properties: {}
         ListCollectionsResponse:
             type: object
             properties:
@@ -570,9 +535,6 @@ components:
                     type: array
                     items:
                         type: string
-        ListDatabasesRequest:
-            type: object
-            properties: {}
         ListDatabasesResponse:
             type: object
             properties:
@@ -593,13 +555,7 @@ components:
                 collection:
                     type: string
                 filter:
-                    type: array
-                    items:
-                        type: object
-                keys:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Document'
+                    type: object
                 options:
                     $ref: '#/components/schemas/ReadOption'
         ReadResponse:
@@ -617,14 +573,12 @@ components:
                 documents:
                     type: array
                     items:
-                        $ref: '#/components/schemas/Document'
+                        type: object
                 options:
                     $ref: '#/components/schemas/WriteOption'
         ReplaceResponse:
             type: object
-            properties:
-                response:
-                    $ref: '#/components/schemas/WriteResponseHeader'
+            properties: {}
         RollbackTransactionRequest:
             type: object
             properties:
@@ -642,6 +596,9 @@ components:
                     type: string
                 origin:
                     type: string
+        TransactionOption:
+            type: object
+            properties: {}
         TruncateCollectionResponse:
             type: object
             properties:
@@ -657,28 +614,19 @@ components:
                 fields:
                     type: object
                 filter:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Filter'
+                    type: object
                 options:
                     $ref: '#/components/schemas/WriteOption'
         UpdateResponse:
             type: object
             properties:
-                response:
-                    $ref: '#/components/schemas/WriteResponseHeader'
+                rc:
+                    type: integer
+                    format: int32
         WriteOption:
             type: object
             properties:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
-        WriteResponseHeader:
-            type: object
-            properties:
-                code:
-                    type: integer
-                    format: int32
-                msg:
-                    type: string
 tags:
     - name: TigrisDB

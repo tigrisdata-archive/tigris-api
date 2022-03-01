@@ -21,24 +21,6 @@ option go_package = "github.com/tigrisdata/tigrisdb/api";
 
 // BUG: gnostic protoc-gen-openapi doesn't support enum generation
 // https://github.com/google/gnostic/issues/255
-enum StatusCode {
-  StatusCode_UNKNOWN = 0;
-  StatusCode_OK = 200;
-  StatusCode_BAD_REQUEST = 400;
-  StatusCode_NOT_FOUND = 404;
-  StatusCode_CONFLICT = 409;
-  StatusCode_NOT_IMPLEMENTED = 501;
-  StatusCode_INTERNAL_SERVER_ERROR = 500;
-}
-
-message WriteResponseHeader {
-  int32 code = 1;
-  string msg = 2;
-}
-
-message Filter {
-  repeated google.protobuf.Struct value = 1;
-}
 
 message WriteOption {
   TransactionCtx tx_ctx = 1;
@@ -48,16 +30,9 @@ message ReadOption {
   TransactionCtx tx_ctx = 1;
 }
 
-message CreateDatabaseOption {}
-
-message DropDatabaseOption {}
-
-message DocOption {}
-
-message Document {
-  google.protobuf.Struct doc = 1;
-  DocOption options = 2;
-}
+message DatabaseOption {}
+message CollectionOption {}
+message TransactionOption {}
 
 message TransactionCtx {
   string id = 1;
@@ -66,6 +41,7 @@ message TransactionCtx {
 
 message BeginTransactionRequest {
   string db = 1;
+  TransactionOption options = 2;
 }
 message BeginTransactionResponse {
   TransactionCtx tx_ctx = 1;
@@ -86,63 +62,56 @@ message RollbackTransactionResponse {}
 message InsertRequest {
   string db = 1;
   string collection = 2;
-  repeated Document documents = 3;
+  repeated bytes documents = 3;
   WriteOption options = 4;
 }
 
-message InsertResponse {
-  WriteResponseHeader response = 1;
-}
+message InsertResponse {}
 
 message DeleteRequest {
   string db = 1;
   string collection = 2;
-  repeated Filter filter = 3;
+  bytes filter = 3;
   WriteOption options = 4;
 }
 
-message DeleteResponse {
-  WriteResponseHeader response = 1;
-}
+message DeleteResponse {}
 
 message ReplaceRequest {
   string db = 1;
   string collection = 2;
-  repeated Document documents = 3;
+  repeated bytes documents = 3;
   WriteOption options = 4;
 }
 
-message ReplaceResponse {
-  WriteResponseHeader response = 1;
-}
+message ReplaceResponse {}
 
 message UpdateRequest {
   string db = 1;
   string collection = 2;
-  google.protobuf.Struct fields = 3;
-  repeated Filter filter = 4;
+  bytes fields = 3;
+  bytes filter = 4;
   WriteOption options = 5;
 }
 
 message UpdateResponse {
-  WriteResponseHeader response = 1;
+  int32 rc = 1;
 }
 
 message ReadRequest {
   string db = 1;
   string collection = 2;
-  repeated google.protobuf.Struct filter = 3;
-  repeated Document keys = 4;
+  bytes filter = 3;
   ReadOption options = 5;
 }
 
 message ReadResponse {
-  google.protobuf.Struct doc = 1;
+  bytes doc = 1;
 }
 
 message CreateDatabaseRequest {
   string db = 1;
-  CreateDatabaseOption options = 2;
+  DatabaseOption options = 2;
 }
 
 message CreateDatabaseResponse {
@@ -151,7 +120,7 @@ message CreateDatabaseResponse {
 
 message DropDatabaseRequest {
   string db = 1;
-  DropDatabaseOption options = 2;
+  DatabaseOption options = 2;
 }
 
 message DropDatabaseResponse {
@@ -162,6 +131,7 @@ message CreateCollectionRequest {
   string db = 1;
   string collection = 2;
   google.protobuf.Struct schema = 3;
+  CollectionOption options = 4;
 }
 
 message CreateCollectionResponse {
@@ -172,6 +142,7 @@ message AlterCollectionRequest {
   string db = 1;
   string collection = 2;
   google.protobuf.Struct schema = 3;
+  CollectionOption options = 4;
 }
 
 message AlterCollectionResponse {
@@ -181,6 +152,7 @@ message AlterCollectionResponse {
 message DropCollectionRequest {
   string db = 1;
   string collection = 2;
+  CollectionOption options = 3;
 }
 
 message DropCollectionResponse {
@@ -289,14 +261,12 @@ service TigrisDB {
   }
   rpc ListDatabases(ListDatabasesRequest) returns (ListDatabasesResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/list"
-      body : "*"
+      get : "/api/v1/databases/list"
     };
   }
   rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/list"
-      body : "*"
+      get : "/api/v1/databases/{db}/collections/list"
     };
   }
 
