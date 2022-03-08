@@ -419,7 +419,7 @@ components:
                 schema:
                     type: object
                 options:
-                    $ref: '#/components/schemas/CollectionOption'
+                    $ref: '#/components/schemas/CollectionOptions'
         AlterCollectionResponse:
             type: object
             properties:
@@ -431,13 +431,13 @@ components:
                 db:
                     type: string
                 options:
-                    $ref: '#/components/schemas/TransactionOption'
+                    $ref: '#/components/schemas/TransactionOptions'
         BeginTransactionResponse:
             type: object
             properties:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
-        CollectionOption:
+        CollectionOptions:
             type: object
             properties: {}
         CommitTransactionRequest:
@@ -460,7 +460,7 @@ components:
                 schema:
                     type: object
                 options:
-                    $ref: '#/components/schemas/CollectionOption'
+                    $ref: '#/components/schemas/CollectionOptions'
         CreateCollectionResponse:
             type: object
             properties:
@@ -472,13 +472,13 @@ components:
                 db:
                     type: string
                 options:
-                    $ref: '#/components/schemas/DatabaseOption'
+                    $ref: '#/components/schemas/DatabaseOptions'
         CreateDatabaseResponse:
             type: object
             properties:
                 msg:
                     type: string
-        DatabaseOption:
+        DatabaseOptions:
             type: object
             properties: {}
         DeleteRequest:
@@ -491,7 +491,12 @@ components:
                 filter:
                     type: object
                 options:
-                    $ref: '#/components/schemas/WriteOption'
+                    $ref: '#/components/schemas/DeleteRequestOptions'
+        DeleteRequestOptions:
+            type: object
+            properties:
+                write_options:
+                    $ref: '#/components/schemas/WriteOptions'
         DeleteResponse:
             type: object
             properties: {}
@@ -506,7 +511,7 @@ components:
                 db:
                     type: string
                 options:
-                    $ref: '#/components/schemas/DatabaseOption'
+                    $ref: '#/components/schemas/DatabaseOptions'
         DropDatabaseResponse:
             type: object
             properties:
@@ -524,7 +529,12 @@ components:
                     items:
                         type: object
                 options:
-                    $ref: '#/components/schemas/WriteOption'
+                    $ref: '#/components/schemas/InsertRequestOptions'
+        InsertRequestOptions:
+            type: object
+            properties:
+                write_options:
+                    $ref: '#/components/schemas/WriteOptions'
         InsertResponse:
             type: object
             properties: {}
@@ -542,11 +552,6 @@ components:
                     type: array
                     items:
                         type: string
-        ReadOption:
-            type: object
-            properties:
-                tx_ctx:
-                    $ref: '#/components/schemas/TransactionCtx'
         ReadRequest:
             type: object
             properties:
@@ -557,7 +562,12 @@ components:
                 filter:
                     type: object
                 options:
-                    $ref: '#/components/schemas/ReadOption'
+                    $ref: '#/components/schemas/ReadRequestOptions'
+        ReadRequestOptions:
+            type: object
+            properties:
+                tx_ctx:
+                    $ref: '#/components/schemas/TransactionCtx'
         ReadResponse:
             type: object
             properties:
@@ -575,7 +585,12 @@ components:
                     items:
                         type: object
                 options:
-                    $ref: '#/components/schemas/WriteOption'
+                    $ref: '#/components/schemas/ReplaceRequestOptions'
+        ReplaceRequestOptions:
+            type: object
+            properties:
+                write_options:
+                    $ref: '#/components/schemas/WriteOptions'
         ReplaceResponse:
             type: object
             properties: {}
@@ -596,7 +611,7 @@ components:
                     type: string
                 origin:
                     type: string
-        TransactionOption:
+        TransactionOptions:
             type: object
             properties: {}
         TruncateCollectionResponse:
@@ -616,14 +631,19 @@ components:
                 filter:
                     type: object
                 options:
-                    $ref: '#/components/schemas/WriteOption'
+                    $ref: '#/components/schemas/UpdateRequestOptions'
+        UpdateRequestOptions:
+            type: object
+            properties:
+                write_options:
+                    $ref: '#/components/schemas/WriteOptions'
         UpdateResponse:
             type: object
             properties:
                 rc:
                     type: integer
                     format: int32
-        WriteOption:
+        WriteOptions:
             type: object
             properties:
                 tx_ctx:
