@@ -19,6 +19,7 @@ import "google/protobuf/struct.proto";
 
 option go_package = "github.com/tigrisdata/tigrisdb/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
+
 // BUG: gnostic protoc-gen-openapi doesn't support enum generation
 // https://github.com/google/gnostic/issues/255
 
@@ -33,6 +34,9 @@ message WriteOptions {
 
 message ReadRequestOptions {
   TransactionCtx tx_ctx = 1;
+  int64 limit = 2;
+  int64 skip = 3;
+  bytes offset = 4;
 }
 
 message DatabaseOptions {}
@@ -123,11 +127,13 @@ message ReadRequest {
   string db = 1;
   string collection = 2;
   bytes filter = 3;
+  bytes fields = 4;
   ReadRequestOptions options = 5;
 }
 
 message ReadResponse {
   bytes doc = 1;
+  bytes key = 2;
 }
 
 message CreateDatabaseRequest {
