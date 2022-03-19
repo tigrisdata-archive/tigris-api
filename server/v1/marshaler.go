@@ -1,9 +1,27 @@
+// Copyright 2022 Tigris Data, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package api
 
 import (
+	"fmt"
+
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/valyala/bytebufferpool"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/grpc/codes"
 )
 
 // CustomMarshaler is a marshaler to customize the response. Currently it is only used to marshal custom error message
@@ -27,10 +45,39 @@ func (c *CustomMarshaler) Marshal(v interface{}) ([]byte, error) {
 // Note: This also means any changes in ReadResponse proto needs to make sure that we add that here and similarly
 // the openAPI specs needs to be specify Doc as object instead of bytes.
 func (x *ReadResponse) MarshalJSON() ([]byte, error) {
-	b := []byte(`{"doc":`)
-	b = append(b, x.Doc...)
-	b = append(b, []byte(`}`)...)
-	return b, nil
+	var err error
+	bb := bytebufferpool.Get()
+	_, err = bb.Write([]byte(`{"doc":`))
+	if err != nil {
+		return nil, Errorf(codes.Internal, err.Error())
+	}
+
+	_, err = bb.Write(x.Doc)
+	if err != nil {
+		return nil, Errorf(codes.Internal, err.Error())
+	}
+
+	key, err := jsoniter.Marshal(x.Key)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = bb.Write([]byte(`,"key":`))
+	if err != nil {
+		return nil, Errorf(codes.Internal, err.Error())
+	}
+	_, err = bb.Write(key)
+	if err != nil {
+		return nil, Errorf(codes.Internal, err.Error())
+	}
+
+	_, err = bb.WriteString("}")
+	if err != nil {
+		return nil, Errorf(codes.Internal, err.Error())
+	}
+
+	fmt.Println("resp ", string(bb.Bytes()))
+	return bb.Bytes(), nil
 }
 
 // UnmarshalJSON on ReadRequest avoids unmarshalling filter and instead this way we can write a custom struct to do
@@ -53,6 +100,9 @@ func (x *ReadRequest) UnmarshalJSON(data []byte) error {
 		case "filter":
 			// not decoding it here and let it decode during filter parsing
 			x.Filter = value
+		case "fields":
+			// not decoding it here and let it decode during fields parsing
+			x.Fields = value
 		case "options":
 			if err := jsoniter.Unmarshal(value, &x.Options); err != nil {
 				return err
@@ -67,44 +117,6 @@ func (x *ReadRequest) UnmarshalJSON(data []byte) error {
 // and also less error-prone because we are not touching the user document. The req handler needs to extract out
 // the relevant keys from the user docs and should pass it as-is to the underlying engine.
 func (x *InsertRequest) UnmarshalJSON(data []byte) error {
-	var mp map[string]jsoniter.RawMessage
-	if err := jsoniter.Unmarshal(data, &mp); err != nil {
-		return err
-	}
-	for key, value := range mp {
-		switch key {
-		case "db":
-			if err := jsoniter.Unmarshal(value, &x.Db); err != nil {
-				return err
-			}
-		case "collection":
-			if err := jsoniter.Unmarshal(value, &x.Collection); err != nil {
-				return err
-			}
-		case "documents":
-			var docs []jsoniter.RawMessage
-			if err := jsoniter.Unmarshal(value, &docs); err != nil {
-				return err
-			}
-
-			x.Documents = make([][]byte, len(docs))
-			for i := 0; i < len(docs); i++ {
-				x.Documents[i] = docs[i]
-			}
-		case "options":
-			if err := jsoniter.Unmarshal(value, &x.Options); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
-// UnmarshalJSON on ReplaceRequest avoids unmarshalling user document. We only need to extract primary/index keys from
-// the document and want to store the document as-is in the database. This way there is no extra cost of serialization/deserialization
-// and also less error-prone because we are not touching the user document. The req handler needs to extract out
-// the relevant keys from the user docs and should pass it as-is to the underlying engine.
-func (x *ReplaceRequest) UnmarshalJSON(data []byte) error {
 	var mp map[string]jsoniter.RawMessage
 	if err := jsoniter.Unmarshal(data, &mp); err != nil {
 		return err
