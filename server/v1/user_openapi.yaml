@@ -182,35 +182,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ReadResponse'
-    /api/v1/databases/{db}/collections/{collection}/documents/replace:
-        put:
-            tags:
-                - TigrisDB
-            operationId: TigrisDB_Replace
-            parameters:
-                - name: db
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ReplaceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ReplaceResponse'
     /api/v1/databases/{db}/collections/{collection}/documents/update:
         put:
             tags:
@@ -535,6 +506,8 @@ components:
             properties:
                 write_options:
                     $ref: '#/components/schemas/WriteOptions'
+                must_not_exist:
+                    type: boolean
         InsertResponse:
             type: object
             properties: {}
@@ -588,27 +561,6 @@ components:
                 key:
                     type: string
                     format: byte
-        ReplaceRequest:
-            type: object
-            properties:
-                db:
-                    type: string
-                collection:
-                    type: string
-                documents:
-                    type: array
-                    items:
-                        type: object
-                options:
-                    $ref: '#/components/schemas/ReplaceRequestOptions'
-        ReplaceRequestOptions:
-            type: object
-            properties:
-                write_options:
-                    $ref: '#/components/schemas/WriteOptions'
-        ReplaceResponse:
-            type: object
-            properties: {}
         RollbackTransactionRequest:
             type: object
             properties:
