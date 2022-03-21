@@ -20,9 +20,9 @@ ${API_DIR}/client/${V}/%/http.go: ${GEN_DIR}/%_openapi.yaml
 		-o ${API_DIR}/client/${V}/$(*F)/http.go \
 		/tmp/$(*F)_openapi.yaml
 
-generate: ${GEN_DIR}/user.pb.go ${GEN_DIR}/user.pb.gw.go ${GEN_DIR}/health.pb.go ${GEN_DIR}/health.pb.gw.go ${GEN_DIR}/user_openapi.yaml
+generate: ${GEN_DIR}/api.pb.go ${GEN_DIR}/api.pb.gw.go ${GEN_DIR}/health.pb.go ${GEN_DIR}/health.pb.gw.go ${GEN_DIR}/api_openapi.yaml
 
-client: ${API_DIR}/client/${V}/user/http.go
+client: ${API_DIR}/client/${V}/api/http.go
 
 lint: generate client
 	yq --exit-status 'tag == "!!map" or tag== "!!seq"' .github/workflows/*.yaml server/v1/*.yaml
