@@ -29,8 +29,8 @@ message ErrorDetails {
 
 // WriteOptions contain write behavior modifying options
 message WriteOptions {
-  TransactionCtx tx_ctx =
-      1; // Perform operation in the context of this transaction
+  // Perform operation in the context of this transaction
+  TransactionCtx tx_ctx = 1;
 }
 
 // ReadRequestOptions contain read behavior modifying options
