@@ -7,7 +7,7 @@ on:
       - "beta"
       - "rc"
 jobs:
-  test:
+  lint:
     uses: ./.github/workflows/lint.yaml
     secrets:
       API_DEPLOY_KEY: ${{ secrets.API_DEPLOY_KEY }}
