@@ -9,6 +9,7 @@ paths:
         get:
             tags:
                 - TigrisDB
+            description: List databases in the current namespace
             operationId: TigrisDB_ListDatabases
             responses:
                 "200":
@@ -21,10 +22,12 @@ paths:
         get:
             tags:
                 - TigrisDB
+            description: List collections in the specified database
             operationId: TigrisDB_ListCollections
             parameters:
                 - name: db
                   in: path
+                  description: List collection in this database
                   required: true
                   schema:
                     type: string
@@ -39,15 +42,18 @@ paths:
         post:
             tags:
                 - TigrisDB
+            description: Change the schema of existing collection
             operationId: TigrisDB_AlterCollection
             parameters:
                 - name: db
                   in: path
+                  description: Database name of the collection
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
+                  description: Collection name to change schema
                   required: true
                   schema:
                     type: string
@@ -68,16 +74,18 @@ paths:
         post:
             tags:
                 - TigrisDB
-            description: The following APIs are related to DDLs supported by TigrisDB
+            description: Create new collection of documents in the specified database
             operationId: TigrisDB_CreateCollection
             parameters:
                 - name: db
                   in: path
+                  description: Database name where to create collection
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
+                  description: Collection name to create
                   required: true
                   schema:
                     type: string
@@ -98,15 +106,18 @@ paths:
         delete:
             tags:
                 - TigrisDB
+            description: Delete documents from the collection according to specified filter
             operationId: TigrisDB_Delete
             parameters:
                 - name: db
                   in: path
+                  description: Database name where to insert documents
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
+                  description: Collection name where to insert documents
                   required: true
                   schema:
                     type: string
@@ -127,16 +138,20 @@ paths:
         post:
             tags:
                 - TigrisDB
-            description: Following APIs are related to DMLs supported by TigrisDB
+            description: |-
+                Insert creates new documents in the collection or replaces existing
+                 documents if mustNotExist option is specified
             operationId: TigrisDB_Insert
             parameters:
                 - name: db
                   in: path
+                  description: Database where to insert documents
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
+                  description: Collection where to insert documents
                   required: true
                   schema:
                     type: string
@@ -157,15 +172,20 @@ paths:
         post:
             tags:
                 - TigrisDB
+            description: |-
+                Read range of documents from the collection according to
+                  the specified filter
             operationId: TigrisDB_Read
             parameters:
                 - name: db
                   in: path
+                  description: Database name to read documents from
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
+                  description: Collection name to read documents from
                   required: true
                   schema:
                     type: string
@@ -182,48 +202,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ReadResponse'
-    /api/v1/databases/{db}/collections/{collection}/documents/replace:
-        put:
-            tags:
-                - TigrisDB
-            operationId: TigrisDB_Replace
-            parameters:
-                - name: db
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ReplaceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ReplaceResponse'
     /api/v1/databases/{db}/collections/{collection}/documents/update:
         put:
             tags:
                 - TigrisDB
+            description: |-
+                Update range of documents in the collection according to
+                 the specified filter and the fields projection
             operationId: TigrisDB_Update
             parameters:
                 - name: db
                   in: path
+                  description: Database name where to update documents
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
+                  description: Collection name where to update documents
                   required: true
                   schema:
                     type: string
@@ -244,15 +240,18 @@ paths:
         delete:
             tags:
                 - TigrisDB
+            description: Drop the collection
             operationId: TigrisDB_DropCollection
             parameters:
                 - name: db
                   in: path
+                  description: Database name of the collection
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
+                  description: Collection name to dtop
                   required: true
                   schema:
                     type: string
@@ -263,37 +262,16 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DropCollectionResponse'
-    /api/v1/databases/{db}/collections/{collection}/truncate:
-        delete:
-            tags:
-                - TigrisDB
-            operationId: TigrisDB_TruncateCollection
-            parameters:
-                - name: db
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/TruncateCollectionResponse'
     /api/v1/databases/{db}/create:
         post:
             tags:
                 - TigrisDB
+            description: Create database in the current namespace
             operationId: TigrisDB_CreateDatabase
             parameters:
                 - name: db
                   in: path
+                  description: Create database with this name
                   required: true
                   schema:
                     type: string
@@ -314,10 +292,14 @@ paths:
         delete:
             tags:
                 - TigrisDB
+            description: |-
+                Drop database deletes all the collections in the database
+                 along with all it documents
             operationId: TigrisDB_DropDatabase
             parameters:
                 - name: db
                   in: path
+                  description: Drop database with this name. Deletes all the collections in the database. Use with caution.
                   required: true
                   schema:
                     type: string
@@ -338,11 +320,15 @@ paths:
         post:
             tags:
                 - TigrisDB
-            description: Transactional APIs
+            description: |-
+                Starts a new transaction and returns a transactional object.
+                 All reads/writes performed within a transaction will run with
+                 serializable isolation.
             operationId: TigrisDB_BeginTransaction
             parameters:
                 - name: db
                   in: path
+                  description: Database name this transaction belongs to
                   required: true
                   schema:
                     type: string
@@ -363,10 +349,16 @@ paths:
         post:
             tags:
                 - TigrisDB
+            description: |-
+                Commit transaction atomically commit all the changes
+                 performed in the context of the transaction.
+                 All the changes committed or none of them committed in
+                 the case of error.
             operationId: TigrisDB_CommitTransaction
             parameters:
                 - name: db
                   in: path
+                  description: Database name this transaction belongs to
                   required: true
                   schema:
                     type: string
@@ -387,10 +379,14 @@ paths:
         post:
             tags:
                 - TigrisDB
+            description: |-
+                Rollback transaction discards all the changes
+                 performed in the transaction
             operationId: TigrisDB_RollbackTransaction
             parameters:
                 - name: db
                   in: path
+                  description: Database name this transaction belongs to
                   required: true
                   schema:
                     type: string
@@ -412,12 +408,9 @@ components:
         AlterCollectionRequest:
             type: object
             properties:
-                db:
-                    type: string
-                collection:
-                    type: string
                 schema:
                     type: object
+                    description: 'Schema of the documents in this collection. Should be proper JSON object. Schema syntax described here: {TBD}'
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
         AlterCollectionResponse:
@@ -428,37 +421,34 @@ components:
         BeginTransactionRequest:
             type: object
             properties:
-                db:
-                    type: string
                 options:
                     $ref: '#/components/schemas/TransactionOptions'
+            description: Start new transaction in database specified by "db"
         BeginTransactionResponse:
             type: object
             properties:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
+            description: Start transaction returns transaction context  which uniquely identifies the transaction
         CollectionOptions:
             type: object
             properties: {}
+            description: Collection requests modifying options
         CommitTransactionRequest:
             type: object
             properties:
-                db:
-                    type: string
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
+            description: Commit transaction with the given ID
         CommitTransactionResponse:
             type: object
             properties: {}
         CreateCollectionRequest:
             type: object
             properties:
-                db:
-                    type: string
-                collection:
-                    type: string
                 schema:
                     type: object
+                    description: 'Schema of the documents in this collection. Should be proper JSON object. Schema syntax described here: {TBD}'
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
         CreateCollectionResponse:
@@ -469,8 +459,6 @@ components:
         CreateDatabaseRequest:
             type: object
             properties:
-                db:
-                    type: string
                 options:
                     $ref: '#/components/schemas/DatabaseOptions'
         CreateDatabaseResponse:
@@ -481,15 +469,13 @@ components:
         DatabaseOptions:
             type: object
             properties: {}
+            description: Database requests modifying options
         DeleteRequest:
             type: object
             properties:
-                db:
-                    type: string
-                collection:
-                    type: string
                 filter:
                     type: object
+                    description: 'Delete documents which matching specified filter. The filter should proper JSON object. Filter syntax described here: {TBD}'
                 options:
                     $ref: '#/components/schemas/DeleteRequestOptions'
         DeleteRequestOptions:
@@ -508,8 +494,6 @@ components:
         DropDatabaseRequest:
             type: object
             properties:
-                db:
-                    type: string
                 options:
                     $ref: '#/components/schemas/DatabaseOptions'
         DropDatabaseResponse:
@@ -520,14 +504,11 @@ components:
         InsertRequest:
             type: object
             properties:
-                db:
-                    type: string
-                collection:
-                    type: string
                 documents:
                     type: array
                     items:
                         type: object
+                    description: Array of documents to insert. Should be proper JSON object
                 options:
                     $ref: '#/components/schemas/InsertRequestOptions'
         InsertRequestOptions:
@@ -535,6 +516,10 @@ components:
             properties:
                 write_options:
                     $ref: '#/components/schemas/WriteOptions'
+                must_not_exist:
+                    type: boolean
+                    description: The must_not_exist, when set to true, prevents overwriting if the documents with the same ID already exists in the collection
+            description: Insert request options
         InsertResponse:
             type: object
             properties: {}
@@ -545,6 +530,7 @@ components:
                     type: array
                     items:
                         type: string
+                    description: List of the collections in the database
         ListDatabasesResponse:
             type: object
             properties:
@@ -552,17 +538,16 @@ components:
                     type: array
                     items:
                         type: string
+                    description: List of the databases in the namespace
         ReadRequest:
             type: object
             properties:
-                db:
-                    type: string
-                collection:
-                    type: string
                 filter:
                     type: object
+                    description: 'Returns documents matching this filter. The filter should proper JSON object Filter syntax described here: {TBD}'
                 fields:
                     type: string
+                    description: Limit fields returned by the read by this subset of the fields The fields should proper JSON object
                     format: byte
                 options:
                     $ref: '#/components/schemas/ReadRequestOptions'
@@ -573,49 +558,33 @@ components:
                     $ref: '#/components/schemas/TransactionCtx'
                 limit:
                     type: integer
+                    description: Limit the number of documents returned by the read operation
                     format: int64
                 skip:
                     type: integer
+                    description: Number of documents to skip before starting to return resulting documents
                     format: int64
                 offset:
                     type: string
+                    description: Start returning document start from this primary key
                     format: byte
+            description: ReadRequestOptions contain read behavior modifying options
         ReadResponse:
             type: object
             properties:
                 doc:
                     type: object
+                    description: Doc is the JSON object representing requested fields
                 key:
                     type: string
+                    description: Key is internal key, which uniquely identify the document. This fields is used to
                     format: byte
-        ReplaceRequest:
-            type: object
-            properties:
-                db:
-                    type: string
-                collection:
-                    type: string
-                documents:
-                    type: array
-                    items:
-                        type: object
-                options:
-                    $ref: '#/components/schemas/ReplaceRequestOptions'
-        ReplaceRequestOptions:
-            type: object
-            properties:
-                write_options:
-                    $ref: '#/components/schemas/WriteOptions'
-        ReplaceResponse:
-            type: object
-            properties: {}
         RollbackTransactionRequest:
             type: object
             properties:
-                db:
-                    type: string
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
+            description: Rollback transaction with the given ID
         RollbackTransactionResponse:
             type: object
             properties: {}
@@ -626,25 +595,20 @@ components:
                     type: string
                 origin:
                     type: string
+            description: Contains ID which uniquely identifies transaction.This context is returned by StartTransaction request andshould be passed in the options of document modificationrequests in order to run them in the context of the sametransaction
         TransactionOptions:
             type: object
             properties: {}
-        TruncateCollectionResponse:
-            type: object
-            properties:
-                msg:
-                    type: string
+            description: Modify start transaction behavior
         UpdateRequest:
             type: object
             properties:
-                db:
-                    type: string
-                collection:
-                    type: string
                 fields:
                     type: object
+                    description: Fields contains set of fields with the values which need to be updated. Should be proper JSON object.
                 filter:
                     type: object
+                    description: 'Update documents which matching specified filter. The filter should proper JSON object Filter syntax described here: {TBD}'
                 options:
                     $ref: '#/components/schemas/UpdateRequestOptions'
         UpdateRequestOptions:
@@ -663,5 +627,6 @@ components:
             properties:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
+            description: WriteOptions contain write behavior modifying options
 tags:
     - name: TigrisDB

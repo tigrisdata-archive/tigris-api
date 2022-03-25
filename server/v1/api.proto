@@ -15,7 +15,6 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
-import "google/protobuf/struct.proto";
 
 option go_package = "github.com/tigrisdata/tigrisdb/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
@@ -28,53 +27,88 @@ message ErrorDetails {
   string msg = 2;
 }
 
+// WriteOptions contain write behavior modifying options
 message WriteOptions {
+  // Perform operation in the context of this transaction
   TransactionCtx tx_ctx = 1;
 }
 
+// ReadRequestOptions contain read behavior modifying options
 message ReadRequestOptions {
+  // Perform operation in the context of this transaction
   TransactionCtx tx_ctx = 1;
+  // Limit the number of documents returned by the read operation
   int64 limit = 2;
+  // Number of documents to skip before starting to return resulting documents
   int64 skip = 3;
+  // Start returning document start from this primary key
   bytes offset = 4;
 }
 
+// Database requests modifying options
 message DatabaseOptions {}
+// Collection requests modifying options
 message CollectionOptions {}
+// Modify start transaction behavior
 message TransactionOptions {}
 
+/*
+  Contains ID which uniquely identifies transaction.
+  This context is returned by StartTransaction request and
+  should be passed in the options of document modification
+  requests in order to run them in the context of the same
+  transaction
+ */
 message TransactionCtx {
   string id = 1;
   string origin = 2;
 }
 
+// Start new transaction in database specified by "db"
 message BeginTransactionRequest {
+  // Database name this transaction belongs to
   string db = 1;
   TransactionOptions options = 2;
 }
-message BeginTransactionResponse {
-  TransactionCtx tx_ctx = 1;
-}
 
+//  Start transaction returns transaction context
+//  which uniquely identifies the transaction
+message BeginTransactionResponse { TransactionCtx tx_ctx = 1; }
+
+// Commit transaction with the given ID
 message CommitTransactionRequest {
+  // Database name this transaction belongs to
   string db = 1;
+  // Contains unique transaction ID
   TransactionCtx tx_ctx = 2;
 }
 message CommitTransactionResponse {}
 
+// Rollback transaction with the given ID
 message RollbackTransactionRequest {
+  // Database name this transaction belongs to
   string db = 1;
+  // Contains unique transaction ID
   TransactionCtx tx_ctx = 2;
 }
 message RollbackTransactionResponse {}
 
+// Insert request options
 message InsertRequestOptions {
   WriteOptions write_options = 1;
+  // The must_not_exist, when set to true,
+  // prevents overwriting if the documents with the same ID
+  // already exist in the collection
+  bool must_not_exist = 2;
 }
 
 message InsertRequest {
+  // Database name where to insert documents
   string db = 1;
+  // Collection name where to insert documents
   string collection = 2;
+  // Array of documents to insert.
+  // Should be proper JSON object
   repeated bytes documents = 3;
   InsertRequestOptions options = 4;
 }
@@ -86,35 +120,35 @@ message DeleteRequestOptions {
 }
 
 message DeleteRequest {
+  // Database name where to insert documents
   string db = 1;
+  // Collection name where to insert documents
   string collection = 2;
+  // Delete documents which matching specified filter.
+  // The filter should proper JSON object.
+  // Filter syntax described here: {TBD}
   bytes filter = 3;
   DeleteRequestOptions options = 4;
 }
 
 message DeleteResponse {}
 
-message ReplaceRequestOptions {
-  WriteOptions write_options = 1;
-}
-
-message ReplaceRequest {
-  string db = 1;
-  string collection = 2;
-  repeated bytes documents = 3;
-  ReplaceRequestOptions options = 4;
-}
-
-message ReplaceResponse {}
-
 message UpdateRequestOptions {
   WriteOptions write_options = 1;
 }
 
 message UpdateRequest {
+  // Database name where to update documents
   string db = 1;
+  // Collection name where to update documents
   string collection = 2;
+  // Fields contains set of fields
+  // with the values which need to be updated.
+  // Should be proper JSON object.
   bytes fields = 3;
+  // Update documents which matching specified filter.
+  // The filter should proper JSON object
+  // Filter syntax described here: {TBD}
   bytes filter = 4;
   UpdateRequestOptions options = 5;
 }
@@ -124,19 +158,31 @@ message UpdateResponse {
 }
 
 message ReadRequest {
+  // Database name to read documents from
   string db = 1;
+  // Collection name to read documents from
   string collection = 2;
+  // Returns documents matching this filter.
+  // The filter should proper JSON object
+  // Filter syntax described here: {TBD}
   bytes filter = 3;
+  // Limit fields returned by the read
+  // by this subset of the fields
+  // The fields should proper JSON object
   bytes fields = 4;
   ReadRequestOptions options = 5;
 }
 
 message ReadResponse {
+  // Doc is the JSON object representing requested fields
   bytes doc = 1;
+  // Key is internal key, which uniquely identify the document.
+  // This fields is used to
   bytes key = 2;
 }
 
 message CreateDatabaseRequest {
+  // Create database with this name
   string db = 1;
   DatabaseOptions options = 2;
 }
@@ -146,6 +192,9 @@ message CreateDatabaseResponse {
 }
 
 message DropDatabaseRequest {
+  // Drop database with this name.
+  // Deletes all the collections in the database.
+  // Use with caution.
   string db = 1;
   DatabaseOptions options = 2;
 }
@@ -155,8 +204,13 @@ message DropDatabaseResponse {
 }
 
 message CreateCollectionRequest {
+  // Database name where to create collection
   string db = 1;
+  // Collection name to create
   string collection = 2;
+  // Schema of the documents in this collection.
+  // Should be proper JSON object.
+  // Schema syntax described here: {TBD}
   bytes schema = 3;
   CollectionOptions options = 4;
 }
@@ -166,8 +220,13 @@ message CreateCollectionResponse {
 }
 
 message AlterCollectionRequest {
+  // Database name of the collection
   string db = 1;
+  // Collection name to change schema
   string collection = 2;
+  // Schema of the documents in this collection.
+  // Should be proper JSON object.
+  // Schema syntax described here: {TBD}
   bytes schema = 3;
   CollectionOptions options = 4;
 }
@@ -177,7 +236,9 @@ message AlterCollectionResponse {
 }
 
 message DropCollectionRequest {
+  // Database name of the collection
   string db = 1;
+  // Collection name to dtop
   string collection = 2;
   CollectionOptions options = 3;
 }
@@ -199,31 +260,44 @@ message ListDatabasesRequest {
 }
 
 message ListDatabasesResponse {
+  // List of the databases in the namespace
   repeated string dbs = 1;
 }
 
 message ListCollectionsRequest {
+  // List collection in this database
   string db = 1;
 }
 
 message ListCollectionsResponse {
+  // List of the collections in the database
   repeated string collections = 1;
 }
 
 service TigrisDB {
   // Transactional APIs
+
+  // Starts a new transaction and returns a transactional object.
+  // All reads/writes performed within a transaction will run with
+  // serializable isolation.
   rpc BeginTransaction(BeginTransactionRequest) returns (BeginTransactionResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/transactions/begin"
       body : "*"
     };
   }
+  // Commit transaction atomically commit all the changes
+  // performed in the context of the transaction.
+  // All the changes committed or none of them committed in
+  // the case of error.
   rpc CommitTransaction(CommitTransactionRequest) returns (CommitTransactionResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/transactions/commit"
       body : "*"
     };
   }
+  // Rollback transaction discards all the changes
+  // performed in the transaction
   rpc RollbackTransaction(RollbackTransactionRequest) returns (RollbackTransactionResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/transactions/rollback"
@@ -231,31 +305,33 @@ service TigrisDB {
     };
   }
 
-  // Following APIs are related to DMLs supported by TigrisDB
+  // Following are documents manipulation API supported by TigrisDB
+
+  // Insert creates new documents in the collection or replaces existing
+  // documents if mustNotExist option is specified
   rpc Insert(InsertRequest) returns (InsertResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/documents/insert"
       body : "*"
     };
   }
-  rpc Replace(ReplaceRequest) returns (ReplaceResponse) {
-    option (google.api.http) = {
-      put : "/api/v1/databases/{db}/collections/{collection}/documents/replace"
-      body : "*"
-    };
-  }
+  // Delete documents from the collection according to specified filter
   rpc Delete(DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
       delete : "/api/v1/databases/{db}/collections/{collection}/documents/delete"
       body : "*"
     };
   }
+  // Update range of documents in the collection according to
+  // the specified filter and the fields projection
   rpc Update(UpdateRequest) returns (UpdateResponse) {
     option (google.api.http) = {
       put : "/api/v1/databases/{db}/collections/{collection}/documents/update"
       body : "*"
     };
   }
+  //  Read range of documents from the collection according to
+  //  the specified filter
   rpc Read(ReadRequest) returns (stream ReadResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/documents/read"
@@ -264,39 +340,42 @@ service TigrisDB {
   }
 
   // The following APIs are related to DDLs supported by TigrisDB
+
+  // Create new collection of documents in the specified database
   rpc CreateCollection(CreateCollectionRequest) returns (CreateCollectionResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/create"
       body : "*"
     };
   }
+
+  // Change the schema of existing collection
   rpc AlterCollection(AlterCollectionRequest) returns (AlterCollectionResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/alter"
       body : "*"
     };
   }
+  // Drop the collection
   rpc DropCollection(DropCollectionRequest) returns (DropCollectionResponse) {
     option (google.api.http) = {
       delete : "/api/v1/databases/{db}/collections/{collection}/drop"
     };
   }
-  rpc TruncateCollection(TruncateCollectionRequest) returns (TruncateCollectionResponse) {
-    option (google.api.http) = {
-      delete : "/api/v1/databases/{db}/collections/{collection}/truncate"
-    };
-  }
+  // List databases in the current namespace
   rpc ListDatabases(ListDatabasesRequest) returns (ListDatabasesResponse) {
     option (google.api.http) = {
       get : "/api/v1/databases/list"
     };
   }
+  // List collections in the specified database
   rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse) {
     option (google.api.http) = {
       get : "/api/v1/databases/{db}/collections/list"
     };
   }
 
+  // Create database in the current namespace
   rpc CreateDatabase(CreateDatabaseRequest) returns (CreateDatabaseResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/create"
@@ -304,6 +383,8 @@ service TigrisDB {
     };
   }
 
+  // Drop database deletes all the collections in the database
+  // along with all it documents
   rpc DropDatabase(DropDatabaseRequest) returns (DropDatabaseResponse) {
     option (google.api.http) = {
       delete : "/api/v1/databases/{db}/drop"
