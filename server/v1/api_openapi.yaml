@@ -19,7 +19,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/ListDatabasesResponse'
     /api/v1/databases/{db}/collections/list:
-        get:
+        post:
             tags:
                 - TigrisDB
             description: List collections in the specified database
@@ -31,6 +31,12 @@ paths:
                   required: true
                   schema:
                     type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListCollectionsRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -145,13 +151,13 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: Database where to insert documents
+                  description: Database name where to insert documents
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
-                  description: Collection where to insert documents
+                  description: Collection name where to insert documents
                   required: true
                   schema:
                     type: string
@@ -255,6 +261,12 @@ paths:
                   required: true
                   schema:
                     type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DropCollectionRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -432,7 +444,9 @@ components:
             description: Start transaction returns transaction context  which uniquely identifies the transaction
         CollectionOptions:
             type: object
-            properties: {}
+            properties:
+                tx_ctx:
+                    $ref: '#/components/schemas/TransactionCtx'
             description: Collection requests modifying options
         CommitTransactionRequest:
             type: object
@@ -486,6 +500,11 @@ components:
         DeleteResponse:
             type: object
             properties: {}
+        DropCollectionRequest:
+            type: object
+            properties:
+                options:
+                    $ref: '#/components/schemas/CollectionOptions'
         DropCollectionResponse:
             type: object
             properties:
@@ -518,11 +537,16 @@ components:
                     $ref: '#/components/schemas/WriteOptions'
                 must_not_exist:
                     type: boolean
-                    description: The must_not_exist, when set to true, prevents overwriting if the documents with the same ID already exists in the collection
+                    description: The must_not_exist, when set to true, prevents overwriting if the documents with the same ID already exist in the collection
             description: Insert request options
         InsertResponse:
             type: object
             properties: {}
+        ListCollectionsRequest:
+            type: object
+            properties:
+                options:
+                    $ref: '#/components/schemas/CollectionOptions'
         ListCollectionsResponse:
             type: object
             properties:
