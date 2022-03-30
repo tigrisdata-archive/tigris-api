@@ -48,7 +48,10 @@ message ReadRequestOptions {
 // Database requests modifying options
 message DatabaseOptions {}
 // Collection requests modifying options
-message CollectionOptions {}
+message CollectionOptions {
+  // Perform operation in the context of this transaction
+  TransactionCtx tx_ctx = 1;
+}
 // Modify start transaction behavior
 message TransactionOptions {}
 
@@ -247,15 +250,6 @@ message DropCollectionResponse {
   string msg = 1;
 }
 
-message TruncateCollectionRequest {
-  string db = 1;
-  string collection = 2;
-}
-
-message TruncateCollectionResponse {
-  string msg = 1;
-}
-
 message ListDatabasesRequest {
 }
 
@@ -267,6 +261,7 @@ message ListDatabasesResponse {
 message ListCollectionsRequest {
   // List collection in this database
   string db = 1;
+  CollectionOptions options = 2;
 }
 
 message ListCollectionsResponse {
@@ -360,6 +355,7 @@ service TigrisDB {
   rpc DropCollection(DropCollectionRequest) returns (DropCollectionResponse) {
     option (google.api.http) = {
       delete : "/api/v1/databases/{db}/collections/{collection}/drop"
+      body : "*"
     };
   }
   // List databases in the current namespace
@@ -371,7 +367,8 @@ service TigrisDB {
   // List collections in the specified database
   rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse) {
     option (google.api.http) = {
-      get : "/api/v1/databases/{db}/collections/list"
+      post : "/api/v1/databases/{db}/collections/list"
+      body : "*"
     };
   }
 

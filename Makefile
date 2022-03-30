@@ -11,14 +11,15 @@ ${GEN_DIR}/%_openapi.yaml ${GEN_DIR}/%.pb.go ${GEN_DIR}/%.pb.gw.go: ${GEN_DIR}/%
 		--go-grpc_out=${API_DIR} --go-grpc_opt=require_unimplemented_servers=false,paths=source_relative \
 		--grpc-gateway_out=${API_DIR} --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
 		$<
-	mv ${API_DIR}/openapi.yaml /tmp/$(*F)_openapi.yaml
+	/bin/bash scripts/fix_openapi.sh ${API_DIR}/openapi.yaml ${GEN_DIR}/$(*F)_openapi.yaml
+	rm ${API_DIR}/openapi.yaml
 
 # generate Go HTTP client from openapi spec
 ${API_DIR}/client/${V}/%/http.go: ${GEN_DIR}/%_openapi.yaml
 	mkdir -p ${API_DIR}/client/${V}/$(*F)
 	oapi-codegen -package api -generate "client, types, spec" \
 		-o ${API_DIR}/client/${V}/$(*F)/http.go \
-		/tmp/$(*F)_openapi.yaml
+		${GEN_DIR}/$(*F)_openapi.yaml
 
 generate: ${GEN_DIR}/api.pb.go ${GEN_DIR}/api.pb.gw.go ${GEN_DIR}/health.pb.go ${GEN_DIR}/health.pb.gw.go ${GEN_DIR}/api_openapi.yaml
 
