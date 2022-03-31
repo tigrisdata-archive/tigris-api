@@ -99,10 +99,6 @@ message RollbackTransactionResponse {}
 // Insert request options
 message InsertRequestOptions {
   WriteOptions write_options = 1;
-  // The must_not_exist, when set to true,
-  // prevents overwriting if the documents with the same ID
-  // already exist in the collection
-  bool must_not_exist = 2;
 }
 
 message InsertRequest {
@@ -117,6 +113,23 @@ message InsertRequest {
 }
 
 message InsertResponse {}
+
+message ReplaceRequestOptions {
+  WriteOptions write_options = 1;
+}
+
+message ReplaceRequest {
+  // Database name where to replace documents.
+  string db = 1;
+  // Collection name where to replace documents.
+  string collection = 2;
+  // Array of documents to be replaced.
+  // Should be proper JSON object.
+  repeated bytes documents = 3;
+  ReplaceRequestOptions options = 4;
+}
+
+message ReplaceResponse {}
 
 message DeleteRequestOptions {
   WriteOptions write_options = 1;
@@ -302,11 +315,19 @@ service TigrisDB {
 
   // Following are documents manipulation API supported by TigrisDB
 
-  // Insert creates new documents in the collection or replaces existing
-  // documents if mustNotExist option is specified
+  // Insert inserts new documents in the collection and returns a conflict if any of the document
+  // passed in the batch already exists. Insert provides idempotency by rejecting request if document
+  // already exists. To replace documents, REPLACE API should be used instead of INSERT.
   rpc Insert(InsertRequest) returns (InsertResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/documents/insert"
+      body : "*"
+    };
+  }
+  // Replace inserts the documents or replaces the existing documents in the collections.
+  rpc Replace(ReplaceRequest) returns (ReplaceResponse) {
+    option (google.api.http) = {
+      put : "/api/v1/databases/{db}/collections/{collection}/documents/replace"
       body : "*"
     };
   }
