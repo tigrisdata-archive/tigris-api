@@ -145,8 +145,9 @@ paths:
             tags:
                 - TigrisDB
             description: |-
-                Insert creates new documents in the collection or replaces existing
-                 documents if mustNotExist option is specified
+                Insert inserts new documents in the collection and returns a conflict if any of the document
+                 passed in the batch already exists. Insert provides idempotency by rejecting request if document
+                 already exists. To replace documents, REPLACE API should be used instead of INSERT.
             operationId: TigrisDB_Insert
             parameters:
                 - name: db
@@ -208,6 +209,38 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ReadResponse'
+    /api/v1/databases/{db}/collections/{collection}/documents/replace:
+        put:
+            tags:
+                - TigrisDB
+            description: Replace inserts the documents or replaces the existing documents in the collections.
+            operationId: TigrisDB_Replace
+            parameters:
+                - name: db
+                  in: path
+                  description: Database name where to replace documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name where to replace documents.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReplaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ReplaceResponse'
     /api/v1/databases/{db}/collections/{collection}/documents/update:
         put:
             tags:
@@ -535,9 +568,6 @@ components:
             properties:
                 write_options:
                     $ref: '#/components/schemas/WriteOptions'
-                must_not_exist:
-                    type: boolean
-                    description: The must_not_exist, when set to true, prevents overwriting if the documents with the same ID already exist in the collection
             description: Insert request options
         InsertResponse:
             type: object
@@ -603,6 +633,24 @@ components:
                     type: string
                     description: Key is internal key, which uniquely identify the document. This fields is used to
                     format: byte
+        ReplaceRequest:
+            type: object
+            properties:
+                documents:
+                    type: array
+                    items:
+                        type: object
+                    description: Array of documents to be replaced. Should be proper JSON object.
+                options:
+                    $ref: '#/components/schemas/ReplaceRequestOptions'
+        ReplaceRequestOptions:
+            type: object
+            properties:
+                write_options:
+                    $ref: '#/components/schemas/WriteOptions'
+        ReplaceResponse:
+            type: object
+            properties: {}
         RollbackTransactionRequest:
             type: object
             properties:
