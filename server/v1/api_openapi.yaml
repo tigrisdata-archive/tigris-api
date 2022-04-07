@@ -560,9 +560,8 @@ components:
                     type: object
                     description: 'Returns documents matching this filter. The filter should proper JSON object Filter syntax described here: {TBD}'
                 fields:
-                    type: string
+                    type: object
                     description: Limit fields returned by the read by this subset of the fields The fields should proper JSON object
-                    format: byte
                 options:
                     $ref: '#/components/schemas/ReadRequestOptions'
         ReadRequestOptions:
