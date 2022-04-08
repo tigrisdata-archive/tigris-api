@@ -6,7 +6,7 @@ info:
     version: 0.0.1
 paths:
     /api/v1/databases/list:
-        get:
+        post:
             tags:
                 - TigrisDB
             description: List returns all the databases.
@@ -423,6 +423,11 @@ components:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
             description: Start transaction returns transaction context  which uniquely identifies the transaction
+        CollectionInfo:
+            type: object
+            properties:
+                name:
+                    type: string
         CollectionOptions:
             type: object
             properties:
@@ -451,16 +456,9 @@ components:
         CreateOrUpdateCollectionRequest:
             type: object
             properties:
-                db:
-                    type: string
-                    description: Database name where to create collection
-                collection:
-                    type: string
-                    description: Collection name to create
                 schema:
-                    type: string
+                    type: object
                     description: 'Schema of the documents in this collection. The schema specifications are same as JSON schema specification defined here(https://json-schema.org/specification.html). As an example, the schema looks like below, {  "name": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "bigint"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 100    },    "balance": {      "description": "User account balance",      "type": "double"    }  },  "primary_key": ["id"] }'
-                    format: byte
                 only_create:
                     type: boolean
                 options:
@@ -469,6 +467,11 @@ components:
             type: object
             properties:
                 msg:
+                    type: string
+        DatabaseInfo:
+            type: object
+            properties:
+                name:
                     type: string
         DatabaseOptions:
             type: object
@@ -540,16 +543,16 @@ components:
                 collections:
                     type: array
                     items:
-                        type: string
+                        $ref: '#/components/schemas/CollectionInfo'
                     description: List of the collections in the database
         ListDatabasesResponse:
             type: object
             properties:
-                dbs:
+                databases:
                     type: array
                     items:
-                        type: string
-                    description: List of the databases in the namespace
+                        $ref: '#/components/schemas/DatabaseInfo'
+                    description: List of the databases.
         ReadRequest:
             type: object
             properties:
@@ -657,13 +660,5 @@ components:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
             description: WriteOptions contain write behavior modifying options
-        CreateCollectionRequest:
-            properties:
-                schema:
-                    type: object
-        AlterCollectionRequest:
-            properties:
-                schema:
-                    type: object
 tags:
     - name: TigrisDB
