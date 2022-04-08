@@ -268,12 +268,16 @@ message DropCollectionResponse {
   string msg = 1;
 }
 
+message DatabaseInfo {
+  string name = 1;
+}
+
 message ListDatabasesRequest {
 }
 
 message ListDatabasesResponse {
-  // List of the databases in the namespace
-  repeated string dbs = 1;
+  // List of the databases.
+  repeated DatabaseInfo databases = 1;
 }
 
 message ListCollectionsRequest {
@@ -282,9 +286,13 @@ message ListCollectionsRequest {
   CollectionOptions options = 2;
 }
 
+message CollectionInfo {
+  string name = 1;
+}
+
 message ListCollectionsResponse {
   // List of the collections in the database
-  repeated string collections = 1;
+  repeated CollectionInfo collections = 1;
 }
 
 service TigrisDB {
@@ -369,7 +377,7 @@ service TigrisDB {
   // List returns all the databases.
   rpc ListDatabases(ListDatabasesRequest) returns (ListDatabasesResponse) {
     option (google.api.http) = {
-      get : "/api/v1/databases/list"
+      post : "/api/v1/databases/list"
     };
   }
   // List all collections in the database passed in the request.
