@@ -233,7 +233,7 @@ message CreateOrUpdateCollectionRequest {
   //  "properties": {
   //    "id": {
   //      "description": "A unique identifier for the user",
-  //      "type": "bigint"
+  //      "type": "integer"
   //    },
   //    "name": {
   //      "description": "Name of the user",
@@ -242,7 +242,7 @@ message CreateOrUpdateCollectionRequest {
   //    },
   //    "balance": {
   //      "description": "User account balance",
-  //      "type": "double"
+  //      "type": "number"
   //    }
   //  },
   //  "primary_key": ["id"]
