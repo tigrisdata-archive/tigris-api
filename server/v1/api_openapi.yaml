@@ -504,6 +504,9 @@ components:
                 timestamp:
                     type: string
                     description: Returns the timestamp when the documents are deleted.
+                status:
+                    type: string
+                    description: an enum with value set as "deleted"
         DropCollectionRequest:
             type: object
             properties:
@@ -554,6 +557,9 @@ components:
                 timestamp:
                     type: string
                     description: Returns the commit timestamp of the documents.
+                status:
+                    type: string
+                    description: an enum with value set as "inserted"
         ListCollectionsRequest:
             type: object
             properties:
@@ -635,6 +641,9 @@ components:
                 timestamp:
                     type: string
                     description: Returns the commit timestamp of the replaced documents.
+                status:
+                    type: string
+                    description: an enum with value set as "replaced"
         RollbackTransactionRequest:
             type: object
             properties:
@@ -682,6 +691,9 @@ components:
                     type: integer
                     description: Returns the number of documents modified.
                     format: int32
+                status:
+                    type: string
+                    description: an enum with value set as "updated"
         WriteOptions:
             type: object
             properties:
