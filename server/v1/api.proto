@@ -115,6 +115,8 @@ message InsertRequest {
 message InsertResponse {
   // Returns the commit timestamp of the documents.
   string timestamp = 1;
+  // an enum with value set as "inserted"
+  string status = 2;
 }
 
 message ReplaceRequestOptions {
@@ -135,6 +137,8 @@ message ReplaceRequest {
 message ReplaceResponse {
   // Returns the commit timestamp of the replaced documents.
   string timestamp = 1;
+  // an enum with value set as "replaced"
+  string status = 2;
 }
 
 message DeleteRequestOptions {
@@ -156,6 +160,8 @@ message DeleteRequest {
 message DeleteResponse {
   // Returns the timestamp when the documents are deleted.
   string timestamp = 1;
+  // an enum with value set as "deleted"
+  string status = 2;
 }
 
 message UpdateRequestOptions {
@@ -183,6 +189,8 @@ message UpdateResponse {
   string timestamp = 1;
   // Returns the number of documents modified.
   int32 modified_count = 2;
+  // an enum with value set as "updated"
+  string status = 3;
 }
 
 message ReadRequest {
