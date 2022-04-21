@@ -451,14 +451,18 @@ components:
         CreateDatabaseResponse:
             type: object
             properties:
-                msg:
+                message:
                     type: string
+                    description: a detailed response message.
+                status:
+                    type: string
+                    description: an enum with value set as "created"
         CreateOrUpdateCollectionRequest:
             type: object
             properties:
                 schema:
                     type: object
-                    description: 'Schema of the documents in this collection. The schema specifications are same as JSON schema specification defined here(https://json-schema.org/specification.html). As an example, the schema looks like below, {  "name": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "bigint"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 100    },    "balance": {      "description": "User account balance",      "type": "double"    }  },  "primary_key": ["id"] }'
+                    description: 'Schema of the documents in this collection. The schema specifications are same as JSON schema specification defined here(https://json-schema.org/specification.html). As an example, the schema looks like below, {  "name": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "integer"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 100    },    "balance": {      "description": "User account balance",      "type": "number"    }  },  "primary_key": ["id"] }'
                 only_create:
                     type: boolean
                 options:
@@ -466,8 +470,12 @@ components:
         CreateOrUpdateCollectionResponse:
             type: object
             properties:
-                msg:
+                message:
                     type: string
+                    description: a detailed response message.
+                status:
+                    type: string
+                    description: an enum with value set as "created" or "updated".
         DatabaseInfo:
             type: object
             properties:
@@ -492,7 +500,10 @@ components:
                     $ref: '#/components/schemas/WriteOptions'
         DeleteResponse:
             type: object
-            properties: {}
+            properties:
+                timestamp:
+                    type: string
+                    description: Returns the timestamp when the documents are deleted.
         DropCollectionRequest:
             type: object
             properties:
@@ -501,8 +512,12 @@ components:
         DropCollectionResponse:
             type: object
             properties:
-                msg:
+                message:
                     type: string
+                    description: a detailed response message.
+                status:
+                    type: string
+                    description: an enum with value set as "dropped"
         DropDatabaseRequest:
             type: object
             properties:
@@ -511,8 +526,12 @@ components:
         DropDatabaseResponse:
             type: object
             properties:
-                msg:
+                message:
                     type: string
+                    description: a detailed response message.
+                status:
+                    type: string
+                    description: an enum with value set as "dropped"
         InsertRequest:
             type: object
             properties:
@@ -531,7 +550,10 @@ components:
             description: Insert request options
         InsertResponse:
             type: object
-            properties: {}
+            properties:
+                timestamp:
+                    type: string
+                    description: Returns the commit timestamp of the documents.
         ListCollectionsRequest:
             type: object
             properties:
@@ -585,12 +607,12 @@ components:
         ReadResponse:
             type: object
             properties:
-                doc:
+                data:
                     type: object
-                    description: Doc is the JSON object representing requested fields
-                key:
+                    description: data has the user requested data
+                resume_token:
                     type: string
-                    description: Key is internal key, which uniquely identify the document. This fields is used to
+                    description: resume_token is internal key, used for pagination.
                     format: byte
         ReplaceRequest:
             type: object
@@ -609,7 +631,10 @@ components:
                     $ref: '#/components/schemas/WriteOptions'
         ReplaceResponse:
             type: object
-            properties: {}
+            properties:
+                timestamp:
+                    type: string
+                    description: Returns the commit timestamp of the replaced documents.
         RollbackTransactionRequest:
             type: object
             properties:
@@ -650,8 +675,12 @@ components:
         UpdateResponse:
             type: object
             properties:
-                rc:
+                timestamp:
+                    type: string
+                    description: Returns the timestamp when the documents are updated.
+                modified_count:
                     type: integer
+                    description: Returns the number of documents modified.
                     format: int32
         WriteOptions:
             type: object

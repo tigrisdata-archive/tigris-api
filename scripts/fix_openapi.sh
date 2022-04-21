@@ -52,7 +52,7 @@ yq_del_db_coll() {
 
 # Fix the types of filter and document fields to be object on HTTP wire.
 # The original format in proto file is "bytes", which allows to skip
-# unmarshalling in GRPC, we also implement custom unmashalling for HTTP
+# unmarshalling in GRPC, we also implement custom unmarshalling for HTTP
 for i in DeleteRequest UpdateRequest ReadRequest; do
 	yq_fix_object $i filter
 done
@@ -61,7 +61,7 @@ yq_fix_object InsertRequest documents.items
 yq_fix_object ReplaceRequest documents.items
 yq_fix_object UpdateRequest fields
 yq_fix_object ReadRequest fields
-yq_fix_object ReadResponse doc
+yq_fix_object ReadResponse data
 yq_fix_object CreateOrUpdateCollectionRequest schema
 
 for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
