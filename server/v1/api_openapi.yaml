@@ -27,7 +27,7 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: List collection in this database
+                  description: List collection in this database.
                   required: true
                   schema:
                     type: string
@@ -55,13 +55,13 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: Database name where to create collection
+                  description: Database name where to create collection.
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
-                  description: Collection name to create
+                  description: Collection name to create.
                   required: true
                   schema:
                     type: string
@@ -78,6 +78,38 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/CreateOrUpdateCollectionResponse'
+    /api/v1/databases/{db}/collections/{collection}/describe:
+        post:
+            tags:
+                - TigrisDB
+            description: Describe collection describes the information related to collection.
+            operationId: TigrisDB_DescribeCollection
+            parameters:
+                - name: db
+                  in: path
+                  description: Name of the database.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Name of the collection.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DescribeCollectionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DescribeCollectionResponse'
     /api/v1/databases/{db}/collections/{collection}/documents/delete:
         delete:
             tags:
@@ -87,13 +119,13 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: Database name where to insert documents
+                  description: Database name where to insert documents.
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
-                  description: Collection name where to insert documents
+                  description: Collection name where to insert documents.
                   required: true
                   schema:
                     type: string
@@ -122,13 +154,13 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: Database name where to insert documents
+                  description: Database name where to insert documents.
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
-                  description: Collection name where to insert documents
+                  description: Collection name where to insert documents.
                   required: true
                   schema:
                     type: string
@@ -154,13 +186,13 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: Database name to read documents from
+                  description: Database name to read documents from.
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
-                  description: Collection name to read documents from
+                  description: Collection name to read documents from.
                   required: true
                   schema:
                     type: string
@@ -250,13 +282,13 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: Database name of the collection
+                  description: Database name of the collection.
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
-                  description: Collection name to drop
+                  description: Collection name to drop.
                   required: true
                   schema:
                     type: string
@@ -282,7 +314,7 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: Create database with this name
+                  description: Create database with this name.
                   required: true
                   schema:
                     type: string
@@ -299,6 +331,34 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/CreateDatabaseResponse'
+    /api/v1/databases/{db}/describe:
+        post:
+            tags:
+                - TigrisDB
+            description: |-
+                Describe database describes the information related to database along
+                 with all the collections inside database.
+            operationId: TigrisDB_DescribeDatabase
+            parameters:
+                - name: db
+                  in: path
+                  description: Name of the database.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DescribeDatabaseRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DescribeDatabaseResponse'
     /api/v1/databases/{db}/drop:
         delete:
             tags:
@@ -308,7 +368,7 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: Drop database with this name. Deletes all the collections in the database. Use with caution.
+                  description: 'Drop database with this name. **Note**: Deletes all the collections in the database. Use with caution.'
                   required: true
                   schema:
                     type: string
@@ -336,7 +396,7 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: Database name this transaction belongs to
+                  description: Database name this transaction belongs to.
                   required: true
                   schema:
                     type: string
@@ -364,7 +424,7 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: Database name this transaction belongs to
+                  description: Database name this transaction belongs to.
                   required: true
                   schema:
                     type: string
@@ -392,7 +452,7 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: Database name this transaction belongs to
+                  description: Database name this transaction belongs to.
                   required: true
                   schema:
                     type: string
@@ -416,24 +476,40 @@ components:
             properties:
                 options:
                     $ref: '#/components/schemas/TransactionOptions'
-            description: Start new transaction in database specified by "db"
+            description: Start new transaction in database specified by "db".
         BeginTransactionResponse:
             type: object
             properties:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
             description: Start transaction returns transaction context  which uniquely identifies the transaction
+        CollectionDescription:
+            type: object
+            properties:
+                collection:
+                    type: string
+                    description: Name of the collection.
+                metadata:
+                    $ref: '#/components/schemas/CollectionMetadata'
+                schema_info:
+                    $ref: '#/components/schemas/SchemaInfo'
         CollectionInfo:
             type: object
             properties:
-                name:
+                collection:
                     type: string
+                    description: Collection name.
+                metadata:
+                    $ref: '#/components/schemas/CollectionMetadata'
+        CollectionMetadata:
+            type: object
+            properties: {}
         CollectionOptions:
             type: object
             properties:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
-            description: Collection requests modifying options
+            description: Collection requests modifying options.
         CommitTransactionRequest:
             type: object
             properties:
@@ -453,16 +529,16 @@ components:
             properties:
                 message:
                     type: string
-                    description: a detailed response message.
+                    description: A detailed response message.
                 status:
                     type: string
-                    description: an enum with value set as "created"
+                    description: An enum with value set as "created".
         CreateOrUpdateCollectionRequest:
             type: object
             properties:
                 schema:
                     type: object
-                    description: 'Schema of the documents in this collection. The schema specifications are same as JSON schema specification defined here(https://json-schema.org/specification.html). As an example, the schema looks like below, {  "name": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "integer"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 100    },    "balance": {      "description": "User account balance",      "type": "number"    }  },  "primary_key": ["id"] }'
+                    description: 'Schema of the documents in this collection. The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>. <p></p>The following is an schema example: `{  "name": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "integer"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 100    },    "balance": {      "description": "User account balance",      "type": "number"    }  },  "primary_key": ["id"] }`'
                 only_create:
                     type: boolean
                 options:
@@ -472,25 +548,44 @@ components:
             properties:
                 message:
                     type: string
-                    description: a detailed response message.
+                    description: A detailed response message.
                 status:
                     type: string
-                    description: an enum with value set as "created" or "updated".
+                    description: An enum with value set as "created" or "updated"
+        DatabaseDescription:
+            type: object
+            properties:
+                db:
+                    type: string
+                    description: Name of the database.
+                metadata:
+                    $ref: '#/components/schemas/DatabaseMetadata'
+                collections_description:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CollectionDescription'
+                    description: A detailed description about all the collections. The description returns collection metadata and the schema.
         DatabaseInfo:
             type: object
             properties:
-                name:
+                db:
                     type: string
+                    description: Database name.
+                metadata:
+                    $ref: '#/components/schemas/DatabaseMetadata'
+        DatabaseMetadata:
+            type: object
+            properties: {}
         DatabaseOptions:
             type: object
             properties: {}
-            description: Database requests modifying options
+            description: Database requests modifying options.
         DeleteRequest:
             type: object
             properties:
                 filter:
                     type: object
-                    description: 'Delete documents which matching specified filter. The filter should proper JSON object. Filter syntax described here: {TBD}'
+                    description: 'Delete documents which matching specified filter. A filter can simply be key, value where key is the field name and value would be the value for this field. Or a filter can be logical where two or more fields can be logically joined using $or and $and. A few examples of filter: <li> To delete a user document where the id has a value 1: ```{"id": 1 }``` <li> To delete all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`'
                 options:
                     $ref: '#/components/schemas/DeleteRequestOptions'
         DeleteRequestOptions:
@@ -498,16 +593,42 @@ components:
             properties:
                 write_options:
                     $ref: '#/components/schemas/WriteOptions'
+            description: Additional options for deleted requests.
         DeleteResponse:
             type: object
             properties:
                 timestamp:
                     type: string
-                    description: Returns the timestamp when the documents are deleted.
+                    description: Time at which the document was deleted. Measured in nano-seconds since the Unix epoch.
                     format: date-time
                 status:
                     type: string
                     description: an enum with value set as "deleted"
+        DescribeCollectionRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                    description: Name of the database.
+                collection:
+                    type: string
+                    description: Name of the collection.
+        DescribeCollectionResponse:
+            type: object
+            properties:
+                description:
+                    $ref: '#/components/schemas/CollectionDescription'
+        DescribeDatabaseRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                    description: Name of the database.
+        DescribeDatabaseResponse:
+            type: object
+            properties:
+                description:
+                    $ref: '#/components/schemas/DatabaseDescription'
         DropCollectionRequest:
             type: object
             properties:
@@ -518,10 +639,10 @@ components:
             properties:
                 message:
                     type: string
-                    description: a detailed response message.
+                    description: A detailed response message.
                 status:
                     type: string
-                    description: an enum with value set as "dropped"
+                    description: An enum with value set as "dropped".
         DropDatabaseRequest:
             type: object
             properties:
@@ -532,10 +653,10 @@ components:
             properties:
                 message:
                     type: string
-                    description: a detailed response message.
+                    description: A detailed response message.
                 status:
                     type: string
-                    description: an enum with value set as "dropped"
+                    description: An enum with value set as "dropped".
         InsertRequest:
             type: object
             properties:
@@ -543,7 +664,7 @@ components:
                     type: array
                     items:
                         type: object
-                    description: Array of documents to insert. Should be proper JSON object
+                    description: Array of documents to insert. Each document is a JSON object.
                 options:
                     $ref: '#/components/schemas/InsertRequestOptions'
         InsertRequestOptions:
@@ -551,17 +672,17 @@ components:
             properties:
                 write_options:
                     $ref: '#/components/schemas/WriteOptions'
-            description: Insert request options
+            description: additional options for insert requests.
         InsertResponse:
             type: object
             properties:
                 timestamp:
                     type: string
-                    description: Returns the commit timestamp of the documents.
+                    description: Time at which the document was inserted. Measured in nano-seconds since the Unix epoch.
                     format: date-time
                 status:
                     type: string
-                    description: an enum with value set as "inserted"
+                    description: An enum with value set as "inserted"
         ListCollectionsRequest:
             type: object
             properties:
@@ -570,11 +691,14 @@ components:
         ListCollectionsResponse:
             type: object
             properties:
+                db:
+                    type: string
+                    description: Name of the database.
                 collections:
                     type: array
                     items:
                         $ref: '#/components/schemas/CollectionInfo'
-                    description: List of the collections in the database
+                    description: List of the collections info in the database.
         ListDatabasesResponse:
             type: object
             properties:
@@ -588,10 +712,10 @@ components:
             properties:
                 filter:
                     type: object
-                    description: 'Returns documents matching this filter. The filter should proper JSON object Filter syntax described here: {TBD}'
+                    description: 'Returns documents matching this filter. A filter can simply be key, value where key is the field name and value would be the value for this field. Or a filter can be logical where two or more fields can be logically joined using $or and $and. A few examples of filter: <li> To read a user document where the id has a value 1: ```{"id": 1 }``` <li> To read all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`'
                 fields:
                     type: object
-                    description: Limit fields returned by the read by this subset of the fields The fields should proper JSON object
+                    description: To read specific fields from a document. Default is all.
                 options:
                     $ref: '#/components/schemas/ReadRequestOptions'
         ReadRequestOptions:
@@ -601,26 +725,26 @@ components:
                     $ref: '#/components/schemas/TransactionCtx'
                 limit:
                     type: integer
-                    description: Limit the number of documents returned by the read operation
+                    description: Limit the number of documents returned by the read operation.
                     format: int64
                 skip:
                     type: integer
-                    description: Number of documents to skip before starting to return resulting documents
+                    description: Number of documents to skip before starting to return resulting documents.
                     format: int64
                 offset:
                     type: string
-                    description: Start returning document start from this primary key
+                    description: A cursor for use in pagination. The next streams will return documents after this offset.
                     format: byte
-            description: ReadRequestOptions contain read behavior modifying options
+            description: Options that can be used to modify the results, for example "limit" to control the number of documents returned by the server.
         ReadResponse:
             type: object
             properties:
                 data:
                     type: object
-                    description: data has the user requested data
+                    description: Object containing the collection document.
                 resume_token:
                     type: string
-                    description: resume_token is internal key, used for pagination.
+                    description: An internal key, used for pagination.
                     format: byte
         ReplaceRequest:
             type: object
@@ -629,7 +753,7 @@ components:
                     type: array
                     items:
                         type: object
-                    description: Array of documents to be replaced. Should be proper JSON object.
+                    description: Array of documents to be replaced. Each document is a JSON object.
                 options:
                     $ref: '#/components/schemas/ReplaceRequestOptions'
         ReplaceRequestOptions:
@@ -637,12 +761,13 @@ components:
             properties:
                 write_options:
                     $ref: '#/components/schemas/WriteOptions'
+            description: Additional options for replace requests.
         ReplaceResponse:
             type: object
             properties:
                 timestamp:
                     type: string
-                    description: Returns the commit timestamp of the replaced documents.
+                    description: Time at which the document was replaced. Measured in nano-seconds since the Unix epoch.
                     format: date-time
                 status:
                     type: string
@@ -656,18 +781,27 @@ components:
         RollbackTransactionResponse:
             type: object
             properties: {}
+        SchemaInfo:
+            type: object
+            properties:
+                schema:
+                    type: string
+                    description: The schema of the collection.
+                    format: byte
         TransactionCtx:
             type: object
             properties:
                 id:
                     type: string
+                    description: Unique for a single transactional request.
                 origin:
                     type: string
-            description: Contains ID which uniquely identifies transaction.This context is returned by StartTransaction request andshould be passed in the options of document modificationrequests in order to run them in the context of the sametransaction
+                    description: Serves as an internal identifier.
+            description: Contains ID which uniquely identifies transaction This context is returned by BeginTransaction request and should be passed in the subsequent requests in order to run them in the context of the same transaction.
         TransactionOptions:
             type: object
             properties: {}
-            description: Modify start transaction behavior
+            description: Options that can be used to modify the transaction semantics.
         UpdateRequest:
             type: object
             properties:
@@ -676,7 +810,7 @@ components:
                     description: Fields contains set of fields with the values which need to be updated. Should be proper JSON object.
                 filter:
                     type: object
-                    description: 'Update documents which matching specified filter. The filter should proper JSON object Filter syntax described here: {TBD}'
+                    description: 'Update documents which matching specified filter. A filter can simply be key, value where key is the field name and value would be the value for this field. Or a filter can be logical where two or more fields can be logically joined using $or and $and. A few examples of filter: <li> To update a user document where the id has a value 1: ```{"id": 1 }``` <li> To update all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`'
                 options:
                     $ref: '#/components/schemas/UpdateRequestOptions'
         UpdateRequestOptions:
@@ -684,12 +818,13 @@ components:
             properties:
                 write_options:
                     $ref: '#/components/schemas/WriteOptions'
+            description: Additional options for update requests.
         UpdateResponse:
             type: object
             properties:
                 timestamp:
                     type: string
-                    description: Returns the timestamp when the documents are updated.
+                    description: Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
                     format: date-time
                 modified_count:
                     type: integer
@@ -697,12 +832,12 @@ components:
                     format: int32
                 status:
                     type: string
-                    description: an enum with value set as "updated"
+                    description: an enum with value set as "updated".
         WriteOptions:
             type: object
             properties:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
-            description: WriteOptions contain write behavior modifying options
+            description: Additional options to modify write requests.
 tags:
     - name: TigrisDB

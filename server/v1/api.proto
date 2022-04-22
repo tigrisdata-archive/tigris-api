@@ -15,6 +15,7 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/tigrisdata/tigrisdb/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
@@ -27,98 +28,104 @@ message ErrorDetails {
   string msg = 2;
 }
 
-// WriteOptions contain write behavior modifying options
+// Additional options to modify write requests.
 message WriteOptions {
-  // Perform operation in the context of this transaction
+  // Perform operation in the context of this transaction.
   TransactionCtx tx_ctx = 1;
 }
 
-// ReadRequestOptions contain read behavior modifying options
+// Options that can be used to modify the results, for example "limit" to control the number of documents
+// returned by the server.
 message ReadRequestOptions {
-  // Perform operation in the context of this transaction
+  // Perform operation in the context of this transaction.
   TransactionCtx tx_ctx = 1;
-  // Limit the number of documents returned by the read operation
+  // Limit the number of documents returned by the read operation.
   int64 limit = 2;
-  // Number of documents to skip before starting to return resulting documents
+  // Number of documents to skip before starting to return resulting documents.
   int64 skip = 3;
-  // Start returning document start from this primary key
+  // A cursor for use in pagination. The next streams will return documents after this offset.
   bytes offset = 4;
 }
 
-// Database requests modifying options
+// Database requests modifying options.
 message DatabaseOptions {}
-// Collection requests modifying options
+
+// Collection requests modifying options.
 message CollectionOptions {
-  // Perform operation in the context of this transaction
+  // Perform operation in the context of this transaction.
   TransactionCtx tx_ctx = 1;
 }
-// Modify start transaction behavior
+
+// Options that can be used to modify the transaction semantics.
 message TransactionOptions {}
 
-/*
-  Contains ID which uniquely identifies transaction.
-  This context is returned by StartTransaction request and
-  should be passed in the options of document modification
-  requests in order to run them in the context of the same
-  transaction
- */
+// Contains ID which uniquely identifies transaction
+// This context is returned by BeginTransaction request and
+// should be passed in the subsequent requests in order to run
+// them in the context of the same transaction.
 message TransactionCtx {
+  // Unique for a single transactional request.
   string id = 1;
+  // Serves as an internal identifier.
   string origin = 2;
 }
 
-// Start new transaction in database specified by "db"
+// Start new transaction in database specified by "db".
 message BeginTransactionRequest {
-  // Database name this transaction belongs to
+  // Database name this transaction belongs to.
   string db = 1;
+  // The transaction options.
   TransactionOptions options = 2;
 }
 
 //  Start transaction returns transaction context
 //  which uniquely identifies the transaction
-message BeginTransactionResponse {TransactionCtx tx_ctx = 1;}
+message BeginTransactionResponse {
+  // Returns a tigris transactional context with details about the transactions.
+  TransactionCtx tx_ctx = 1;
+}
 
 // Commit transaction with the given ID
 message CommitTransactionRequest {
-  // Database name this transaction belongs to
+  // Database name this transaction belongs to.
   string db = 1;
-  // Contains unique transaction ID
+  // Tigris transactional context with details about the transactions.
   TransactionCtx tx_ctx = 2;
 }
 message CommitTransactionResponse {}
 
 // Rollback transaction with the given ID
 message RollbackTransactionRequest {
-  // Database name this transaction belongs to
+  // Database name this transaction belongs to.
   string db = 1;
-  // Contains unique transaction ID
+  // Tigris transactional context with details about the transactions.
   TransactionCtx tx_ctx = 2;
 }
 message RollbackTransactionResponse {}
 
-// Insert request options
+// additional options for insert requests.
 message InsertRequestOptions {
   WriteOptions write_options = 1;
 }
 
 message InsertRequest {
-  // Database name where to insert documents
+  // Database name where to insert documents.
   string db = 1;
-  // Collection name where to insert documents
+  // Collection name where to insert documents.
   string collection = 2;
-  // Array of documents to insert.
-  // Should be proper JSON object
+  // Array of documents to insert. Each document is a JSON object.
   repeated bytes documents = 3;
   InsertRequestOptions options = 4;
 }
 
 message InsertResponse {
-  // Returns the commit timestamp of the documents.
-  string timestamp = 1;
-  // an enum with value set as "inserted"
+  // Time at which the document was inserted. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp timestamp = 1;
+  // An enum with value set as "inserted"
   string status = 2;
 }
 
+// Additional options for replace requests.
 message ReplaceRequestOptions {
   WriteOptions write_options = 1;
 }
@@ -128,42 +135,46 @@ message ReplaceRequest {
   string db = 1;
   // Collection name where to replace documents.
   string collection = 2;
-  // Array of documents to be replaced.
-  // Should be proper JSON object.
+  // Array of documents to be replaced. Each document is a JSON object.
   repeated bytes documents = 3;
   ReplaceRequestOptions options = 4;
 }
 
 message ReplaceResponse {
-  // Returns the commit timestamp of the replaced documents.
-  string timestamp = 1;
+  // Time at which the document was replaced. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp timestamp = 1;
   // an enum with value set as "replaced"
   string status = 2;
 }
 
+// Additional options for deleted requests.
 message DeleteRequestOptions {
   WriteOptions write_options = 1;
 }
 
 message DeleteRequest {
-  // Database name where to insert documents
+  // Database name where to insert documents.
   string db = 1;
-  // Collection name where to insert documents
+  // Collection name where to insert documents.
   string collection = 2;
   // Delete documents which matching specified filter.
-  // The filter should proper JSON object.
-  // Filter syntax described here: {TBD}
+  // A filter can simply be key, value where key
+  // is the field name and value would be the value for this field. Or a filter can be logical where
+  // two or more fields can be logically joined using $or and $and. A few examples of filter:
+  // <li> To delete a user document where the id has a value 1: ```{"id": 1 }```
+  // <li> To delete all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
   bytes filter = 3;
   DeleteRequestOptions options = 4;
 }
 
 message DeleteResponse {
-  // Returns the timestamp when the documents are deleted.
-  string timestamp = 1;
+  // Time at which the document was deleted. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp timestamp = 1;
   // an enum with value set as "deleted"
   string status = 2;
 }
 
+// Additional options for update requests.
 message UpdateRequestOptions {
   WriteOptions write_options = 1;
 }
@@ -178,81 +189,86 @@ message UpdateRequest {
   // Should be proper JSON object.
   bytes fields = 3;
   // Update documents which matching specified filter.
-  // The filter should proper JSON object
-  // Filter syntax described here: {TBD}
+  // A filter can simply be key, value where key
+  // is the field name and value would be the value for this field. Or a filter can be logical where
+  // two or more fields can be logically joined using $or and $and. A few examples of filter:
+  // <li> To update a user document where the id has a value 1: ```{"id": 1 }```
+  // <li> To update all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
   bytes filter = 4;
   UpdateRequestOptions options = 5;
 }
 
 message UpdateResponse {
-  // Returns the timestamp when the documents are updated.
-  string timestamp = 1;
+  // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp timestamp = 1;
   // Returns the number of documents modified.
   int32 modified_count = 2;
-  // an enum with value set as "updated"
+  // an enum with value set as "updated".
   string status = 3;
 }
 
 message ReadRequest {
-  // Database name to read documents from
+  // Database name to read documents from.
   string db = 1;
-  // Collection name to read documents from
+  // Collection name to read documents from.
   string collection = 2;
   // Returns documents matching this filter.
-  // The filter should proper JSON object
-  // Filter syntax described here: {TBD}
+  // A filter can simply be key, value where key
+  // is the field name and value would be the value for this field. Or a filter can be logical where
+  // two or more fields can be logically joined using $or and $and. A few examples of filter:
+  // <li> To read a user document where the id has a value 1: ```{"id": 1 }```
+  // <li> To read all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
   bytes filter = 3;
-  // Limit fields returned by the read
-  // by this subset of the fields
-  // The fields should proper JSON object
+  // To read specific fields from a document. Default is all.
   bytes fields = 4;
+  // Options that can be used to modify the results, for example "limit" to control the number of documents
+  // returned by the server.
   ReadRequestOptions options = 5;
 }
 
 message ReadResponse {
-  // data has the user requested data
+  // Object containing the collection document.
   bytes data = 1;
-  // resume_token is internal key, used for pagination.
+  // An internal key, used for pagination.
   bytes resume_token = 2;
 }
 
 message CreateDatabaseRequest {
-  // Create database with this name
+  // Create database with this name.
   string db = 1;
   DatabaseOptions options = 2;
 }
 
 message CreateDatabaseResponse {
-  // a detailed response message.
+  // A detailed response message.
   string message = 1;
-  // an enum with value set as "created"
+  // An enum with value set as "created".
   string status = 2;
 }
 
 message DropDatabaseRequest {
-  // Drop database with this name.
-  // Deletes all the collections in the database.
+  // Drop database with this name. **Note**: Deletes all the collections in the database.
   // Use with caution.
   string db = 1;
   DatabaseOptions options = 2;
 }
 
 message DropDatabaseResponse {
-  // a detailed response message.
+  // A detailed response message.
   string message = 1;
-  // an enum with value set as "dropped"
+  // An enum with value set as "dropped".
   string status = 2;
 }
 
 message CreateOrUpdateCollectionRequest {
-  // Database name where to create collection
+  // Database name where to create collection.
   string db = 1;
-  // Collection name to create
+  // Collection name to create.
   string collection = 2;
   // Schema of the documents in this collection. The schema specifications are same as
-  // JSON schema specification defined here(https://json-schema.org/specification.html).
-  // As an example, the schema looks like below,
-  // {
+  // JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.
+  // <p></p>The following is an schema example:
+  // `{
   //  "name": "user",
   //  "description": "Collection of documents with details of users",
   //  "properties": {
@@ -271,47 +287,47 @@ message CreateOrUpdateCollectionRequest {
   //    }
   //  },
   //  "primary_key": ["id"]
-  // }
+  // }`
   bytes schema = 3;
   bool only_create = 4;
   CollectionOptions options = 5;
 }
 
 message CreateOrUpdateCollectionResponse {
-  // a detailed response message.
+  // A detailed response message.
   string message = 1;
-  // an enum with value set as "created" or "updated".
+  // An enum with value set as "created" or "updated"
   string status = 2;
 }
 
 message DropCollectionRequest {
-  // Database name of the collection
+  // Database name of the collection.
   string db = 1;
-  // Collection name to drop
+  // Collection name to drop.
   string collection = 2;
   CollectionOptions options = 3;
 }
 
 message DropCollectionResponse {
-  // a detailed response message.
+  // A detailed response message.
   string message = 1;
-  // an enum with value set as "dropped"
+  // An enum with value set as "dropped".
   string status = 2;
 }
 
 message DatabaseInfo {
-  // Database name
+  // Database name.
   string db = 1;
 
-  // Database metadata
+  // Metadata about the database. (ex. ...)
   DatabaseMetadata metadata = 2;
 }
 
 message CollectionInfo {
-  // Collection name
+  // Collection name.
   string collection = 1;
 
-  // Collection metadata
+  // Metadata about the collection.
   CollectionMetadata metadata = 2;
 }
 
@@ -324,66 +340,67 @@ message ListDatabasesResponse {
 }
 
 message ListCollectionsRequest {
-  // List collection in this database
+  // List collection in this database.
   string db = 1;
   CollectionOptions options = 2;
 }
 
 message ListCollectionsResponse {
-  // Database name
+  // Name of the database.
   string db = 1;
 
-  // List of the collections info in the database
+  // List of the collections info in the database.
   repeated CollectionInfo collections = 2;
 }
 
 message DescribeDatabaseRequest {
-  // Database name
+  // Name of the database.
   string db = 1;
 }
 
 message DescribeCollectionRequest {
-  // Database name
+  // Name of the database.
   string db = 1;
 
-  // Collection name
+  // Name of the collection.
   string collection = 2;
 }
 
 message DescribeDatabaseResponse {
-  // Database description
+  // A detailed description about the database and all associated collections. Description of the collection
+  // includes schema details as well.
   DatabaseDescription description = 1;
 }
 
 message DescribeCollectionResponse {
-  // Collection description
+  // A detailed description about the collection. The description returns collection metadata and the schema.
   CollectionDescription description = 1;
 }
 
 message DatabaseDescription {
-  // Database name
+  // Name of the database.
   string db = 1;
 
-  // Database metadata
+  // Metadata about the database.
   DatabaseMetadata metadata = 2;
 
-  // Collections description
+  // A detailed description about all the collections. The description returns collection metadata and the schema.
   repeated CollectionDescription collections_description = 3;
 }
 
 message CollectionDescription {
-  // Collection name
+  // Name of the collection.
   string collection = 1;
 
-  // Collection metadata
+  // Metadata about the collection.
   CollectionMetadata metadata = 2;
 
-  // Collection schema
+  // A detailed description about the collection. The description returns collection metadata and the schema.
   SchemaInfo schema_info = 3;
 }
 
 message SchemaInfo {
-  // Schema
+  // The schema of the collection.
   bytes schema = 1;
 }
 
