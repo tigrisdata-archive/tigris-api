@@ -76,7 +76,7 @@ message BeginTransactionRequest {
 
 //  Start transaction returns transaction context
 //  which uniquely identifies the transaction
-message BeginTransactionResponse { TransactionCtx tx_ctx = 1; }
+message BeginTransactionResponse {TransactionCtx tx_ctx = 1;}
 
 // Commit transaction with the given ID
 message CommitTransactionRequest {
@@ -300,7 +300,19 @@ message DropCollectionResponse {
 }
 
 message DatabaseInfo {
-  string name = 1;
+  // Database name
+  string db = 1;
+
+  // Database metadata
+  DatabaseMetadata metadata = 2;
+}
+
+message CollectionInfo {
+  // Collection name
+  string collection = 1;
+
+  // Collection metadata
+  CollectionMetadata metadata = 2;
 }
 
 message ListDatabasesRequest {
@@ -317,13 +329,68 @@ message ListCollectionsRequest {
   CollectionOptions options = 2;
 }
 
-message CollectionInfo {
-  string name = 1;
+message ListCollectionsResponse {
+  // Database name
+  string db = 1;
+
+  // List of the collections info in the database
+  repeated CollectionInfo collections = 2;
 }
 
-message ListCollectionsResponse {
-  // List of the collections in the database
-  repeated CollectionInfo collections = 1;
+message DescribeDatabaseRequest {
+  // Database name
+  string db = 1;
+}
+
+message DescribeCollectionRequest {
+  // Database name
+  string db = 1;
+
+  // Collection name
+  string collection = 2;
+}
+
+message DescribeDatabaseResponse {
+  // Database description
+  DatabaseDescription description = 1;
+}
+
+message DescribeCollectionResponse {
+  // Collection description
+  CollectionDescription description = 1;
+}
+
+message DatabaseDescription {
+  // Database name
+  string db = 1;
+
+  // Database metadata
+  DatabaseMetadata metadata = 2;
+
+  // Collections description
+  repeated CollectionDescription collections_description = 3;
+}
+
+message CollectionDescription {
+  // Collection name
+  string collection = 1;
+
+  // Collection metadata
+  CollectionMetadata metadata = 2;
+
+  // Collection schema
+  SchemaInfo schema_info = 3;
+}
+
+message SchemaInfo {
+  // Schema
+  bytes schema = 1;
+}
+
+message DatabaseMetadata {
+}
+
+message CollectionMetadata {
 }
 
 service TigrisDB {
@@ -430,6 +497,23 @@ service TigrisDB {
   rpc DropDatabase(DropDatabaseRequest) returns (DropDatabaseResponse) {
     option (google.api.http) = {
       delete : "/api/v1/databases/{db}/drop"
+      body : "*"
+    };
+  }
+
+  // Describe database describes the information related to database along
+  // with all the collections inside database.
+  rpc DescribeDatabase(DescribeDatabaseRequest) returns (DescribeDatabaseResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/describe"
+      body : "*"
+    };
+  }
+
+  // Describe collection describes the information related to collection.
+  rpc DescribeCollection(DescribeCollectionRequest) returns (DescribeCollectionResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/collections/{collection}/describe"
       body : "*"
     };
   }
