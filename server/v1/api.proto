@@ -112,7 +112,12 @@ message InsertRequest {
   InsertRequestOptions options = 4;
 }
 
-message InsertResponse {}
+message InsertResponse {
+  // Returns the commit timestamp of the documents.
+  string timestamp = 1;
+  // an enum with value set as "inserted"
+  string status = 2;
+}
 
 message ReplaceRequestOptions {
   WriteOptions write_options = 1;
@@ -129,7 +134,12 @@ message ReplaceRequest {
   ReplaceRequestOptions options = 4;
 }
 
-message ReplaceResponse {}
+message ReplaceResponse {
+  // Returns the commit timestamp of the replaced documents.
+  string timestamp = 1;
+  // an enum with value set as "replaced"
+  string status = 2;
+}
 
 message DeleteRequestOptions {
   WriteOptions write_options = 1;
@@ -147,7 +157,12 @@ message DeleteRequest {
   DeleteRequestOptions options = 4;
 }
 
-message DeleteResponse {}
+message DeleteResponse {
+  // Returns the timestamp when the documents are deleted.
+  string timestamp = 1;
+  // an enum with value set as "deleted"
+  string status = 2;
+}
 
 message UpdateRequestOptions {
   WriteOptions write_options = 1;
@@ -170,7 +185,12 @@ message UpdateRequest {
 }
 
 message UpdateResponse {
-  int32 rc = 1;
+  // Returns the timestamp when the documents are updated.
+  string timestamp = 1;
+  // Returns the number of documents modified.
+  int32 modified_count = 2;
+  // an enum with value set as "updated"
+  string status = 3;
 }
 
 message ReadRequest {
@@ -190,11 +210,10 @@ message ReadRequest {
 }
 
 message ReadResponse {
-  // Doc is the JSON object representing requested fields
-  bytes doc = 1;
-  // Key is internal key, which uniquely identify the document.
-  // This fields is used to
-  bytes key = 2;
+  // data has the user requested data
+  bytes data = 1;
+  // resume_token is internal key, used for pagination.
+  bytes resume_token = 2;
 }
 
 message CreateDatabaseRequest {
@@ -204,7 +223,10 @@ message CreateDatabaseRequest {
 }
 
 message CreateDatabaseResponse {
-  string msg = 1;
+  // a detailed response message.
+  string message = 1;
+  // an enum with value set as "created"
+  string status = 2;
 }
 
 message DropDatabaseRequest {
@@ -216,7 +238,10 @@ message DropDatabaseRequest {
 }
 
 message DropDatabaseResponse {
-  string msg = 1;
+  // a detailed response message.
+  string message = 1;
+  // an enum with value set as "dropped"
+  string status = 2;
 }
 
 message CreateOrUpdateCollectionRequest {
@@ -233,7 +258,7 @@ message CreateOrUpdateCollectionRequest {
   //  "properties": {
   //    "id": {
   //      "description": "A unique identifier for the user",
-  //      "type": "bigint"
+  //      "type": "integer"
   //    },
   //    "name": {
   //      "description": "Name of the user",
@@ -242,7 +267,7 @@ message CreateOrUpdateCollectionRequest {
   //    },
   //    "balance": {
   //      "description": "User account balance",
-  //      "type": "double"
+  //      "type": "number"
   //    }
   //  },
   //  "primary_key": ["id"]
@@ -253,7 +278,10 @@ message CreateOrUpdateCollectionRequest {
 }
 
 message CreateOrUpdateCollectionResponse {
-  string msg = 1;
+  // a detailed response message.
+  string message = 1;
+  // an enum with value set as "created" or "updated".
+  string status = 2;
 }
 
 message DropCollectionRequest {
@@ -265,7 +293,10 @@ message DropCollectionRequest {
 }
 
 message DropCollectionResponse {
-  string msg = 1;
+  // a detailed response message.
+  string message = 1;
+  // an enum with value set as "dropped"
+  string status = 2;
 }
 
 message DatabaseInfo {
