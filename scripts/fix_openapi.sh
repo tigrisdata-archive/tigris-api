@@ -44,6 +44,10 @@ yq_fix_object() {
 	yq_cmd ".components.schemas.$1.properties.$2.type=\"object\""
 }
 
+yq_fix_timestamp() {
+	yq_cmd ".components.schemas.$1.properties.$2.format=\"date-time\""
+}
+
 # Delete db and collection fields from request body
 yq_del_db_coll() {
 	yq_cmd "del(.components.schemas.$1.properties.db)"
@@ -63,6 +67,10 @@ yq_fix_object UpdateRequest fields
 yq_fix_object ReadRequest fields
 yq_fix_object ReadResponse data
 yq_fix_object CreateOrUpdateCollectionRequest schema
+
+for i in InsertResponse ReplaceResponse UpdateResponse DeleteResponse; do
+  yq_fix_timestamp $i timestamp
+done
 
 for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
 	CreateOrUpdateCollectionRequest DropCollectionRequest \
