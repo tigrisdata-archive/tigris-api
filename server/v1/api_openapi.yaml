@@ -504,6 +504,7 @@ components:
                 timestamp:
                     type: string
                     description: Returns the timestamp when the documents are deleted.
+                    format: date-time
                 status:
                     type: string
                     description: an enum with value set as "deleted"
@@ -557,6 +558,7 @@ components:
                 timestamp:
                     type: string
                     description: Returns the commit timestamp of the documents.
+                    format: date-time
                 status:
                     type: string
                     description: an enum with value set as "inserted"
@@ -641,6 +643,7 @@ components:
                 timestamp:
                     type: string
                     description: Returns the commit timestamp of the replaced documents.
+                    format: date-time
                 status:
                     type: string
                     description: an enum with value set as "replaced"
@@ -687,6 +690,7 @@ components:
                 timestamp:
                     type: string
                     description: Returns the timestamp when the documents are updated.
+                    format: date-time
                 modified_count:
                     type: integer
                     description: Returns the number of documents modified.
