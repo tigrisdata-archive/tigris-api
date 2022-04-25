@@ -374,6 +374,9 @@ message DescribeCollectionRequest {
 
   // Name of the collection.
   string collection = 2;
+
+  // Collection options.
+  CollectionOptions options = 3;
 }
 
 message DescribeDatabaseResponse {
