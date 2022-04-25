@@ -92,7 +92,10 @@ message CommitTransactionRequest {
   // Tigris transactional context with details about the transactions.
   TransactionCtx tx_ctx = 2;
 }
-message CommitTransactionResponse {}
+message CommitTransactionResponse {
+  // Status of commit transaction operation.
+  string status = 1;
+}
 
 // Rollback transaction with the given ID
 message RollbackTransactionRequest {
@@ -101,7 +104,10 @@ message RollbackTransactionRequest {
   // Tigris transactional context with details about the transactions.
   TransactionCtx tx_ctx = 2;
 }
-message RollbackTransactionResponse {}
+message RollbackTransactionResponse {
+  // Status of rollback transaction operation.
+  string status = 1;
+}
 
 // additional options for insert requests.
 message InsertRequestOptions {
