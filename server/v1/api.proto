@@ -438,7 +438,7 @@ message StreamResponse {
 }
 
 message StreamChange {
-  string collectionName = 1;
+  string collection_name = 1;
   bytes data = 2;
 }
 
