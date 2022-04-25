@@ -423,6 +423,19 @@ message DatabaseMetadata {
 message CollectionMetadata {
 }
 
+message StreamRequest {
+  string db = 1;
+}
+
+message StreamResponse {
+  repeated StreamChange changes = 1;
+}
+
+message StreamChange {
+  string collectionName = 1;
+  bytes data = 2;
+}
+
 service TigrisDB {
   // Starts a new transaction and returns a transactional object. All reads/writes performed
   // within a transaction will run with serializable isolation.
@@ -544,6 +557,13 @@ service TigrisDB {
   rpc DescribeCollection(DescribeCollectionRequest) returns (DescribeCollectionResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/describe"
+      body : "*"
+    };
+  }
+
+  rpc Stream(StreamRequest) returns (stream StreamResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/stream"
       body : "*"
     };
   }

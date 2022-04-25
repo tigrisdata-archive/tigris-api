@@ -385,6 +385,30 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DropDatabaseResponse'
+    /api/v1/databases/{db}/stream:
+        post:
+            tags:
+                - TigrisDB
+            operationId: TigrisDB_Stream
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/StreamRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StreamResponse'
     /api/v1/databases/{db}/transactions/begin:
         post:
             tags:
@@ -796,6 +820,26 @@ components:
                     type: string
                     description: The schema of the collection.
                     format: byte
+        StreamChange:
+            type: object
+            properties:
+                collectionName:
+                    type: string
+                data:
+                    type: string
+                    format: byte
+        StreamRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+        StreamResponse:
+            type: object
+            properties:
+                changes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/StreamChange'
         TransactionCtx:
             type: object
             properties:
