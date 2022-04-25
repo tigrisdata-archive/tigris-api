@@ -597,10 +597,8 @@ components:
         DeleteResponse:
             type: object
             properties:
-                timestamp:
-                    type: string
-                    description: Time at which the document was deleted. Measured in nano-seconds since the Unix epoch.
-                    format: date-time
+                metadata:
+                    $ref: '#/components/schemas/ResponseMetadata'
                 status:
                     type: string
                     description: an enum with value set as "deleted"
@@ -676,10 +674,8 @@ components:
         InsertResponse:
             type: object
             properties:
-                timestamp:
-                    type: string
-                    description: Time at which the document was inserted. Measured in nano-seconds since the Unix epoch.
-                    format: date-time
+                metadata:
+                    $ref: '#/components/schemas/ResponseMetadata'
                 status:
                     type: string
                     description: An enum with value set as "inserted"
@@ -746,6 +742,8 @@ components:
                     type: string
                     description: An internal key, used for pagination.
                     format: byte
+                metadata:
+                    $ref: '#/components/schemas/ResponseMetadata'
         ReplaceRequest:
             type: object
             properties:
@@ -765,13 +763,23 @@ components:
         ReplaceResponse:
             type: object
             properties:
-                timestamp:
-                    type: string
-                    description: Time at which the document was replaced. Measured in nano-seconds since the Unix epoch.
-                    format: date-time
+                metadata:
+                    $ref: '#/components/schemas/ResponseMetadata'
                 status:
                     type: string
                     description: an enum with value set as "replaced"
+        ResponseMetadata:
+            type: object
+            properties:
+                created_at:
+                    type: string
+                    description: Time at which the document was inserted/replaced. Measured in nano-seconds since the Unix epoch.
+                    format: date-time
+                updated_at:
+                    type: string
+                    description: Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
+                    format: date-time
+            description: Has metadata related to the documents stored.
         RollbackTransactionRequest:
             type: object
             properties:
@@ -822,10 +830,8 @@ components:
         UpdateResponse:
             type: object
             properties:
-                timestamp:
-                    type: string
-                    description: Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
-                    format: date-time
+                metadata:
+                    $ref: '#/components/schemas/ResponseMetadata'
                 modified_count:
                     type: integer
                     description: Returns the number of documents modified.
