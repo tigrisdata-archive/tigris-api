@@ -67,10 +67,11 @@ yq_fix_object UpdateRequest fields
 yq_fix_object ReadRequest fields
 yq_fix_object ReadResponse data
 yq_fix_object CreateOrUpdateCollectionRequest schema
+yq_fix_timestamp ResponseMetadata created_at
+yq_fix_timestamp ResponseMetadata updated_at
 
-for i in InsertResponse ReplaceResponse UpdateResponse DeleteResponse; do
-  yq_fix_timestamp $i timestamp
-done
+yq_fix_object DescribeCollectionResponse schema
+yq_fix_object CollectionDescription schema
 
 for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
 	CreateOrUpdateCollectionRequest DropCollectionRequest \
