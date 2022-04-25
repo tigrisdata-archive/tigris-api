@@ -385,26 +385,34 @@ message DescribeCollectionRequest {
   CollectionOptions options = 3;
 }
 
+// A detailed description about the database and all associated collections.
+// Description of the collection includes schema details as well.
 message DescribeDatabaseResponse {
-  // A detailed description about the database and all associated collections. Description of the collection
-  // includes schema details as well.
-  DatabaseDescription description = 1;
-}
-
-message DescribeCollectionResponse {
-  // A detailed description about the collection. The description returns collection metadata and the schema.
-  CollectionDescription description = 1;
-}
-
-message DatabaseDescription {
   // Name of the database.
   string db = 1;
 
   // Metadata about the database.
   DatabaseMetadata metadata = 2;
 
-  // A detailed description about all the collections. The description returns collection metadata and the schema.
-  repeated CollectionDescription collections_description = 3;
+  // A detailed description about all the collections.
+  // The description returns collection metadata and the schema.
+  repeated CollectionDescription collections = 3;
+}
+
+// A detailed description about the collection.
+// The description returns collection metadata and the schema.
+message DescribeCollectionResponse {
+  // Name of the collection.
+  string collection = 1;
+
+  // Metadata about the collection.
+  CollectionMetadata metadata = 2;
+
+  // Collections schema
+  bytes schema = 3;
+}
+
+message DatabaseDescription {
 }
 
 message CollectionDescription {
@@ -414,13 +422,8 @@ message CollectionDescription {
   // Metadata about the collection.
   CollectionMetadata metadata = 2;
 
-  // A detailed description about the collection. The description returns collection metadata and the schema.
-  SchemaInfo schema_info = 3;
-}
-
-message SchemaInfo {
-  // The schema of the collection.
-  bytes schema = 1;
+  // Collections schema
+  bytes schema = 3;
 }
 
 message DatabaseMetadata {

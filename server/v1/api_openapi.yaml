@@ -515,8 +515,9 @@ components:
                     description: Name of the collection.
                 metadata:
                     $ref: '#/components/schemas/CollectionMetadata'
-                schema_info:
-                    $ref: '#/components/schemas/SchemaInfo'
+                schema:
+                    type: object
+                    description: Collections schema
         CollectionInfo:
             type: object
             properties:
@@ -542,7 +543,10 @@ components:
             description: Commit transaction with the given ID
         CommitTransactionResponse:
             type: object
-            properties: {}
+            properties:
+                status:
+                    type: string
+                    description: Status of commit transaction operation.
         CreateDatabaseRequest:
             type: object
             properties:
@@ -576,19 +580,6 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created" or "updated"
-        DatabaseDescription:
-            type: object
-            properties:
-                db:
-                    type: string
-                    description: Name of the database.
-                metadata:
-                    $ref: '#/components/schemas/DatabaseMetadata'
-                collections_description:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/CollectionDescription'
-                    description: A detailed description about all the collections. The description returns collection metadata and the schema.
         DatabaseInfo:
             type: object
             properties:
@@ -635,11 +626,20 @@ components:
                 collection:
                     type: string
                     description: Name of the collection.
+                options:
+                    $ref: '#/components/schemas/CollectionOptions'
         DescribeCollectionResponse:
             type: object
             properties:
-                description:
-                    $ref: '#/components/schemas/CollectionDescription'
+                collection:
+                    type: string
+                    description: Name of the collection.
+                metadata:
+                    $ref: '#/components/schemas/CollectionMetadata'
+                schema:
+                    type: object
+                    description: Collections schema
+            description: A detailed description about the collection. The description returns collection metadata and the schema.
         DescribeDatabaseRequest:
             type: object
             properties:
@@ -649,8 +649,17 @@ components:
         DescribeDatabaseResponse:
             type: object
             properties:
-                description:
-                    $ref: '#/components/schemas/DatabaseDescription'
+                db:
+                    type: string
+                    description: Name of the database.
+                metadata:
+                    $ref: '#/components/schemas/DatabaseMetadata'
+                collections:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CollectionDescription'
+                    description: A detailed description about all the collections. The description returns collection metadata and the schema.
+            description: A detailed description about the database and all associated collections. Description of the collection includes schema details as well.
         DropCollectionRequest:
             type: object
             properties:
@@ -812,14 +821,10 @@ components:
             description: Rollback transaction with the given ID
         RollbackTransactionResponse:
             type: object
-            properties: {}
-        SchemaInfo:
-            type: object
             properties:
-                schema:
+                status:
                     type: string
-                    description: The schema of the collection.
-                    format: byte
+                    description: Status of rollback transaction operation.
         StreamChange:
             type: object
             properties:
