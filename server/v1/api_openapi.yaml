@@ -823,7 +823,7 @@ components:
         StreamChange:
             type: object
             properties:
-                collectionName:
+                collection_name:
                     type: string
                 data:
                     type: string
