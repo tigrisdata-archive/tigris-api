@@ -108,6 +108,14 @@ message InsertRequestOptions {
   WriteOptions write_options = 1;
 }
 
+// Has metadata related to the documents stored.
+message ResponseMetadata {
+  // Time at which the document was inserted/replaced. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp created_at = 1;
+  // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp updated_at = 2;
+}
+
 message InsertRequest {
   // Database name where to insert documents.
   string db = 1;
@@ -119,8 +127,8 @@ message InsertRequest {
 }
 
 message InsertResponse {
-  // Time at which the document was inserted. Measured in nano-seconds since the Unix epoch.
-  google.protobuf.Timestamp timestamp = 1;
+  // Has metadata related to the documents stored.
+  ResponseMetadata metadata = 1;
   // An enum with value set as "inserted"
   string status = 2;
 }
@@ -141,8 +149,8 @@ message ReplaceRequest {
 }
 
 message ReplaceResponse {
-  // Time at which the document was replaced. Measured in nano-seconds since the Unix epoch.
-  google.protobuf.Timestamp timestamp = 1;
+  // Has metadata related to the documents stored.
+  ResponseMetadata metadata = 1;
   // an enum with value set as "replaced"
   string status = 2;
 }
@@ -168,8 +176,8 @@ message DeleteRequest {
 }
 
 message DeleteResponse {
-  // Time at which the document was deleted. Measured in nano-seconds since the Unix epoch.
-  google.protobuf.Timestamp timestamp = 1;
+  // Has metadata related to the documents stored.
+  ResponseMetadata metadata = 1;
   // an enum with value set as "deleted"
   string status = 2;
 }
@@ -199,8 +207,8 @@ message UpdateRequest {
 }
 
 message UpdateResponse {
-  // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
-  google.protobuf.Timestamp timestamp = 1;
+  // Has metadata related to the documents stored.
+  ResponseMetadata metadata = 1;
   // Returns the number of documents modified.
   int32 modified_count = 2;
   // an enum with value set as "updated".
@@ -231,6 +239,8 @@ message ReadResponse {
   bytes data = 1;
   // An internal key, used for pagination.
   bytes resume_token = 2;
+  // Has metadata related to the documents stored.
+  ResponseMetadata metadata = 3;
 }
 
 message CreateDatabaseRequest {
