@@ -17,7 +17,7 @@ syntax = "proto3";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/tigrisdata/tigrisdb/api";
+option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
 // BUG: gnostic protoc-gen-openapi doesn't support enum generation
@@ -445,7 +445,7 @@ message StreamChange {
   bytes data = 2;
 }
 
-service TigrisDB {
+service Tigris {
   // Starts a new transaction and returns a transactional object. All reads/writes performed
   // within a transaction will run with serializable isolation.
   rpc BeginTransaction(BeginTransactionRequest) returns (BeginTransactionResponse) {
