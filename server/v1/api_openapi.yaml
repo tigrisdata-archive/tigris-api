@@ -2,15 +2,15 @@
 # https://github.com/google/gnostic/tree/master/apps/protoc-gen-openapi
 openapi: 3.0.3
 info:
-    title: TigrisDB API
+    title: Tigris API
     version: 0.0.1
 paths:
     /api/v1/databases/list:
         post:
             tags:
-                - TigrisDB
+                - Tigris
             description: List returns all the databases.
-            operationId: TigrisDB_ListDatabases
+            operationId: Tigris_ListDatabases
             responses:
                 "200":
                     description: OK
@@ -21,9 +21,9 @@ paths:
     /api/v1/databases/{db}/collections/list:
         post:
             tags:
-                - TigrisDB
+                - Tigris
             description: List all collections in the database passed in the request.
-            operationId: TigrisDB_ListCollections
+            operationId: Tigris_ListCollections
             parameters:
                 - name: db
                   in: path
@@ -47,11 +47,11 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/createOrUpdate:
         post:
             tags:
-                - TigrisDB
+                - Tigris
             description: |-
                 Creates a new collection or atomically upgrades the collection to the new schema changes in the database
                  passed in the request.
-            operationId: TigrisDB_CreateOrUpdateCollection
+            operationId: Tigris_CreateOrUpdateCollection
             parameters:
                 - name: db
                   in: path
@@ -81,9 +81,9 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/describe:
         post:
             tags:
-                - TigrisDB
+                - Tigris
             description: Describe collection describes the information related to collection.
-            operationId: TigrisDB_DescribeCollection
+            operationId: Tigris_DescribeCollection
             parameters:
                 - name: db
                   in: path
@@ -113,9 +113,9 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/documents/delete:
         delete:
             tags:
-                - TigrisDB
+                - Tigris
             description: Delete a range of documents in the collection using the condition provided in the filter.
-            operationId: TigrisDB_Delete
+            operationId: Tigris_Delete
             parameters:
                 - name: db
                   in: path
@@ -145,12 +145,12 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/documents/insert:
         post:
             tags:
-                - TigrisDB
+                - Tigris
             description: |-
                 Inserts new documents in the collection and returns an AlreadyExists error if any of the documents
                  in the request already exists. Insert provides idempotency by returning an error if the document
                  already exists. To replace documents, use REPLACE API instead of INSERT.
-            operationId: TigrisDB_Insert
+            operationId: Tigris_Insert
             parameters:
                 - name: db
                   in: path
@@ -180,9 +180,9 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/documents/read:
         post:
             tags:
-                - TigrisDB
+                - Tigris
             description: Reads range of documents from the collection using the condition in the filter.
-            operationId: TigrisDB_Read
+            operationId: Tigris_Read
             parameters:
                 - name: db
                   in: path
@@ -212,9 +212,9 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/documents/replace:
         put:
             tags:
-                - TigrisDB
+                - Tigris
             description: Inserts the documents or replaces the existing documents in the collections.
-            operationId: TigrisDB_Replace
+            operationId: Tigris_Replace
             parameters:
                 - name: db
                   in: path
@@ -244,9 +244,9 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/documents/update:
         put:
             tags:
-                - TigrisDB
+                - Tigris
             description: Update a range of documents in the collection using the condition provided in the filter.
-            operationId: TigrisDB_Update
+            operationId: Tigris_Update
             parameters:
                 - name: db
                   in: path
@@ -276,9 +276,9 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/drop:
         delete:
             tags:
-                - TigrisDB
+                - Tigris
             description: Drop the collection and all its documents in the database passed in the request.
-            operationId: TigrisDB_DropCollection
+            operationId: Tigris_DropCollection
             parameters:
                 - name: db
                   in: path
@@ -308,9 +308,9 @@ paths:
     /api/v1/databases/{db}/create:
         post:
             tags:
-                - TigrisDB
+                - Tigris
             description: Creates a new database and returns a AlreadyExists error if the database already exists.
-            operationId: TigrisDB_CreateDatabase
+            operationId: Tigris_CreateDatabase
             parameters:
                 - name: db
                   in: path
@@ -334,11 +334,11 @@ paths:
     /api/v1/databases/{db}/describe:
         post:
             tags:
-                - TigrisDB
+                - Tigris
             description: |-
                 Describe database describes the information related to database along
                  with all the collections inside database.
-            operationId: TigrisDB_DescribeDatabase
+            operationId: Tigris_DescribeDatabase
             parameters:
                 - name: db
                   in: path
@@ -362,9 +362,9 @@ paths:
     /api/v1/databases/{db}/drop:
         delete:
             tags:
-                - TigrisDB
+                - Tigris
             description: Drop database deletes all the collections in the database along with all it documents.
-            operationId: TigrisDB_DropDatabase
+            operationId: Tigris_DropDatabase
             parameters:
                 - name: db
                   in: path
@@ -388,8 +388,8 @@ paths:
     /api/v1/databases/{db}/stream:
         post:
             tags:
-                - TigrisDB
-            operationId: TigrisDB_Stream
+                - Tigris
+            operationId: Tigris_Stream
             parameters:
                 - name: db
                   in: path
@@ -412,11 +412,11 @@ paths:
     /api/v1/databases/{db}/transactions/begin:
         post:
             tags:
-                - TigrisDB
+                - Tigris
             description: |-
                 Starts a new transaction and returns a transactional object. All reads/writes performed
                  within a transaction will run with serializable isolation.
-            operationId: TigrisDB_BeginTransaction
+            operationId: Tigris_BeginTransaction
             parameters:
                 - name: db
                   in: path
@@ -440,11 +440,11 @@ paths:
     /api/v1/databases/{db}/transactions/commit:
         post:
             tags:
-                - TigrisDB
+                - Tigris
             description: |-
                 Atomically commit all the changes performed in the context of the transaction. Commit provides all
                  or nothing semantics by ensuring no partial updates are in the database due to a transaction failure.
-            operationId: TigrisDB_CommitTransaction
+            operationId: Tigris_CommitTransaction
             parameters:
                 - name: db
                   in: path
@@ -468,11 +468,11 @@ paths:
     /api/v1/databases/{db}/transactions/rollback:
         post:
             tags:
-                - TigrisDB
+                - Tigris
             description: |-
                 Rollback transaction discards all the changes
                  performed in the transaction
-            operationId: TigrisDB_RollbackTransaction
+            operationId: Tigris_RollbackTransaction
             parameters:
                 - name: db
                   in: path
@@ -895,4 +895,4 @@ components:
                     $ref: '#/components/schemas/TransactionCtx'
             description: Additional options to modify write requests.
 tags:
-    - name: TigrisDB
+    - name: Tigris
