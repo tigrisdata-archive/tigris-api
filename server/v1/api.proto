@@ -14,6 +14,8 @@
 
 syntax = "proto3";
 
+package tigrisdata.tigris.v1;
+
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
