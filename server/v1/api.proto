@@ -447,6 +447,13 @@ message StreamChange {
   bytes data = 2;
 }
 
+message GetInfoRequest {
+
+}
+message GetInfoResponse {
+  string server_version = 1;
+}
+
 service Tigris {
   // Starts a new transaction and returns a transactional object. All reads/writes performed
   // within a transaction will run with serializable isolation.
@@ -576,6 +583,14 @@ service Tigris {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/stream"
       body : "*"
+    };
+  }
+
+  // Provides the information about the server.
+  rpc GetInfo(GetInfoRequest) returns
+      (GetInfoResponse) {
+    option (google.api.http) = {
+      get : "/api/v1/info"
     };
   }
 }
