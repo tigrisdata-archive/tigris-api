@@ -493,6 +493,19 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/RollbackTransactionResponse'
+    /api/v1/info:
+        get:
+            tags:
+                - Tigris
+            description: Provides the information about the server.
+            operationId: Tigris_GetInfo
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetInfoResponse'
 components:
     schemas:
         BeginTransactionRequest:
@@ -688,6 +701,11 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "dropped".
+        GetInfoResponse:
+            type: object
+            properties:
+                server_version:
+                    type: string
         InsertRequest:
             type: object
             properties:
