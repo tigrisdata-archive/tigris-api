@@ -18,12 +18,53 @@ package tigrisdata.v1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "openapi/annotations.proto";
 
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
 // BUG: gnostic protoc-gen-openapi doesn't support enum generation
 // https://github.com/google/gnostic/issues/255
+
+option (openapi.v3.document) = {
+  info: {
+    title: "Tigris API Reference"
+    version: "0.0.1"
+    description: "## Overview \nThis section is organized around REST. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
+    license: {
+      name: "Apache License"
+      url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
+    }
+  }
+  tags: [{
+    name: "Databases"
+    description: "APIs that can used to manage databases. A single database can have one or more collections."
+  },{
+    name: "Collections"
+    description: "APIs that can used to manage collections."
+  },{
+    name: "Documents"
+    description: "APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key."
+  }, {
+    name: "Transactions"
+    description: "APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key."
+  }]
+  components: {
+    security_schemes: {
+      additional_properties: [
+        {
+          name: "BearerAuth";
+          value: {
+            security_scheme: {
+              type: "http";
+              scheme: "bearer";
+            }
+          }
+        }
+      ]
+    }
+  }
+};
 
 message ErrorDetails {
   uint32 code = 1;
@@ -462,6 +503,10 @@ service Tigris {
       post : "/api/v1/databases/{db}/transactions/begin"
       body : "*"
     };
+    option(openapi.v3.operation) = {
+      summary: "Begin a transaction"
+      tags: "Transactions"
+    };
   }
   // Atomically commit all the changes performed in the context of the transaction. Commit provides all
   // or nothing semantics by ensuring no partial updates are in the database due to a transaction failure.
@@ -470,6 +515,10 @@ service Tigris {
       post : "/api/v1/databases/{db}/transactions/commit"
       body : "*"
     };
+    option(openapi.v3.operation) = {
+      summary: "Commit a Transaction"
+      tags: "Transactions"
+    };
   }
   // Rollback transaction discards all the changes
   // performed in the transaction
@@ -477,6 +526,10 @@ service Tigris {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/transactions/rollback"
       body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Rollback a transaction"
+      tags: "Transactions"
     };
   }
 
@@ -488,12 +541,20 @@ service Tigris {
       post : "/api/v1/databases/{db}/collections/{collection}/documents/insert"
       body : "*"
     };
+    option(openapi.v3.operation) = {
+      summary: "Insert Documents"
+      tags: "Documents"
+    };
   }
   // Inserts the documents or replaces the existing documents in the collections.
   rpc Replace(ReplaceRequest) returns (ReplaceResponse) {
     option (google.api.http) = {
       put : "/api/v1/databases/{db}/collections/{collection}/documents/replace"
       body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Insert or Replace Documents"
+      tags: "Documents"
     };
   }
   // Delete a range of documents in the collection using the condition provided in the filter.
@@ -502,6 +563,10 @@ service Tigris {
       delete : "/api/v1/databases/{db}/collections/{collection}/documents/delete"
       body : "*"
     };
+    option(openapi.v3.operation) = {
+      summary: "Delete Documents"
+      tags: "Documents"
+    };
   }
   // Update a range of documents in the collection using the condition provided in the filter.
   rpc Update(UpdateRequest) returns (UpdateResponse) {
@@ -509,12 +574,20 @@ service Tigris {
       put : "/api/v1/databases/{db}/collections/{collection}/documents/update"
       body : "*"
     };
+    option(openapi.v3.operation) = {
+      summary: "Update Documents"
+      tags: "Documents"
+    };
   }
   //  Reads range of documents from the collection using the condition in the filter.
   rpc Read(ReadRequest) returns (stream ReadResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/documents/read"
       body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Read Documents"
+      tags: "Documents"
     };
   }
 
@@ -525,6 +598,10 @@ service Tigris {
       post : "/api/v1/databases/{db}/collections/{collection}/createOrUpdate"
       body : "*"
     };
+    option(openapi.v3.operation) = {
+      summary: "Create or update a collection"
+      tags: "Collections"
+    };
   }
   // Drop the collection and all its documents in the database passed in the request.
   rpc DropCollection(DropCollectionRequest) returns (DropCollectionResponse) {
@@ -532,11 +609,19 @@ service Tigris {
       delete : "/api/v1/databases/{db}/collections/{collection}/drop"
       body : "*"
     };
+    option(openapi.v3.operation) = {
+      summary: "Drop Collection"
+      tags: "Collections"
+    };
   }
   // List returns all the databases.
   rpc ListDatabases(ListDatabasesRequest) returns (ListDatabasesResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/list"
+    };
+    option(openapi.v3.operation) = {
+      summary: "List Databases"
+      tags: "Databases"
     };
   }
   // List all collections in the database passed in the request.
@@ -545,12 +630,20 @@ service Tigris {
       post : "/api/v1/databases/{db}/collections/list"
       body : "*"
     };
+    option(openapi.v3.operation) = {
+      summary: "List Collections"
+      tags: "Databases"
+    };
   }
   // Creates a new database and returns a AlreadyExists error if the database already exists.
   rpc CreateDatabase(CreateDatabaseRequest) returns (CreateDatabaseResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/create"
       body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Create Database"
+      tags: "Databases"
     };
   }
 
@@ -559,6 +652,10 @@ service Tigris {
     option (google.api.http) = {
       delete : "/api/v1/databases/{db}/drop"
       body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Drop Database"
+      tags: "Databases"
     };
   }
 
@@ -569,6 +666,10 @@ service Tigris {
       post : "/api/v1/databases/{db}/describe"
       body : "*"
     };
+    option(openapi.v3.operation) = {
+      summary: "Describe Database"
+      tags: "Databases"
+    };
   }
 
   // Describe collection describes the information related to collection.
@@ -577,12 +678,20 @@ service Tigris {
       post : "/api/v1/databases/{db}/collections/{collection}/describe"
       body : "*"
     };
+    option(openapi.v3.operation) = {
+      summary: "Describe Collection"
+      tags: "Collections"
+    };
   }
 
   rpc Stream(StreamRequest) returns (stream StreamResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/stream"
       body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Stream"
+      tags: "Change Data Capture"
     };
   }
 
