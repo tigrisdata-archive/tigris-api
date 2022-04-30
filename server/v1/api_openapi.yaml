@@ -1,14 +1,20 @@
 # Generated with protoc-gen-openapi
-# https://github.com/google/gnostic/tree/master/apps/protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
 openapi: 3.0.3
 info:
-    title: Tigris API
+    title: Tigris API Reference
+    description: "## Overview \nThis section is organized around REST. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
+    license:
+        name: Apache License
+        url: https://github.com/tigrisdata/tigris/blob/main/LICENSE
     version: 0.0.1
 paths:
     /api/v1/databases/list:
         post:
             tags:
                 - Tigris
+                - Databases
+            summary: List Databases
             description: List returns all the databases.
             operationId: Tigris_ListDatabases
             responses:
@@ -18,10 +24,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListDatabasesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/collections/list:
         post:
             tags:
                 - Tigris
+                - Databases
+            summary: List Collections
             description: List all collections in the database passed in the request.
             operationId: Tigris_ListCollections
             parameters:
@@ -44,10 +58,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListCollectionsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/collections/{collection}/createOrUpdate:
         post:
             tags:
                 - Tigris
+                - Collections
+            summary: Create or update a collection
             description: |-
                 Creates a new collection or atomically upgrades the collection to the new schema changes in the database
                  passed in the request.
@@ -78,10 +100,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/CreateOrUpdateCollectionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/collections/{collection}/describe:
         post:
             tags:
                 - Tigris
+                - Collections
+            summary: Describe Collection
             description: Describe collection describes the information related to collection.
             operationId: Tigris_DescribeCollection
             parameters:
@@ -110,10 +140,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DescribeCollectionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/collections/{collection}/documents/delete:
         delete:
             tags:
                 - Tigris
+                - Documents
+            summary: Delete Documents
             description: Delete a range of documents in the collection using the condition provided in the filter.
             operationId: Tigris_Delete
             parameters:
@@ -142,10 +180,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DeleteResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/collections/{collection}/documents/insert:
         post:
             tags:
                 - Tigris
+                - Documents
+            summary: Insert Documents
             description: |-
                 Inserts new documents in the collection and returns an AlreadyExists error if any of the documents
                  in the request already exists. Insert provides idempotency by returning an error if the document
@@ -177,10 +223,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/InsertResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/collections/{collection}/documents/read:
         post:
             tags:
                 - Tigris
+                - Documents
+            summary: Read Documents
             description: Reads range of documents from the collection using the condition in the filter.
             operationId: Tigris_Read
             parameters:
@@ -209,10 +263,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ReadResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/collections/{collection}/documents/replace:
         put:
             tags:
                 - Tigris
+                - Documents
+            summary: Insert or Replace Documents
             description: Inserts the documents or replaces the existing documents in the collections.
             operationId: Tigris_Replace
             parameters:
@@ -241,10 +303,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ReplaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/collections/{collection}/documents/update:
         put:
             tags:
                 - Tigris
+                - Documents
+            summary: Update Documents
             description: Update a range of documents in the collection using the condition provided in the filter.
             operationId: Tigris_Update
             parameters:
@@ -273,10 +343,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/UpdateResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/collections/{collection}/drop:
         delete:
             tags:
                 - Tigris
+                - Collections
+            summary: Drop Collection
             description: Drop the collection and all its documents in the database passed in the request.
             operationId: Tigris_DropCollection
             parameters:
@@ -305,10 +383,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DropCollectionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/create:
         post:
             tags:
                 - Tigris
+                - Databases
+            summary: Create Database
             description: Creates a new database and returns a AlreadyExists error if the database already exists.
             operationId: Tigris_CreateDatabase
             parameters:
@@ -331,10 +417,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/CreateDatabaseResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/describe:
         post:
             tags:
                 - Tigris
+                - Databases
+            summary: Describe Database
             description: |-
                 Describe database describes the information related to database along
                  with all the collections inside database.
@@ -359,10 +453,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DescribeDatabaseResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/drop:
         delete:
             tags:
                 - Tigris
+                - Databases
+            summary: Drop Database
             description: Drop database deletes all the collections in the database along with all it documents.
             operationId: Tigris_DropDatabase
             parameters:
@@ -385,10 +487,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DropDatabaseResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/stream:
         post:
             tags:
                 - Tigris
+                - Change Data Capture
+            summary: Stream
             operationId: Tigris_Stream
             parameters:
                 - name: db
@@ -409,10 +519,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/StreamResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/transactions/begin:
         post:
             tags:
                 - Tigris
+                - Transactions
+            summary: Begin a transaction
             description: |-
                 Starts a new transaction and returns a transactional object. All reads/writes performed
                  within a transaction will run with serializable isolation.
@@ -437,10 +555,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/BeginTransactionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/transactions/commit:
         post:
             tags:
                 - Tigris
+                - Transactions
+            summary: Commit a Transaction
             description: |-
                 Atomically commit all the changes performed in the context of the transaction. Commit provides all
                  or nothing semantics by ensuring no partial updates are in the database due to a transaction failure.
@@ -465,10 +591,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/CommitTransactionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/transactions/rollback:
         post:
             tags:
                 - Tigris
+                - Transactions
+            summary: Rollback a transaction
             description: |-
                 Rollback transaction discards all the changes
                  performed in the transaction
@@ -493,6 +627,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/RollbackTransactionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/info:
         get:
             tags:
@@ -506,6 +646,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/GetInfoResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
         BeginTransactionRequest:
@@ -706,6 +852,14 @@ components:
             properties:
                 server_version:
                     type: string
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
         InsertRequest:
             type: object
             properties:
@@ -843,6 +997,22 @@ components:
                 status:
                     type: string
                     description: Status of rollback transaction operation.
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
+                message:
+                    type: string
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
         StreamChange:
             type: object
             properties:
@@ -912,5 +1082,17 @@ components:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
             description: Additional options to modify write requests.
+    securitySchemes:
+        BearerAuth:
+            type: http
+            scheme: bearer
 tags:
+    - name: Collections
+      description: APIs that can used to manage collections.
+    - name: Databases
+      description: APIs that can used to manage databases. A single database can have one or more collections.
+    - name: Documents
+      description: APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
     - name: Tigris
+    - name: Transactions
+      description: APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
