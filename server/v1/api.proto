@@ -18,7 +18,7 @@ package tigrisdata.v1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
-import "openapi/annotations.proto";
+import "openapiv3/annotations.proto";
 
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
@@ -684,6 +684,8 @@ service Tigris {
     };
   }
 
+  // Provides real time events for the changes made into the database. Streams by default publish all events for a database
+  // but can be restricted to a specific collection. These events can be useful to build event-driven applications.
   rpc Stream(StreamRequest) returns (stream StreamResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/stream"
@@ -695,7 +697,7 @@ service Tigris {
     };
   }
 
-  // Provides the information about the server.
+  // Provides the information about the server. This information includes returning the server version, etc.
   rpc GetInfo(GetInfoRequest) returns
       (GetInfoResponse) {
     option (google.api.http) = {
