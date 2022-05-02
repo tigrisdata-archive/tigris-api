@@ -499,6 +499,9 @@ paths:
                 - Tigris
                 - Change Data Capture
             summary: Stream
+            description: |-
+                Provides real time events for the changes made into the database. Streams by default publish all events for a database
+                 but can be restricted to a specific collection. These events can be useful to build event-driven applications.
             operationId: Tigris_Stream
             parameters:
                 - name: db
@@ -637,7 +640,7 @@ paths:
         get:
             tags:
                 - Tigris
-            description: Provides the information about the server.
+            description: Provides the information about the server. This information includes returning the server version, etc.
             operationId: Tigris_GetInfo
             responses:
                 "200":
