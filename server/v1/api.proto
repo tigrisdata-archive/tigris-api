@@ -30,13 +30,16 @@ option (openapi.v3.document) = {
   info: {
     title: "Tigris API Reference"
     version: "0.0.1"
-    description: "## Overview \nThis section is organized around REST. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
+    description: "\n## Overview\nThis section is organized around HTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
     license: {
       name: "Apache License"
       url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
     }
   }
   tags: [{
+    name: "Admin"
+    description: "APIs to manage or get more information about the server."
+  }, {
     name: "Databases"
     description: "APIs that can used to manage databases. A single database can have one or more collections."
   },{
@@ -48,6 +51,9 @@ option (openapi.v3.document) = {
   }, {
     name: "Transactions"
     description: "APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key."
+  }, {
+    name: "Streams"
+    description: "APIs that provide real-time events for writes made to collections in the database."
   }]
   components: {
     security_schemes: {
@@ -693,7 +699,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Stream"
-      tags: "Change Data Capture"
+      tags: "Streams"
     };
   }
 
@@ -702,6 +708,10 @@ service Tigris {
       (GetInfoResponse) {
     option (google.api.http) = {
       get : "/api/v1/info"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Information about the server"
+      tags: "Admin"
     };
   }
 }

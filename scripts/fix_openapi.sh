@@ -54,6 +54,14 @@ yq_del_db_coll() {
 	yq_cmd "del(.components.schemas.$1.properties.collection)"
 }
 
+yq_del_service_tags() {
+  yq_cmd "del(.paths[] | .get.tags[0])"
+  yq_cmd "del(.paths[] | .post.tags[0])"
+  yq_cmd "del(.paths[] | .put.tags[0])"
+  yq_cmd "del(.paths[] | .delete.tags[0])"
+  yq_cmd "del(.tags[] | select(.name == \"Tigris\"))"
+}
+
 # Fix the types of filter and document fields to be object on HTTP wire.
 # The original format in proto file is "bytes", which allows to skip
 # unmarshalling in GRPC, we also implement custom unmarshalling for HTTP
@@ -72,6 +80,8 @@ yq_fix_timestamp ResponseMetadata updated_at
 
 yq_fix_object DescribeCollectionResponse schema
 yq_fix_object CollectionDescription schema
+
+yq_del_service_tags
 
 for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
 	CreateOrUpdateCollectionRequest DropCollectionRequest \

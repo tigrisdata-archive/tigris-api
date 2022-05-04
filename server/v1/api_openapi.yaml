@@ -3,7 +3,9 @@
 openapi: 3.0.3
 info:
     title: Tigris API Reference
-    description: "## Overview \nThis section is organized around REST. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
+    description: |-
+        ## Overview
+        This section is organized around HTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes.
     license:
         name: Apache License
         url: https://github.com/tigrisdata/tigris/blob/main/LICENSE
@@ -12,7 +14,6 @@ paths:
     /api/v1/databases/list:
         post:
             tags:
-                - Tigris
                 - Databases
             summary: List Databases
             description: List returns all the databases.
@@ -33,7 +34,6 @@ paths:
     /api/v1/databases/{db}/collections/list:
         post:
             tags:
-                - Tigris
                 - Databases
             summary: List Collections
             description: List all collections in the database passed in the request.
@@ -67,7 +67,6 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/createOrUpdate:
         post:
             tags:
-                - Tigris
                 - Collections
             summary: Create or update a collection
             description: |-
@@ -109,7 +108,6 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/describe:
         post:
             tags:
-                - Tigris
                 - Collections
             summary: Describe Collection
             description: Describe collection describes the information related to collection.
@@ -149,7 +147,6 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/documents/delete:
         delete:
             tags:
-                - Tigris
                 - Documents
             summary: Delete Documents
             description: Delete a range of documents in the collection using the condition provided in the filter.
@@ -189,7 +186,6 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/documents/insert:
         post:
             tags:
-                - Tigris
                 - Documents
             summary: Insert Documents
             description: |-
@@ -232,7 +228,6 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/documents/read:
         post:
             tags:
-                - Tigris
                 - Documents
             summary: Read Documents
             description: Reads range of documents from the collection using the condition in the filter.
@@ -272,7 +267,6 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/documents/replace:
         put:
             tags:
-                - Tigris
                 - Documents
             summary: Insert or Replace Documents
             description: Inserts the documents or replaces the existing documents in the collections.
@@ -312,7 +306,6 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/documents/update:
         put:
             tags:
-                - Tigris
                 - Documents
             summary: Update Documents
             description: Update a range of documents in the collection using the condition provided in the filter.
@@ -352,7 +345,6 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/drop:
         delete:
             tags:
-                - Tigris
                 - Collections
             summary: Drop Collection
             description: Drop the collection and all its documents in the database passed in the request.
@@ -392,7 +384,6 @@ paths:
     /api/v1/databases/{db}/create:
         post:
             tags:
-                - Tigris
                 - Databases
             summary: Create Database
             description: Creates a new database and returns a AlreadyExists error if the database already exists.
@@ -426,7 +417,6 @@ paths:
     /api/v1/databases/{db}/describe:
         post:
             tags:
-                - Tigris
                 - Databases
             summary: Describe Database
             description: |-
@@ -462,7 +452,6 @@ paths:
     /api/v1/databases/{db}/drop:
         delete:
             tags:
-                - Tigris
                 - Databases
             summary: Drop Database
             description: Drop database deletes all the collections in the database along with all it documents.
@@ -496,8 +485,7 @@ paths:
     /api/v1/databases/{db}/stream:
         post:
             tags:
-                - Tigris
-                - Change Data Capture
+                - Streams
             summary: Stream
             description: |-
                 Provides real time events for the changes made into the database. Streams by default publish all events for a database
@@ -531,7 +519,6 @@ paths:
     /api/v1/databases/{db}/transactions/begin:
         post:
             tags:
-                - Tigris
                 - Transactions
             summary: Begin a transaction
             description: |-
@@ -567,7 +554,6 @@ paths:
     /api/v1/databases/{db}/transactions/commit:
         post:
             tags:
-                - Tigris
                 - Transactions
             summary: Commit a Transaction
             description: |-
@@ -603,7 +589,6 @@ paths:
     /api/v1/databases/{db}/transactions/rollback:
         post:
             tags:
-                - Tigris
                 - Transactions
             summary: Rollback a transaction
             description: |-
@@ -639,7 +624,8 @@ paths:
     /api/v1/info:
         get:
             tags:
-                - Tigris
+                - Admin
+            summary: Information about the server
             description: Provides the information about the server. This information includes returning the server version, etc.
             operationId: Tigris_GetInfo
             responses:
@@ -1090,12 +1076,15 @@ components:
             type: http
             scheme: bearer
 tags:
+    - name: Admin
+      description: APIs to manage or get more information about the server.
     - name: Collections
       description: APIs that can used to manage collections.
     - name: Databases
       description: APIs that can used to manage databases. A single database can have one or more collections.
     - name: Documents
       description: APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
-    - name: Tigris
+    - name: Streams
+      description: APIs that provide real-time events for writes made to collections in the database.
     - name: Transactions
       description: APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
