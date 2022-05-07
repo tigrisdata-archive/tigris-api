@@ -509,7 +509,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/StreamResponse'
+                                $ref: '#/components/schemas/StreamEvent'
                 default:
                     description: Default error response
                     content:
@@ -1002,10 +1002,10 @@ components:
                         $ref: '#/components/schemas/GoogleProtobufAny'
                     description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
             description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
-        StreamChange:
+        StreamEvent:
             type: object
             properties:
-                collection_name:
+                collection:
                     type: string
                 data:
                     type: string
@@ -1015,13 +1015,13 @@ components:
             properties:
                 db:
                     type: string
-        StreamResponse:
+                collection:
+                    type: string
+                options:
+                    $ref: '#/components/schemas/StreamRequestOptions'
+        StreamRequestOptions:
             type: object
-            properties:
-                changes:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/StreamChange'
+            properties: {}
         TransactionCtx:
             type: object
             properties:
