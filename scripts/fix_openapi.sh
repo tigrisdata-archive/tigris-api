@@ -75,6 +75,7 @@ yq_fix_object UpdateRequest fields
 yq_fix_object ReadRequest fields
 yq_fix_object ReadResponse data
 yq_fix_object CreateOrUpdateCollectionRequest schema
+yq_fix_object StreamEvent data
 yq_fix_timestamp ResponseMetadata created_at
 yq_fix_timestamp ResponseMetadata updated_at
 

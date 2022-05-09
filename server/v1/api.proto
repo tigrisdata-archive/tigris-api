@@ -490,6 +490,10 @@ message StreamRequest {
   StreamRequestOptions options = 3;
 }
 
+message StreamResponse {
+  StreamEvent event = 1;
+}
+
 message StreamEvent {
   string collection = 1;
   bytes data = 2;
@@ -693,7 +697,7 @@ service Tigris {
 
   // Provides real time events for the changes made into the database. Streams by default publish all events for a database
   // but can be restricted to a specific collection. These events can be useful to build event-driven applications.
-  rpc Stream(StreamRequest) returns (stream StreamEvent) {
+  rpc Stream(StreamRequest) returns (stream StreamResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/stream"
       body : "*"
