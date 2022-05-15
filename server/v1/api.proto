@@ -495,8 +495,14 @@ message StreamResponse {
 }
 
 message StreamEvent {
-  string collection = 1;
-  bytes data = 2;
+  bytes tx_id = 1;
+  string collection = 2;
+  string op = 3;
+  bytes key = 4;
+  bytes lkey = 5;
+  bytes rkey = 6;
+  bytes data = 7;
+  bool last = 8;
 }
 
 message GetInfoRequest {
