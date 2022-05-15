@@ -1005,10 +1005,26 @@ components:
         StreamEvent:
             type: object
             properties:
+                tx_id:
+                    type: string
+                    format: byte
                 collection:
                     type: string
+                op:
+                    type: string
+                key:
+                    type: string
+                    format: byte
+                lkey:
+                    type: string
+                    format: byte
+                rkey:
+                    type: string
+                    format: byte
                 data:
                     type: object
+                last:
+                    type: boolean
         StreamRequest:
             type: object
             properties:
