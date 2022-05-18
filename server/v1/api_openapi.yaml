@@ -257,7 +257,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ReadResponse'
+                                $ref: '#/components/schemas/StreamingReadResponse'
                 default:
                     description: Default error response
                     content:
@@ -509,7 +509,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/StreamResponse'
+                                $ref: '#/components/schemas/StreamingStreamResponse'
                 default:
                     description: Default error response
                     content:
@@ -836,6 +836,36 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "dropped".
+        Error:
+            type: object
+            properties:
+                code:
+                    enum:
+                        - OK
+                        - CANCELLED
+                        - UNKNOWN
+                        - INVALID_ARGUMENT
+                        - DEADLINE_EXCEEDED
+                        - NOT_FOUND
+                        - ALREADY_EXISTS
+                        - PERMISSION_DENIED
+                        - RESOURCE_EXHAUSTED
+                        - FAILED_PRECONDITION
+                        - ABORTED
+                        - OUT_OF_RANGE
+                        - UNIMPLEMENTED
+                        - INTERNAL
+                        - UNAVAILABLE
+                        - DATA_LOSS
+                        - UNAUTHENTICATED
+                        - CONFLICT
+                    type: string
+                    description: The status code is a short, machine parsable string, which uniquely identifies the error type. Tigris to HTTP code mapping [here](/reference/http-code)
+                    format: enum
+                message:
+                    type: string
+                    description: A developer-facing descriptive error message
+            description: The Error type defines a logical error model
         GetInfoResponse:
             type: object
             properties:
@@ -1002,22 +1032,6 @@ components:
                 status:
                     type: string
                     description: Status of rollback transaction operation.
-        Status:
-            type: object
-            properties:
-                code:
-                    type: integer
-                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-                    format: int32
-                message:
-                    type: string
-                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-                details:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/GoogleProtobufAny'
-                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
         StreamEvent:
             type: object
             properties:
@@ -1107,6 +1121,25 @@ components:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
             description: Additional options to modify write requests.
+        StreamingReadResponse:
+            type: object
+            properties:
+                result:
+                    $ref: '#/components/schemas/ReadResponse'
+                error:
+                    $ref: '#/components/schemas/Error'
+        StreamingStreamResponse:
+            type: object
+            properties:
+                result:
+                    $ref: '#/components/schemas/StreamResponse'
+                error:
+                    $ref: '#/components/schemas/Error'
+        Status:
+            type: object
+            properties:
+                error:
+                    $ref: '#/components/schemas/Error'
     securitySchemes:
         BearerAuth:
             type: http
