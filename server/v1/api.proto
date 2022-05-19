@@ -169,6 +169,8 @@ message ResponseMetadata {
   google.protobuf.Timestamp created_at = 1;
   // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
   google.protobuf.Timestamp updated_at = 2;
+  // Time at which the document was deleted. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp deleted_at = 3;
 }
 
 message InsertRequest {
