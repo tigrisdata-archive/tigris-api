@@ -188,6 +188,8 @@ message InsertResponse {
   ResponseMetadata metadata = 1;
   // An enum with value set as "inserted"
   string status = 2;
+  // an array returns the value of the primary keys.
+  repeated bytes keys = 3;
 }
 
 // Additional options for replace requests.
@@ -210,6 +212,8 @@ message ReplaceResponse {
   ResponseMetadata metadata = 1;
   // an enum with value set as "replaced"
   string status = 2;
+  // an array returns the value of the primary keys.
+  repeated bytes keys = 3;
 }
 
 // Additional options for deleted requests.
