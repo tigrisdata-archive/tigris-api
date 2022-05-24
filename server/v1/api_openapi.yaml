@@ -873,6 +873,12 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "inserted"
+                keys:
+                    type: array
+                    items:
+                        type: string
+                        format: byte
+                    description: an array returns the value of the primary keys.
         ListCollectionsRequest:
             type: object
             properties:
@@ -962,6 +968,12 @@ components:
                 status:
                     type: string
                     description: an enum with value set as "replaced"
+                keys:
+                    type: array
+                    items:
+                        type: string
+                        format: byte
+                    description: an array returns the value of the primary keys.
         ResponseMetadata:
             type: object
             properties:
