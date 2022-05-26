@@ -340,7 +340,7 @@ message CreateOrUpdateCollectionRequest {
   // JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.
   // <p></p>The following is an schema example:
   // `{
-  //  "name": "user",
+  //  "title": "user",
   //  "description": "Collection of documents with details of users",
   //  "properties": {
   //    "id": {
