@@ -23,9 +23,6 @@ import "openapiv3/annotations.proto";
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
-// BUG: gnostic protoc-gen-openapi doesn't support enum generation
-// https://github.com/google/gnostic/issues/255
-
 option (openapi.v3.document) = {
   info: {
     title: "Tigris API Reference"
@@ -72,9 +69,54 @@ option (openapi.v3.document) = {
   }
 };
 
+// Codes returned by the Tigris server in the case of error
+enum Code {
+  OK = 0; // 200
+  CANCELLED = 1; // 499
+  UNKNOWN = 2; // 500
+  INVALID_ARGUMENT = 3; // 400
+  DEADLINE_EXCEEDED = 4; // 504
+  NOT_FOUND = 5; // 404
+  ALREADY_EXISTS = 6; // 409
+  PERMISSION_DENIED = 7; // 403
+  RESOURCE_EXHAUSTED = 8; // 429
+  FAILED_PRECONDITION = 9; // 412
+  ABORTED = 10; // 409
+  OUT_OF_RANGE = 11; // 400
+  UNIMPLEMENTED = 12; // 501
+  INTERNAL = 13; // 500
+  UNAVAILABLE = 14; // 503
+  DATA_LOSS = 15; // 500
+  UNAUTHENTICATED = 16; // 401
+
+  // Above code are identical to GRPC standard codes: https://cloud.google.com/apis/design/errors
+  // Below Tigris specific extended error codes are defined:
+
+  CONFLICT = 17; // 409
+  BAD_GATEWAY = 18; // 502
+}
+
+// Contains retry information
+message RetryInfo {
+  // retry delay advice in milliseconds
+  int32 delay = 3;
+}
+
+// ErrorDetails defines error format passed by Tigris HTTP protocol
 message ErrorDetails {
-  uint32 code = 1;
-  string msg = 2;
+  string code = 1;
+  string message = 2;
+  RetryInfo retry = 3;
+}
+
+// The Error type defines a logical error model
+message Error {
+  // The status code is a short, machine parsable string,
+  // which uniquely identifies the error type.
+  // Tigris to HTTP code mapping [here](/reference/http-code)
+  Code code = 1;
+  // A developer-facing descriptive error message
+  string message = 2;
 }
 
 // Additional options to modify write requests.
@@ -169,6 +211,8 @@ message ResponseMetadata {
   google.protobuf.Timestamp created_at = 1;
   // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
   google.protobuf.Timestamp updated_at = 2;
+  // Time at which the document was deleted. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp deleted_at = 3;
 }
 
 message InsertRequest {
@@ -186,6 +230,8 @@ message InsertResponse {
   ResponseMetadata metadata = 1;
   // An enum with value set as "inserted"
   string status = 2;
+  // an array returns the value of the primary keys.
+  repeated bytes keys = 3;
 }
 
 // Additional options for replace requests.
@@ -208,6 +254,8 @@ message ReplaceResponse {
   ResponseMetadata metadata = 1;
   // an enum with value set as "replaced"
   string status = 2;
+  // an array returns the value of the primary keys.
+  repeated bytes keys = 3;
 }
 
 // Additional options for deleted requests.
@@ -334,7 +382,7 @@ message CreateOrUpdateCollectionRequest {
   // JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.
   // <p></p>The following is an schema example:
   // `{
-  //  "name": "user",
+  //  "title": "user",
   //  "description": "Collection of documents with details of users",
   //  "properties": {
   //    "id": {
@@ -506,10 +554,13 @@ message StreamEvent {
 }
 
 message GetInfoRequest {
-
 }
+
 message GetInfoResponse {
   string server_version = 1;
+
+  // NOTE: This is a hack to propagate this object definition to OpenAPI
+  Error error = 2;
 }
 
 service Tigris {

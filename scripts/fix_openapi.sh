@@ -62,6 +62,45 @@ yq_del_service_tags() {
   yq_cmd "del(.tags[] | select(.name == \"Tigris\"))"
 }
 
+# By default GRPC gateway returns streaming response and error wrapped in a new
+# object, instead of returning original response defined in proto file.
+# This is done to be able to return an error in the middle of the stream.
+#
+# Response {
+#   Result ProtoResponse // original response
+#   Error grpc.Status
+# }
+#
+# The following function fixes streaming response in OpenAPI to correspond above logic
+#
+# shellcheck disable=SC2016
+yq_streaming_response() {
+  yq_cmd 'with(.components.schemas.Streaming'"$1"';
+    .type="object" |
+    .properties.result.$ref="#/components/schemas/'"$1"'" |
+    .properties.error.$ref="#/components/schemas/Error"
+  )'
+
+  yq_cmd '.paths."/api/v1/databases/{db}/'"$2"'".post.responses.200.content."application/json".schema.$ref="#/components/schemas/Streaming'"$1"'"'
+}
+
+# Rewrite default response Status to look like:
+#
+# Status:
+#   error:
+#      code int32
+#      message string
+#
+# shellcheck disable=SC2016
+yq_error_response() {
+	yq_cmd "del(.components.schemas.Status)"
+	yq_cmd 'with(.components.schemas.Status;
+	.type="object" |
+	.properties.error.$ref="#/components/schemas/Error"
+	)'
+	yq_cmd "del(.components.schemas.GetInfoResponse.properties.error)"
+}
+
 # Fix the types of filter and document fields to be object on HTTP wire.
 # The original format in proto file is "bytes", which allows to skip
 # unmarshalling in GRPC, we also implement custom unmarshalling for HTTP
@@ -92,6 +131,11 @@ for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
 
 	yq_del_db_coll $i
 done
+
+yq_streaming_response ReadResponse "collections/{collection}/documents/read"
+yq_streaming_response StreamResponse stream
+
+yq_error_response
 
 fix_bytes
 
