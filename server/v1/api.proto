@@ -80,7 +80,7 @@ enum Code {
   ALREADY_EXISTS = 6; // 409
   PERMISSION_DENIED = 7; // 403
   RESOURCE_EXHAUSTED = 8; // 429
-  FAILED_PRECONDITION = 9; // 400
+  FAILED_PRECONDITION = 9; // 412
   ABORTED = 10; // 409
   OUT_OF_RANGE = 11; // 400
   UNIMPLEMENTED = 12; // 501
@@ -93,6 +93,7 @@ enum Code {
   // Below Tigris specific extended error codes are defined:
 
   CONFLICT = 17; // 409
+  BAD_GATEWAY = 18; // 502
 }
 
 // Contains retry information
