@@ -529,16 +529,16 @@ message DatabaseMetadata {
 message CollectionMetadata {
 }
 
-message StreamRequestOptions {
+message EventsRequestOptions {
 }
 
-message StreamRequest {
+message EventsRequest {
   string db = 1;
   string collection = 2;
-  StreamRequestOptions options = 3;
+  EventsRequestOptions options = 3;
 }
 
-message StreamResponse {
+message EventsResponse {
   StreamEvent event = 1;
 }
 
@@ -754,14 +754,14 @@ service Tigris {
 
   // Provides real time events for the changes made into the database. Streams by default publish all events for a database
   // but can be restricted to a specific collection. These events can be useful to build event-driven applications.
-  rpc Stream(StreamRequest) returns (stream StreamResponse) {
+  rpc Events(EventsRequest) returns (stream EventsResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/stream"
+      post : "/api/v1/databases/{db}/collections/{collection}/events"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Stream"
-      tags: "Streams"
+      summary: "Events Stream"
+      tags: "Events"
     };
   }
 

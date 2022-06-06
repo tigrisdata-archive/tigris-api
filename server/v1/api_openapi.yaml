@@ -381,6 +381,45 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/databases/{db}/collections/{collection}/events:
+        post:
+            tags:
+                - Events
+            summary: Events Stream
+            description: |-
+                Provides real time events for the changes made into the database. Streams by default publish all events for a database
+                 but can be restricted to a specific collection. These events can be useful to build event-driven applications.
+            operationId: Tigris_Events
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/EventsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EventsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/create:
         post:
             tags:
@@ -476,40 +515,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DropDatabaseResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/stream:
-        post:
-            tags:
-                - Streams
-            summary: Stream
-            description: |-
-                Provides real time events for the changes made into the database. Streams by default publish all events for a database
-                 but can be restricted to a specific collection. These events can be useful to build event-driven applications.
-            operationId: Tigris_Stream
-            parameters:
-                - name: db
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/StreamRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/StreamingStreamResponse'
                 default:
                     description: Default error response
                     content:
@@ -641,6 +646,14 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/databases/{db}/stream:
+        post:
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StreamingStreamResponse'
 components:
     schemas:
         BeginTransactionRequest:
@@ -867,6 +880,23 @@ components:
                     type: string
                     description: A developer-facing descriptive error message
             description: The Error type defines a logical error model
+        EventsRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                collection:
+                    type: string
+                options:
+                    $ref: '#/components/schemas/EventsRequestOptions'
+        EventsRequestOptions:
+            type: object
+            properties: {}
+        EventsResponse:
+            type: object
+            properties:
+                event:
+                    $ref: '#/components/schemas/StreamEvent'
         GetInfoResponse:
             type: object
             properties:
@@ -1056,23 +1086,6 @@ components:
                     type: object
                 last:
                     type: boolean
-        StreamRequest:
-            type: object
-            properties:
-                db:
-                    type: string
-                collection:
-                    type: string
-                options:
-                    $ref: '#/components/schemas/StreamRequestOptions'
-        StreamRequestOptions:
-            type: object
-            properties: {}
-        StreamResponse:
-            type: object
-            properties:
-                event:
-                    $ref: '#/components/schemas/StreamEvent'
         TransactionCtx:
             type: object
             properties:
