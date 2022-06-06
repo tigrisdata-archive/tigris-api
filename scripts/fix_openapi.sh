@@ -133,7 +133,7 @@ for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
 done
 
 yq_streaming_response ReadResponse "collections/{collection}/documents/read"
-yq_streaming_response EventsResponse stream
+yq_streaming_response EventsResponse "collections/{collection}/events"
 
 yq_error_response
 
