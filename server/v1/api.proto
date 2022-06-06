@@ -563,6 +563,25 @@ message GetInfoResponse {
   Error error = 2;
 }
 
+message PublishRequest {
+  string db = 1;
+  string topic = 2;
+  bytes message = 3;
+}
+
+message PublishResponse {
+  string status = 1;
+}
+
+message SubscribeRequest {
+  string db = 1;
+  string topic = 2;
+}
+
+message SubscribeResponse {
+  bytes message = 1;
+}
+
 service Tigris {
   // Starts a new transaction and returns a transactional object. All reads/writes performed
   // within a transaction will run with serializable isolation.
@@ -774,6 +793,28 @@ service Tigris {
     option(openapi.v3.operation) = {
       summary: "Information about the server"
       tags: "Admin"
+    };
+  }
+
+  rpc Publish(PublishRequest) returns (PublishResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/topic/{topic}/publish"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Publish a message to a topic"
+      tags: "Topics"
+    };
+  }
+
+  rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/topic/{topic}/subscribe"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Subscribe to a topic for a stream of messages"
+      tags: "Topics"
     };
   }
 }
