@@ -718,14 +718,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/stream:
-        post:
-            responses:
-                200:
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/StreamingStreamResponse'
 components:
     schemas:
         BeginTransactionRequest:
@@ -1242,11 +1234,11 @@ components:
                     $ref: '#/components/schemas/ReadResponse'
                 error:
                     $ref: '#/components/schemas/Error'
-        StreamingStreamResponse:
+        StreamingEventsResponse:
             type: object
             properties:
                 result:
-                    $ref: '#/components/schemas/StreamResponse'
+                    $ref: '#/components/schemas/EventsResponse'
                 error:
                     $ref: '#/components/schemas/Error'
         Status:
