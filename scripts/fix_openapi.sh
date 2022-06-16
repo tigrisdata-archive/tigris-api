@@ -113,6 +113,9 @@ yq_fix_object ReplaceRequest documents.items
 yq_fix_object UpdateRequest fields
 yq_fix_object ReadRequest fields
 yq_fix_object ReadResponse data
+yq_fix_object SearchRequest fields
+yq_fix_object SearchRequest facet
+yq_fix_object SearchHit data
 yq_fix_object CreateOrUpdateCollectionRequest schema
 yq_fix_object StreamEvent data
 yq_fix_timestamp ResponseMetadata created_at
@@ -126,13 +129,14 @@ yq_del_service_tags
 for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
 	CreateOrUpdateCollectionRequest DropCollectionRequest \
 	CreateDatabaseRequest DropDatabaseRequest \
-	ListDatabasesRequest ListCollectionsRequest \
+	ListDatabasesRequest ListCollectionsRequest SearchRequest \
 	BeginTransactionRequest CommitTransactionRequest RollbackTransactionRequest; do
 
 	yq_del_db_coll $i
 done
 
 yq_streaming_response ReadResponse "collections/{collection}/documents/read"
+yq_streaming_response SearchResponse "collections/{collection}/documents/search"
 yq_streaming_response StreamResponse stream
 
 yq_error_response

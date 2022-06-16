@@ -335,7 +335,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/SearchResponse'
+                                $ref: '#/components/schemas/StreamingSearchResponse'
                 default:
                     description: Default error response
                     content:
@@ -929,7 +929,7 @@ components:
                 sum:
                     type: integer
                     format: int64
-                total_values:
+                count:
                     type: integer
                     format: int64
             description: avg, min, max, sum are only available for numeric fields
@@ -1006,7 +1006,7 @@ components:
                 current:
                     type: integer
                     format: int64
-                total_pages:
+                total:
                     type: integer
                     format: int64
                 per_page:
@@ -1125,9 +1125,8 @@ components:
             type: object
             properties:
                 data:
-                    type: string
+                    type: object
                     description: actual search document
-                    format: byte
                 meta:
                     $ref: '#/components/schemas/SearchHitMeta'
         SearchHitMeta:
@@ -1144,12 +1143,6 @@ components:
         SearchRequest:
             type: object
             properties:
-                db:
-                    type: string
-                    description: Database name to read documents from.
-                collection:
-                    type: string
-                    description: Collection name to read documents from.
                 q:
                     type: string
                     description: Query string for searching across text fields
@@ -1163,17 +1156,15 @@ components:
                     description: Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
                     format: byte
                 facet:
-                    type: string
+                    type: object
                     description: Facet query to aggregate results on given fields
-                    format: byte
                 sort:
                     type: string
                     description: 'Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`'
                     format: byte
                 fields:
-                    type: string
+                    type: object
                     description: Fetch specific fields from a document. Default is all
-                    format: byte
         SearchResponse:
             type: object
             properties:
@@ -1282,6 +1273,13 @@ components:
             properties:
                 result:
                     $ref: '#/components/schemas/ReadResponse'
+                error:
+                    $ref: '#/components/schemas/Error'
+        StreamingSearchResponse:
+            type: object
+            properties:
+                result:
+                    $ref: '#/components/schemas/SearchResponse'
                 error:
                     $ref: '#/components/schemas/Error'
         StreamingStreamResponse:
