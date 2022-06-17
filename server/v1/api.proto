@@ -88,12 +88,12 @@ enum Code {
   UNAVAILABLE = 14; // 503
   DATA_LOSS = 15; // 500
   UNAUTHENTICATED = 16; // 401
-
   // Above code are identical to GRPC standard codes: https://cloud.google.com/apis/design/errors
   // Below Tigris specific extended error codes are defined:
 
   CONFLICT = 17; // 409
   BAD_GATEWAY = 18; // 502
+  METHOD_NOT_ALLOWED = 19; // 405
 }
 
 // Contains retry information
