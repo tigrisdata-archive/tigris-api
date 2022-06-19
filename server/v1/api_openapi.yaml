@@ -303,6 +303,45 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/databases/{db}/collections/{collection}/documents/search:
+        post:
+            tags:
+                - Documents
+            summary: Search Documents
+            description: Searches a collection for documents matching the query
+            operationId: Tigris_Search
+            parameters:
+                - name: db
+                  in: path
+                  description: Database name to read documents from.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name to read documents from.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SearchRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StreamingSearchResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/collections/{collection}/documents/update:
         put:
             tags:
@@ -937,6 +976,7 @@ components:
                         - UNAUTHENTICATED
                         - CONFLICT
                         - BAD_GATEWAY
+                        - METHOD_NOT_ALLOWED
                     type: string
                     description: The status code is a short, machine parsable string, which uniquely identifies the error type. Tigris to HTTP code mapping [here](/reference/http-code)
                     format: enum
@@ -961,6 +1001,33 @@ components:
             properties:
                 event:
                     $ref: '#/components/schemas/StreamEvent'
+        FacetCount:
+            type: object
+            properties:
+                count:
+                    type: integer
+                    format: int64
+                value:
+                    type: string
+        FacetStats:
+            type: object
+            properties:
+                avg:
+                    type: number
+                    format: float
+                max:
+                    type: integer
+                    format: int64
+                min:
+                    type: integer
+                    format: int64
+                sum:
+                    type: integer
+                    format: int64
+                count:
+                    type: integer
+                    format: int64
+            description: avg, min, max, sum are only available for numeric fields
         GetInfoResponse:
             type: object
             properties:
@@ -1028,6 +1095,19 @@ components:
                     items:
                         $ref: '#/components/schemas/DatabaseInfo'
                     description: List of the databases.
+        Page:
+            type: object
+            properties:
+                current:
+                    type: integer
+                    format: int64
+                total:
+                    type: integer
+                    format: int64
+                per_page:
+                    type: integer
+                    format: int32
+            description: Pagination meta. Used only in /search as of now
         PublishRequest:
             type: object
             properties:
@@ -1142,6 +1222,73 @@ components:
                 status:
                     type: string
                     description: Status of rollback transaction operation.
+        SearchFacet:
+            type: object
+            properties:
+                counts:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/FacetCount'
+                stats:
+                    $ref: '#/components/schemas/FacetStats'
+        SearchHit:
+            type: object
+            properties:
+                data:
+                    type: object
+                    description: actual search document
+                meta:
+                    $ref: '#/components/schemas/SearchHitMeta'
+        SearchHitMeta:
+            type: object
+            properties: {}
+        SearchMetadata:
+            type: object
+            properties:
+                found:
+                    type: integer
+                    format: int64
+                page:
+                    $ref: '#/components/schemas/Page'
+        SearchRequest:
+            type: object
+            properties:
+                q:
+                    type: string
+                    description: Query string for searching across text fields
+                search_fields:
+                    type: array
+                    items:
+                        type: string
+                    description: Array of fields to project search query against
+                filter:
+                    type: string
+                    description: Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
+                    format: byte
+                facet:
+                    type: object
+                    description: Facet query to aggregate results on given fields
+                sort:
+                    type: string
+                    description: 'Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`'
+                    format: byte
+                fields:
+                    type: object
+                    description: Fetch specific fields from a document. Default is all
+        SearchResponse:
+            type: object
+            properties:
+                hits:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SearchHit'
+                facets:
+                    type: object
+                    additionalProperties:
+                        $ref: '#/components/schemas/SearchFacet'
+                meta:
+                    $ref: '#/components/schemas/SearchMetadata'
+            description: Response struct for /search
         StreamEvent:
             type: object
             properties:
@@ -1232,6 +1379,13 @@ components:
             properties:
                 result:
                     $ref: '#/components/schemas/ReadResponse'
+                error:
+                    $ref: '#/components/schemas/Error'
+        StreamingSearchResponse:
+            type: object
+            properties:
+                result:
+                    $ref: '#/components/schemas/SearchResponse'
                 error:
                     $ref: '#/components/schemas/Error'
         StreamingEventsResponse:

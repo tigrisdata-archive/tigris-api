@@ -88,12 +88,12 @@ enum Code {
   UNAVAILABLE = 14; // 503
   DATA_LOSS = 15; // 500
   UNAUTHENTICATED = 16; // 401
-
   // Above code are identical to GRPC standard codes: https://cloud.google.com/apis/design/errors
   // Below Tigris specific extended error codes are defined:
 
   CONFLICT = 17; // 409
   BAD_GATEWAY = 18; // 502
+  METHOD_NOT_ALLOWED = 19; // 405
 }
 
 // Contains retry information
@@ -344,6 +344,70 @@ message ReadResponse {
   bytes resume_token = 2;
   // Has metadata related to the documents stored.
   ResponseMetadata metadata = 3;
+}
+message SearchRequest {
+  // Database name to read documents from.
+  string db = 1;
+  // Collection name to read documents from.
+  string collection = 2;
+  // Query string for searching across text fields
+  string q = 3;
+  // Array of fields to project search query against
+  repeated string search_fields = 4;
+  // Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
+  bytes filter = 5;
+  // Facet query to aggregate results on given fields
+  bytes facet = 6;
+  // Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`
+  bytes sort = 7;
+  // Fetch specific fields from a document. Default is all
+  bytes fields = 8;
+}
+
+// Response struct for /search
+message SearchResponse {
+  repeated SearchHit hits = 1;
+  map<string, SearchFacet> facets = 2;
+  SearchMetadata meta = 3;
+}
+
+message SearchHit {
+  // actual search document
+  bytes data = 1;
+  SearchHitMeta meta = 2;
+}
+
+message SearchHitMeta {}
+
+message SearchFacet {
+  repeated FacetCount counts = 1;
+  FacetStats stats = 2;
+}
+
+message FacetCount {
+  int64 count = 1;
+  string value = 2;
+}
+
+// avg, min, max, sum are only available for numeric fields
+message FacetStats {
+  float avg = 1;
+  int64 max = 2;
+  int64 min = 3;
+  int64 sum = 4;
+  int64 count = 5;
+}
+
+message SearchMetadata {
+  int64 found = 1;
+  Page page = 2;
+}
+
+// Pagination meta. Used only in /search as of now
+message Page {
+  int64 current = 1;
+  int64 total = 2;
+  int32 per_page = 3;
 }
 
 message CreateDatabaseRequest {
@@ -674,6 +738,18 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Read Documents"
+      tags: "Documents"
+    };
+  }
+
+  //  Searches a collection for documents matching the query
+  rpc Search(SearchRequest) returns (stream SearchResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/collections/{collection}/documents/search"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Search Documents"
       tags: "Documents"
     };
   }
