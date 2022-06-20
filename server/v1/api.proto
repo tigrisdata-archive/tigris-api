@@ -593,16 +593,16 @@ message DatabaseMetadata {
 message CollectionMetadata {
 }
 
-message StreamRequestOptions {
+message EventsRequestOptions {
 }
 
-message StreamRequest {
+message EventsRequest {
   string db = 1;
   string collection = 2;
-  StreamRequestOptions options = 3;
+  EventsRequestOptions options = 3;
 }
 
-message StreamResponse {
+message EventsResponse {
   StreamEvent event = 1;
 }
 
@@ -625,6 +625,25 @@ message GetInfoResponse {
 
   // NOTE: This is a hack to propagate this object definition to OpenAPI
   Error error = 2;
+}
+
+message PublishRequest {
+  string db = 1;
+  string topic = 2;
+  bytes message = 3;
+}
+
+message PublishResponse {
+  string status = 1;
+}
+
+message SubscribeRequest {
+  string db = 1;
+  string topic = 2;
+}
+
+message SubscribeResponse {
+  bytes message = 1;
 }
 
 service Tigris {
@@ -830,14 +849,14 @@ service Tigris {
 
   // Provides real time events for the changes made into the database. Streams by default publish all events for a database
   // but can be restricted to a specific collection. These events can be useful to build event-driven applications.
-  rpc Stream(StreamRequest) returns (stream StreamResponse) {
+  rpc Events(EventsRequest) returns (stream EventsResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/stream"
+      post : "/api/v1/databases/{db}/collections/{collection}/events"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Stream"
-      tags: "Streams"
+      summary: "Events Stream"
+      tags: "Events"
     };
   }
 
@@ -850,6 +869,28 @@ service Tigris {
     option(openapi.v3.operation) = {
       summary: "Information about the server"
       tags: "Admin"
+    };
+  }
+
+  rpc Publish(PublishRequest) returns (PublishResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/topic/{topic}/publish"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Publish a message to a topic"
+      tags: "Topics"
+    };
+  }
+
+  rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/topic/{topic}/subscribe"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Subscribe to a topic for a stream of messages"
+      tags: "Topics"
     };
   }
 }

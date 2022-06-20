@@ -420,6 +420,45 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/databases/{db}/collections/{collection}/events:
+        post:
+            tags:
+                - Events
+            summary: Events Stream
+            description: |-
+                Provides real time events for the changes made into the database. Streams by default publish all events for a database
+                 but can be restricted to a specific collection. These events can be useful to build event-driven applications.
+            operationId: Tigris_Events
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/EventsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StreamingEventsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/create:
         post:
             tags:
@@ -521,17 +560,19 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/stream:
+    /api/v1/databases/{db}/topic/{topic}/publish:
         post:
             tags:
-                - Streams
-            summary: Stream
-            description: |-
-                Provides real time events for the changes made into the database. Streams by default publish all events for a database
-                 but can be restricted to a specific collection. These events can be useful to build event-driven applications.
-            operationId: Tigris_Stream
+                - Topics
+            summary: Publish a message to a topic
+            operationId: Tigris_Publish
             parameters:
                 - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: topic
                   in: path
                   required: true
                   schema:
@@ -540,7 +581,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/StreamRequest'
+                            $ref: '#/components/schemas/PublishRequest'
                 required: true
             responses:
                 "200":
@@ -548,7 +589,43 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/StreamingStreamResponse'
+                                $ref: '#/components/schemas/PublishResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/databases/{db}/topic/{topic}/subscribe:
+        post:
+            tags:
+                - Topics
+            summary: Subscribe to a topic for a stream of messages
+            operationId: Tigris_Subscribe
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: topic
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SubscribeRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SubscribeResponse'
                 default:
                     description: Default error response
                     content:
@@ -907,6 +984,23 @@ components:
                     type: string
                     description: A developer-facing descriptive error message
             description: The Error type defines a logical error model
+        EventsRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                collection:
+                    type: string
+                options:
+                    $ref: '#/components/schemas/EventsRequestOptions'
+        EventsRequestOptions:
+            type: object
+            properties: {}
+        EventsResponse:
+            type: object
+            properties:
+                event:
+                    $ref: '#/components/schemas/StreamEvent'
         FacetCount:
             type: object
             properties:
@@ -1014,6 +1108,21 @@ components:
                     type: integer
                     format: int32
             description: Pagination meta. Used only in /search as of now
+        PublishRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                topic:
+                    type: string
+                message:
+                    type: string
+                    format: byte
+        PublishResponse:
+            type: object
+            properties:
+                status:
+                    type: string
         ReadRequest:
             type: object
             properties:
@@ -1203,23 +1312,19 @@ components:
                     type: object
                 last:
                     type: boolean
-        StreamRequest:
+        SubscribeRequest:
             type: object
             properties:
                 db:
                     type: string
-                collection:
+                topic:
                     type: string
-                options:
-                    $ref: '#/components/schemas/StreamRequestOptions'
-        StreamRequestOptions:
-            type: object
-            properties: {}
-        StreamResponse:
+        SubscribeResponse:
             type: object
             properties:
-                event:
-                    $ref: '#/components/schemas/StreamEvent'
+                message:
+                    type: string
+                    format: byte
         TransactionCtx:
             type: object
             properties:
@@ -1283,11 +1388,11 @@ components:
                     $ref: '#/components/schemas/SearchResponse'
                 error:
                     $ref: '#/components/schemas/Error'
-        StreamingStreamResponse:
+        StreamingEventsResponse:
             type: object
             properties:
                 result:
-                    $ref: '#/components/schemas/StreamResponse'
+                    $ref: '#/components/schemas/EventsResponse'
                 error:
                     $ref: '#/components/schemas/Error'
         Status:
