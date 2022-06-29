@@ -28,7 +28,7 @@ ${API_DIR}/client/${V}/%/http.go: ${PROTO_DIR}/%_openapi.yaml
 		-o ${API_DIR}/client/${V}/$(*F)/http.go \
 		${PROTO_DIR}/$(*F)_openapi.yaml
 
-generate: ${GEN_DIR}/api.pb.go ${GEN_DIR}/api.pb.gw.go ${GEN_DIR}/health.pb.go ${GEN_DIR}/health.pb.gw.go ${PROTO_DIR}/api_openapi.yaml
+generate: ${GEN_DIR}/api.pb.go ${GEN_DIR}/api.pb.gw.go ${GEN_DIR}/health.pb.go ${GEN_DIR}/health.pb.gw.go ${GEN_DIR}/admin.pb.go ${GEN_DIR}/admin.pb.gw.go ${PROTO_DIR}/api_openapi.yaml ${PROTO_DIR}/admin_openapi.yaml
 
 client: ${API_DIR}/client/${V}/api/http.go
 
