@@ -27,14 +27,20 @@ fix_bytes() {
 	sed -e 's/format: bytes/format: byte/g' "$IN_FILE" >"$OUT_FILE"
 }
 
-if [[ "$OUT_FILE" != *"api_openapi"* ]]; then
-	fix_bytes
-	exit 0
-fi
-
 yq_cmd() {
 	yq -I 4 -i "$1" "$IN_FILE"
 }
+
+# Delete name attribute from body
+yq_del_namespace_name() {
+	yq_cmd "del(.components.schemas.$1.properties.name)"
+}
+
+if [[ "$OUT_FILE" != *"api_openapi"* ]]; then
+ 	yq_del_namespace_name CreateNamespaceRequest
+	fix_bytes
+	exit 0
+fi
 
 # Change type of documents, filters, fields, schema to be JSON object
 # instead of bytes.
