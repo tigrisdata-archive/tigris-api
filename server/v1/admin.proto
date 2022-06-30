@@ -19,8 +19,8 @@ package tigrisdata.admin.v1;
 import "google/api/annotations.proto";
 import "openapiv3/annotations.proto";
 
-option go_package = "github.com/tigrisdata/tigris/admin";
-option java_package = "com.tigrisdata.admin.v1.grpc";
+option go_package = "github.com/tigrisdata/tigris/api";
+option java_package = "com.tigrisdata.db.api.v1.grpc";
 
 message CreateNamespaceRequest{
   // A unique namespace id.
