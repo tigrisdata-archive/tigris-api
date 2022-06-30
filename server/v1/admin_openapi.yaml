@@ -2,21 +2,37 @@
 # https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
 openapi: 3.0.3
 info:
-    title: HealthAPI API
+    title: Admin API
     version: 0.0.1
 paths:
-    /api/v1/health:
-        get:
+    /admin/v1/namespaces/{name}/create:
+        post:
             tags:
-                - HealthAPI
-            operationId: HealthAPI_Health
+                - Admin
+                - Namespace
+            summary: Creates a namespace
+            description: Creates a new namespace, if it does not exist
+            operationId: Admin_CreateNamespace
+            parameters:
+                - name: name
+                  in: path
+                  description: A namespace name.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateNamespaceRequest'
+                required: true
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/HealthCheckResponse'
+                                $ref: '#/components/schemas/CreateNamespaceResponse'
                 default:
                     description: Default error response
                     content:
@@ -25,6 +41,22 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
+        CreateNamespaceRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: A unique namespace id.
+                    format: int32
+        CreateNamespaceResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "created".
         GoogleProtobufAny:
             type: object
             properties:
@@ -33,11 +65,6 @@ components:
                     description: The type of the serialized message.
             additionalProperties: true
             description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-        HealthCheckResponse:
-            type: object
-            properties:
-                response:
-                    type: string
         Status:
             type: object
             properties:
@@ -55,4 +82,4 @@ components:
                     description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
             description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
 tags:
-    - name: HealthAPI
+    - name: Admin

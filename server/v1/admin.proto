@@ -1,0 +1,50 @@
+// Copyright 2022 Tigris Data, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package tigrisdata.admin.v1;
+
+import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
+
+option go_package = "github.com/tigrisdata/tigris/api";
+option java_package = "com.tigrisdata.db.api.v1.grpc";
+
+message CreateNamespaceRequest{
+  // A unique namespace id.
+  int32 id = 1;
+  // A namespace name.
+  string name = 2;
+}
+message CreateNamespaceResponse{
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "created".
+  string status = 2;
+}
+service Admin {
+  // Creates a new namespace, if it does not exist
+  rpc createNamespace(CreateNamespaceRequest) returns 
+      (CreateNamespaceResponse) {
+    option (google.api.http) = {
+      post : "/admin/v1/namespaces/{name}/create"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Creates a namespace"
+      tags: "Namespace"
+    };
+  }
+}

@@ -88,12 +88,12 @@ enum Code {
   UNAVAILABLE = 14; // 503
   DATA_LOSS = 15; // 500
   UNAUTHENTICATED = 16; // 401
-
   // Above code are identical to GRPC standard codes: https://cloud.google.com/apis/design/errors
   // Below Tigris specific extended error codes are defined:
 
   CONFLICT = 17; // 409
   BAD_GATEWAY = 18; // 502
+  METHOD_NOT_ALLOWED = 19; // 405
 }
 
 // Contains retry information
@@ -346,6 +346,91 @@ message ReadResponse {
   ResponseMetadata metadata = 3;
 }
 
+message SearchRequest {
+  // Database name to read documents from.
+  string db = 1;
+  // Collection name to read documents from.
+  string collection = 2;
+  // Query string for searching across text fields
+  string q = 3;
+  // Array of fields to project search query against
+  repeated string search_fields = 4;
+  // Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
+  bytes filter = 5;
+  // Facet query to aggregate results on given fields
+  bytes facet = 6;
+  // Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`
+  bytes sort = 7;
+  // Fetch specific fields from a document. Default is all
+  bytes fields = 8;
+  // Optionally can set the number of hits to be returned per page, default is 20.
+  int32 page_size = 9;
+  // Optionally can specify the page to retrieve. If page is set then only hits for this page is returned
+  int32 page = 10;
+}
+
+// Response struct for search
+message SearchResponse {
+  repeated SearchHit hits = 1;
+  map<string, SearchFacet> facets = 2;
+  SearchMetadata meta = 3;
+}
+
+message SearchHit {
+  // Actual search document
+  bytes data = 1;
+  // Has metadata related to the search hit
+  SearchHitMeta metadata = 2;
+}
+
+// Contains metadata related to the search hit, has information about document created_at/updated_at as well.
+message SearchHitMeta {
+  // Time at which the document was inserted/replaced. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp created_at = 1;
+  // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp updated_at = 2;
+}
+
+message SearchFacet {
+  repeated FacetCount counts = 1;
+  FacetStats stats = 2;
+}
+
+message FacetCount {
+  int64 count = 1;
+  string value = 2;
+}
+
+// Additional stats for faceted field
+message FacetStats {
+  // Average of all values in a field. Only available for numeric fields
+  float avg = 1;
+  // Maximum of all values in a field. Only available for numeric fields
+  int64 max = 2;
+  // Minimum of all values in a field. Only available for numeric fields
+  int64 min = 3;
+  // Sum of all values in a field. Only available for numeric fields
+  int64 sum = 4;
+  // Total number of values in a field
+  int64 count = 5;
+}
+
+message SearchMetadata {
+  // Total number of matches
+  int64 found = 1;
+  Page page = 2;
+}
+
+// Pagination metadata for SearchResponse
+message Page {
+  // Current page of search results
+  int32 current = 1;
+  // Total pages in search results
+  int32 total = 2;
+  // Number of results per page
+  int32 size = 3;
+}
+
 message CreateDatabaseRequest {
   // Create database with this name.
   string db = 1;
@@ -529,16 +614,16 @@ message DatabaseMetadata {
 message CollectionMetadata {
 }
 
-message StreamRequestOptions {
+message EventsRequestOptions {
 }
 
-message StreamRequest {
+message EventsRequest {
   string db = 1;
   string collection = 2;
-  StreamRequestOptions options = 3;
+  EventsRequestOptions options = 3;
 }
 
-message StreamResponse {
+message EventsResponse {
   StreamEvent event = 1;
 }
 
@@ -561,6 +646,25 @@ message GetInfoResponse {
 
   // NOTE: This is a hack to propagate this object definition to OpenAPI
   Error error = 2;
+}
+
+message PublishRequest {
+  string db = 1;
+  string topic = 2;
+  bytes message = 3;
+}
+
+message PublishResponse {
+  string status = 1;
+}
+
+message SubscribeRequest {
+  string db = 1;
+  string topic = 2;
+}
+
+message SubscribeResponse {
+  bytes message = 1;
 }
 
 service Tigris {
@@ -655,6 +759,18 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Read Documents"
+      tags: "Documents"
+    };
+  }
+
+  //  Searches a collection for documents matching the query
+  rpc Search(SearchRequest) returns (stream SearchResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/collections/{collection}/documents/search"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Search Documents"
       tags: "Documents"
     };
   }
@@ -754,14 +870,14 @@ service Tigris {
 
   // Provides real time events for the changes made into the database. Streams by default publish all events for a database
   // but can be restricted to a specific collection. These events can be useful to build event-driven applications.
-  rpc Stream(StreamRequest) returns (stream StreamResponse) {
+  rpc Events(EventsRequest) returns (stream EventsResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/stream"
+      post : "/api/v1/databases/{db}/collections/{collection}/events"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Stream"
-      tags: "Streams"
+      summary: "Events Stream"
+      tags: "Events"
     };
   }
 
@@ -774,6 +890,28 @@ service Tigris {
     option(openapi.v3.operation) = {
       summary: "Information about the server"
       tags: "Admin"
+    };
+  }
+
+  rpc Publish(PublishRequest) returns (PublishResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/topic/{topic}/publish"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Publish a message to a topic"
+      tags: "Topics"
+    };
+  }
+
+  rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/databases/{db}/topic/{topic}/subscribe"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Subscribe to a topic for a stream of messages"
+      tags: "Topics"
     };
   }
 }
