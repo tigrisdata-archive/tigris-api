@@ -1014,20 +1014,25 @@ components:
             properties:
                 avg:
                     type: number
+                    description: Average of all values in a field. Only available for numeric fields
                     format: float
                 max:
                     type: integer
+                    description: Maximum of all values in a field. Only available for numeric fields
                     format: int64
                 min:
                     type: integer
+                    description: Minimum of all values in a field. Only available for numeric fields
                     format: int64
                 sum:
                     type: integer
+                    description: Sum of all values in a field. Only available for numeric fields
                     format: int64
                 count:
                     type: integer
+                    description: Total number of values in a field
                     format: int64
-            description: avg, min, max, sum are only available for numeric fields
+            description: Additional stats for faceted field
         GetInfoResponse:
             type: object
             properties:
@@ -1100,14 +1105,17 @@ components:
             properties:
                 current:
                     type: integer
+                    description: Current page of search results
                     format: int32
                 total:
                     type: integer
+                    description: Total pages in search results
                     format: int32
-                per_page:
+                size:
                     type: integer
+                    description: Number of results per page
                     format: int32
-            description: Pagination meta. Used only in /search as of now
+            description: Pagination metadata for SearchResponse
         PublishRequest:
             type: object
             properties:
@@ -1236,7 +1244,7 @@ components:
             properties:
                 data:
                     type: object
-                    description: actual search document
+                    description: Actual search document
                 metadata:
                     $ref: '#/components/schemas/SearchHitMeta'
         SearchHitMeta:
@@ -1256,6 +1264,7 @@ components:
             properties:
                 found:
                     type: integer
+                    description: Total number of matches
                     format: int64
                 page:
                     $ref: '#/components/schemas/Page'
@@ -1305,7 +1314,7 @@ components:
                         $ref: '#/components/schemas/SearchFacet'
                 meta:
                     $ref: '#/components/schemas/SearchMetadata'
-            description: Response struct for /search
+            description: Response struct for search
         StreamEvent:
             type: object
             properties:
