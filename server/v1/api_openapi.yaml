@@ -1105,11 +1105,7 @@ components:
             properties:
                 current:
                     type: integer
-                    description: Current page of search results
-                    format: int32
-                total:
-                    type: integer
-                    description: Total pages in search results
+                    description: Number representing the current page of results
                     format: int32
                 size:
                     type: integer
@@ -1264,8 +1260,12 @@ components:
             properties:
                 found:
                     type: integer
-                    description: Total number of matches
+                    description: Total number of search results across all pages
                     format: int64
+                total_pages:
+                    type: integer
+                    description: Number representing the total pages of results
+                    format: int32
                 page:
                     $ref: '#/components/schemas/Page'
         SearchRequest:

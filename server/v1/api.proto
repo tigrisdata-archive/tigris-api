@@ -416,17 +416,17 @@ message FacetStats {
 }
 
 message SearchMetadata {
-  // Total number of matches
+  // Total number of search results across all pages
   int64 found = 1;
-  Page page = 2;
+  // Number representing the total pages of results
+  int32 total_pages = 2;
+  Page page = 3;
 }
 
 // Pagination metadata for SearchResponse
 message Page {
-  // Current page of search results
+  // Number representing the current page of results
   int32 current = 1;
-  // Total pages in search results
-  int32 total = 2;
   // Number of results per page
   int32 size = 3;
 }
