@@ -121,15 +121,11 @@ message Error {
 
 // Additional options to modify write requests.
 message WriteOptions {
-  // Perform operation in the context of this transaction.
-  TransactionCtx tx_ctx = 1;
 }
 
 // Options that can be used to modify the results, for example "limit" to control the number of documents
 // returned by the server.
 message ReadRequestOptions {
-  // Perform operation in the context of this transaction.
-  TransactionCtx tx_ctx = 1;
   // Limit the number of documents returned by the read operation.
   int64 limit = 2;
   // Number of documents to skip before starting to return resulting documents.
@@ -143,8 +139,6 @@ message DatabaseOptions {}
 
 // Collection requests modifying options.
 message CollectionOptions {
-  // Perform operation in the context of this transaction.
-  TransactionCtx tx_ctx = 1;
 }
 
 // Options that can be used to modify the transaction semantics.
@@ -152,8 +146,8 @@ message TransactionOptions {}
 
 // Contains ID which uniquely identifies transaction
 // This context is returned by BeginTransaction request and
-// should be passed in the subsequent requests in order to run
-// them in the context of the same transaction.
+// should be passed in the metadata (headers) of subsequent requests
+// in order to run them in the context of the same transaction.
 message TransactionCtx {
   // Unique for a single transactional request.
   string id = 1;
@@ -180,8 +174,6 @@ message BeginTransactionResponse {
 message CommitTransactionRequest {
   // Database name this transaction belongs to.
   string db = 1;
-  // Tigris transactional context with details about the transactions.
-  TransactionCtx tx_ctx = 2;
 }
 message CommitTransactionResponse {
   // Status of commit transaction operation.
@@ -192,8 +184,6 @@ message CommitTransactionResponse {
 message RollbackTransactionRequest {
   // Database name this transaction belongs to.
   string db = 1;
-  // Tigris transactional context with details about the transactions.
-  TransactionCtx tx_ctx = 2;
 }
 message RollbackTransactionResponse {
   // Status of rollback transaction operation.

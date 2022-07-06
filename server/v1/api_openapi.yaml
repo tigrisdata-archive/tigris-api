@@ -795,15 +795,11 @@ components:
             properties: {}
         CollectionOptions:
             type: object
-            properties:
-                tx_ctx:
-                    $ref: '#/components/schemas/TransactionCtx'
+            properties: {}
             description: Collection requests modifying options.
         CommitTransactionRequest:
             type: object
-            properties:
-                tx_ctx:
-                    $ref: '#/components/schemas/TransactionCtx'
+            properties: {}
             description: Commit transaction with the given ID
         CommitTransactionResponse:
             type: object
@@ -1141,8 +1137,6 @@ components:
         ReadRequestOptions:
             type: object
             properties:
-                tx_ctx:
-                    $ref: '#/components/schemas/TransactionCtx'
                 limit:
                     type: integer
                     description: Limit the number of documents returned by the read operation.
@@ -1216,9 +1210,7 @@ components:
             description: Has metadata related to the documents stored.
         RollbackTransactionRequest:
             type: object
-            properties:
-                tx_ctx:
-                    $ref: '#/components/schemas/TransactionCtx'
+            properties: {}
             description: Rollback transaction with the given ID
         RollbackTransactionResponse:
             type: object
@@ -1359,7 +1351,7 @@ components:
                 origin:
                     type: string
                     description: Serves as an internal identifier.
-            description: Contains ID which uniquely identifies transaction This context is returned by BeginTransaction request and should be passed in the subsequent requests in order to run them in the context of the same transaction.
+            description: Contains ID which uniquely identifies transaction This context is returned by BeginTransaction request and should be passed in the metadata (headers) of subsequent requests in order to run them in the context of the same transaction.
         TransactionOptions:
             type: object
             properties: {}
@@ -1395,9 +1387,7 @@ components:
                     description: an enum with value set as "updated".
         WriteOptions:
             type: object
-            properties:
-                tx_ctx:
-                    $ref: '#/components/schemas/TransactionCtx'
+            properties: {}
             description: Additional options to modify write requests.
         StreamingReadResponse:
             type: object
