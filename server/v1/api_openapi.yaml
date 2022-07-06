@@ -1280,9 +1280,8 @@ components:
                         type: string
                     description: Array of fields to project search query against
                 filter:
-                    type: string
+                    type: object
                     description: Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
-                    format: byte
                 facet:
                     type: object
                     description: Facet query to aggregate results on given fields
