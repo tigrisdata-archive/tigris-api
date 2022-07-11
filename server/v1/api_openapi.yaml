@@ -1015,19 +1015,19 @@ components:
                 avg:
                     type: number
                     description: Average of all values in a field. Only available for numeric fields
-                    format: float
+                    format: double
                 max:
-                    type: integer
+                    type: number
                     description: Maximum of all values in a field. Only available for numeric fields
-                    format: int64
+                    format: double
                 min:
-                    type: integer
+                    type: number
                     description: Minimum of all values in a field. Only available for numeric fields
-                    format: int64
+                    format: double
                 sum:
-                    type: integer
+                    type: number
                     description: Sum of all values in a field. Only available for numeric fields
-                    format: int64
+                    format: double
                 count:
                     type: integer
                     description: Total number of values in a field
@@ -1109,7 +1109,7 @@ components:
                     format: int32
                 size:
                     type: integer
-                    description: Number of results per page
+                    description: Maximum number of results per page
                     format: int32
             description: Pagination metadata for SearchResponse
         PublishRequest:
