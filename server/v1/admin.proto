@@ -34,6 +34,21 @@ message CreateNamespaceResponse{
   // An enum with value set as "created".
   string status = 2;
 }
+
+message NamespaceInfo{
+  // A unique namespace id.
+  int32 id = 1;
+  // A namespace name.
+  string name = 2;
+}
+
+message ListNamespacesRequest {
+}
+
+message ListNamespacesResponse {
+  repeated NamespaceInfo namespaces = 1;
+}
+
 service Admin {
   // Creates a new namespace, if it does not exist
   rpc createNamespace(CreateNamespaceRequest) returns 
@@ -44,6 +59,18 @@ service Admin {
     };
     option(openapi.v3.operation) = {
       summary: "Creates a namespace"
+      tags: "Namespace"
+    };
+  }
+
+  // List all namespace
+  rpc listNamespaces(ListNamespacesRequest) returns
+      (ListNamespacesResponse) {
+    option (google.api.http) = {
+      post : "/admin/v1/namespaces/list"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Lists all namespaces"
       tags: "Namespace"
     };
   }
