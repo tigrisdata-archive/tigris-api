@@ -351,12 +351,14 @@ message SearchRequest {
   bytes facet = 6;
   // Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`
   bytes sort = 7;
-  // Fetch specific fields from a document. Default is all
-  bytes fields = 8;
+  // Array of document field names to include in results. By default, all fields are included.
+  repeated string include_fields = 8;
+  // Array of document field names to exclude from results. `include_fields`, if specified, takes precedence over `exclude_fields`.
+  repeated string exclude_fields = 9;
   // Optionally can set the number of hits to be returned per page, default is 20.
-  int32 page_size = 9;
+  int32 page_size = 10;
   // Optionally can specify the page to retrieve. If page is set then only hits for this page is returned
-  int32 page = 10;
+  int32 page = 11;
 }
 
 // Response struct for search
