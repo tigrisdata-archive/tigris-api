@@ -1281,9 +1281,16 @@ components:
                     type: string
                     description: 'Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`'
                     format: byte
-                fields:
-                    type: object
-                    description: Fetch specific fields from a document. Default is all
+                include_fields:
+                    type: array
+                    items:
+                        type: string
+                    description: Array of document field names to include in results. By default, all fields are included.
+                exclude_fields:
+                    type: array
+                    items:
+                        type: string
+                    description: Array of document field names to exclude from results. `include_fields`, if specified, takes precedence over `exclude_fields`.
                 page_size:
                     type: integer
                     description: Optionally can set the number of hits to be returned per page, default is 20.
@@ -1292,6 +1299,8 @@ components:
                     type: integer
                     description: Optionally can specify the page to retrieve. If page is set then only hits for this page is returned
                     format: int32
+                fields:
+                    type: object
         SearchResponse:
             type: object
             properties:
