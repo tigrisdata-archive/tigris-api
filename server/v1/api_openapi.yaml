@@ -459,6 +459,78 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/databases/{db}/collections/{collection}/publish:
+        post:
+            tags:
+                - Collections
+            summary: Publish a message to a collection
+            operationId: Tigris_Publish
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/PublishRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PublishResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/databases/{db}/collections/{collection}/subscribe:
+        post:
+            tags:
+                - Collections
+            summary: Subscribe to a collection for a stream of messages
+            operationId: Tigris_Subscribe
+            parameters:
+                - name: db
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SubscribeRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StreamingSubscribeResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/databases/{db}/create:
         post:
             tags:
@@ -554,78 +626,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DropDatabaseResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/topic/{topic}/publish:
-        post:
-            tags:
-                - Topics
-            summary: Publish a message to a topic
-            operationId: Tigris_Publish
-            parameters:
-                - name: db
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: topic
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/PublishRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/PublishResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/topic/{topic}/subscribe:
-        post:
-            tags:
-                - Topics
-            summary: Subscribe to a topic for a stream of messages
-            operationId: Tigris_Subscribe
-            parameters:
-                - name: db
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: topic
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/SubscribeRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/SubscribeResponse'
                 default:
                     description: Default error response
                     content:
@@ -796,7 +796,13 @@ components:
                     $ref: '#/components/schemas/CollectionMetadata'
         CollectionMetadata:
             type: object
-            properties: {}
+            properties:
+                type:
+                    enum:
+                        - DOCUMENTS
+                        - MESSAGES
+                    type: string
+                    format: enum
         CollectionOptions:
             type: object
             properties: {}
@@ -835,6 +841,12 @@ components:
                     type: boolean
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
+                type:
+                    enum:
+                        - DOCUMENTS
+                        - MESSAGES
+                    type: string
+                    format: enum
         CreateOrUpdateCollectionResponse:
             type: object
             properties:
@@ -1125,16 +1137,29 @@ components:
             properties:
                 db:
                     type: string
-                topic:
+                collection:
                     type: string
-                message:
-                    type: string
-                    format: byte
+                messages:
+                    type: array
+                    items:
+                        type: object
+                options:
+                    $ref: '#/components/schemas/PublishRequestOptions'
+        PublishRequestOptions:
+            type: object
+            properties: {}
         PublishResponse:
             type: object
             properties:
+                metadata:
+                    $ref: '#/components/schemas/ResponseMetadata'
                 status:
                     type: string
+                keys:
+                    type: array
+                    items:
+                        type: string
+                        format: byte
         ReadRequest:
             type: object
             properties:
@@ -1355,8 +1380,13 @@ components:
             properties:
                 db:
                     type: string
-                topic:
+                collection:
                     type: string
+                options:
+                    $ref: '#/components/schemas/SubscribeRequestOptions'
+        SubscribeRequestOptions:
+            type: object
+            properties: {}
         SubscribeResponse:
             type: object
             properties:
@@ -1429,6 +1459,13 @@ components:
             properties:
                 result:
                     $ref: '#/components/schemas/EventsResponse'
+                error:
+                    $ref: '#/components/schemas/Error'
+        StreamingSubscribeResponse:
+            type: object
+            properties:
+                result:
+                    $ref: '#/components/schemas/SubscribeResponse'
                 error:
                     $ref: '#/components/schemas/Error'
         Status:
