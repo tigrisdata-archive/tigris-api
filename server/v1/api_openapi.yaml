@@ -782,6 +782,10 @@ components:
                 schema:
                     type: object
                     description: Collections schema
+                size:
+                    type: integer
+                    description: Collection size in bytes
+                    format: int64
         CollectionInfo:
             type: object
             properties:
@@ -795,15 +799,11 @@ components:
             properties: {}
         CollectionOptions:
             type: object
-            properties:
-                tx_ctx:
-                    $ref: '#/components/schemas/TransactionCtx'
+            properties: {}
             description: Collection requests modifying options.
         CommitTransactionRequest:
             type: object
-            properties:
-                tx_ctx:
-                    $ref: '#/components/schemas/TransactionCtx'
+            properties: {}
             description: Commit transaction with the given ID
         CommitTransactionResponse:
             type: object
@@ -903,6 +903,10 @@ components:
                 schema:
                     type: object
                     description: Collections schema
+                size:
+                    type: integer
+                    description: Collection size in bytes
+                    format: int64
             description: A detailed description about the collection. The description returns collection metadata and the schema.
         DescribeDatabaseRequest:
             type: object
@@ -923,6 +927,10 @@ components:
                     items:
                         $ref: '#/components/schemas/CollectionDescription'
                     description: A detailed description about all the collections. The description returns collection metadata and the schema.
+                size:
+                    type: integer
+                    description: Sum all database collections sizes
+                    format: int64
             description: A detailed description about the database and all associated collections. Description of the collection includes schema details as well.
         DropCollectionRequest:
             type: object
@@ -1015,19 +1023,19 @@ components:
                 avg:
                     type: number
                     description: Average of all values in a field. Only available for numeric fields
-                    format: float
+                    format: double
                 max:
-                    type: integer
+                    type: number
                     description: Maximum of all values in a field. Only available for numeric fields
-                    format: int64
+                    format: double
                 min:
-                    type: integer
+                    type: number
                     description: Minimum of all values in a field. Only available for numeric fields
-                    format: int64
+                    format: double
                 sum:
-                    type: integer
+                    type: number
                     description: Sum of all values in a field. Only available for numeric fields
-                    format: int64
+                    format: double
                 count:
                     type: integer
                     description: Total number of values in a field
@@ -1105,15 +1113,11 @@ components:
             properties:
                 current:
                     type: integer
-                    description: Current page of search results
-                    format: int32
-                total:
-                    type: integer
-                    description: Total pages in search results
+                    description: Number representing the current page of results
                     format: int32
                 size:
                     type: integer
-                    description: Number of results per page
+                    description: Maximum number of results per page
                     format: int32
             description: Pagination metadata for SearchResponse
         PublishRequest:
@@ -1145,8 +1149,6 @@ components:
         ReadRequestOptions:
             type: object
             properties:
-                tx_ctx:
-                    $ref: '#/components/schemas/TransactionCtx'
                 limit:
                     type: integer
                     description: Limit the number of documents returned by the read operation.
@@ -1220,9 +1222,7 @@ components:
             description: Has metadata related to the documents stored.
         RollbackTransactionRequest:
             type: object
-            properties:
-                tx_ctx:
-                    $ref: '#/components/schemas/TransactionCtx'
+            properties: {}
             description: Rollback transaction with the given ID
         RollbackTransactionResponse:
             type: object
@@ -1264,8 +1264,12 @@ components:
             properties:
                 found:
                     type: integer
-                    description: Total number of matches
+                    description: Total number of search results across all pages
                     format: int64
+                total_pages:
+                    type: integer
+                    description: Number representing the total pages of results
+                    format: int32
                 page:
                     $ref: '#/components/schemas/Page'
         SearchRequest:
@@ -1280,9 +1284,8 @@ components:
                         type: string
                     description: Array of fields to project search query against
                 filter:
-                    type: string
+                    type: object
                     description: Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
-                    format: byte
                 facet:
                     type: object
                     description: Facet query to aggregate results on given fields
@@ -1290,9 +1293,16 @@ components:
                     type: string
                     description: 'Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`'
                     format: byte
-                fields:
-                    type: object
-                    description: Fetch specific fields from a document. Default is all
+                include_fields:
+                    type: array
+                    items:
+                        type: string
+                    description: Array of document field names to include in results. By default, all fields are included.
+                exclude_fields:
+                    type: array
+                    items:
+                        type: string
+                    description: Array of document field names to exclude from results. `include_fields`, if specified, takes precedence over `exclude_fields`.
                 page_size:
                     type: integer
                     description: Optionally can set the number of hits to be returned per page, default is 20.
@@ -1301,6 +1311,8 @@ components:
                     type: integer
                     description: Optionally can specify the page to retrieve. If page is set then only hits for this page is returned
                     format: int32
+                fields:
+                    type: object
         SearchResponse:
             type: object
             properties:
@@ -1360,7 +1372,7 @@ components:
                 origin:
                     type: string
                     description: Serves as an internal identifier.
-            description: Contains ID which uniquely identifies transaction This context is returned by BeginTransaction request and should be passed in the subsequent requests in order to run them in the context of the same transaction.
+            description: Contains ID which uniquely identifies transaction This context is returned by BeginTransaction request and should be passed in the metadata (headers) of subsequent requests in order to run them in the context of the same transaction.
         TransactionOptions:
             type: object
             properties: {}
@@ -1396,9 +1408,7 @@ components:
                     description: an enum with value set as "updated".
         WriteOptions:
             type: object
-            properties:
-                tx_ctx:
-                    $ref: '#/components/schemas/TransactionCtx'
+            properties: {}
             description: Additional options to modify write requests.
         StreamingReadResponse:
             type: object

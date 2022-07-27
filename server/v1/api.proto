@@ -121,15 +121,11 @@ message Error {
 
 // Additional options to modify write requests.
 message WriteOptions {
-  // Perform operation in the context of this transaction.
-  TransactionCtx tx_ctx = 1;
 }
 
 // Options that can be used to modify the results, for example "limit" to control the number of documents
 // returned by the server.
 message ReadRequestOptions {
-  // Perform operation in the context of this transaction.
-  TransactionCtx tx_ctx = 1;
   // Limit the number of documents returned by the read operation.
   int64 limit = 2;
   // Number of documents to skip before starting to return resulting documents.
@@ -143,8 +139,6 @@ message DatabaseOptions {}
 
 // Collection requests modifying options.
 message CollectionOptions {
-  // Perform operation in the context of this transaction.
-  TransactionCtx tx_ctx = 1;
 }
 
 // Options that can be used to modify the transaction semantics.
@@ -152,8 +146,8 @@ message TransactionOptions {}
 
 // Contains ID which uniquely identifies transaction
 // This context is returned by BeginTransaction request and
-// should be passed in the subsequent requests in order to run
-// them in the context of the same transaction.
+// should be passed in the metadata (headers) of subsequent requests
+// in order to run them in the context of the same transaction.
 message TransactionCtx {
   // Unique for a single transactional request.
   string id = 1;
@@ -180,8 +174,6 @@ message BeginTransactionResponse {
 message CommitTransactionRequest {
   // Database name this transaction belongs to.
   string db = 1;
-  // Tigris transactional context with details about the transactions.
-  TransactionCtx tx_ctx = 2;
 }
 message CommitTransactionResponse {
   // Status of commit transaction operation.
@@ -192,8 +184,6 @@ message CommitTransactionResponse {
 message RollbackTransactionRequest {
   // Database name this transaction belongs to.
   string db = 1;
-  // Tigris transactional context with details about the transactions.
-  TransactionCtx tx_ctx = 2;
 }
 message RollbackTransactionResponse {
   // Status of rollback transaction operation.
@@ -361,12 +351,14 @@ message SearchRequest {
   bytes facet = 6;
   // Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`
   bytes sort = 7;
-  // Fetch specific fields from a document. Default is all
-  bytes fields = 8;
+  // Array of document field names to include in results. By default, all fields are included.
+  repeated string include_fields = 8;
+  // Array of document field names to exclude from results. `include_fields`, if specified, takes precedence over `exclude_fields`.
+  repeated string exclude_fields = 9;
   // Optionally can set the number of hits to be returned per page, default is 20.
-  int32 page_size = 9;
+  int32 page_size = 10;
   // Optionally can specify the page to retrieve. If page is set then only hits for this page is returned
-  int32 page = 10;
+  int32 page = 11;
 }
 
 // Response struct for search
@@ -404,30 +396,30 @@ message FacetCount {
 // Additional stats for faceted field
 message FacetStats {
   // Average of all values in a field. Only available for numeric fields
-  float avg = 1;
+  double avg = 1;
   // Maximum of all values in a field. Only available for numeric fields
-  int64 max = 2;
+  double max = 2;
   // Minimum of all values in a field. Only available for numeric fields
-  int64 min = 3;
+  double min = 3;
   // Sum of all values in a field. Only available for numeric fields
-  int64 sum = 4;
+  double sum = 4;
   // Total number of values in a field
   int64 count = 5;
 }
 
 message SearchMetadata {
-  // Total number of matches
+  // Total number of search results across all pages
   int64 found = 1;
-  Page page = 2;
+  // Number representing the total pages of results
+  int32 total_pages = 2;
+  Page page = 3;
 }
 
 // Pagination metadata for SearchResponse
 message Page {
-  // Current page of search results
+  // Number representing the current page of results
   int32 current = 1;
-  // Total pages in search results
-  int32 total = 2;
-  // Number of results per page
+  // Maximum number of results per page
   int32 size = 3;
 }
 
@@ -579,6 +571,9 @@ message DescribeDatabaseResponse {
   // A detailed description about all the collections.
   // The description returns collection metadata and the schema.
   repeated CollectionDescription collections = 3;
+
+  // Sum all database collections sizes
+  int64 size = 4;
 }
 
 // A detailed description about the collection.
@@ -592,6 +587,8 @@ message DescribeCollectionResponse {
 
   // Collections schema
   bytes schema = 3;
+  // Collection size in bytes
+  int64 size = 4;
 }
 
 message DatabaseDescription {
@@ -606,6 +603,8 @@ message CollectionDescription {
 
   // Collections schema
   bytes schema = 3;
+  // Collection size in bytes
+  int64 size = 4;
 }
 
 message DatabaseMetadata {
