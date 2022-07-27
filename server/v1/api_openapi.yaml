@@ -782,6 +782,10 @@ components:
                 schema:
                     type: object
                     description: Collections schema
+                size:
+                    type: integer
+                    description: Collection size in bytes
+                    format: int64
         CollectionInfo:
             type: object
             properties:
@@ -899,6 +903,10 @@ components:
                 schema:
                     type: object
                     description: Collections schema
+                size:
+                    type: integer
+                    description: Collection size in bytes
+                    format: int64
             description: A detailed description about the collection. The description returns collection metadata and the schema.
         DescribeDatabaseRequest:
             type: object
@@ -919,6 +927,10 @@ components:
                     items:
                         $ref: '#/components/schemas/CollectionDescription'
                     description: A detailed description about all the collections. The description returns collection metadata and the schema.
+                size:
+                    type: integer
+                    description: Sum all database collections sizes
+                    format: int64
             description: A detailed description about the database and all associated collections. Description of the collection includes schema details as well.
         DropCollectionRequest:
             type: object

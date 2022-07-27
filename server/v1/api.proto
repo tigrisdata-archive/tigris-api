@@ -571,6 +571,9 @@ message DescribeDatabaseResponse {
   // A detailed description about all the collections.
   // The description returns collection metadata and the schema.
   repeated CollectionDescription collections = 3;
+
+  // Sum all database collections sizes
+  int64 size = 4;
 }
 
 // A detailed description about the collection.
@@ -584,6 +587,8 @@ message DescribeCollectionResponse {
 
   // Collections schema
   bytes schema = 3;
+  // Collection size in bytes
+  int64 size = 4;
 }
 
 message DatabaseDescription {
@@ -598,6 +603,8 @@ message CollectionDescription {
 
   // Collections schema
   bytes schema = 3;
+  // Collection size in bytes
+  int64 size = 4;
 }
 
 message DatabaseMetadata {
