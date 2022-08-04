@@ -11,6 +11,8 @@ all: lint
 
 .PRECIOUS: ${PROTO_DIR}/%_openapi.yaml ${PROTO_DIR}/%.proto
 
+COMPONENTS = api health admin auth
+
 # Generate GRPC client/server, openapi spec, http server
 ${PROTO_DIR}/%_openapi.yaml ${GEN_DIR}/%.pb.go ${GEN_DIR}/%.pb.gw.go: ${PROTO_DIR}/%.proto
 	protoc -I. --openapi_out=${API_DIR} --openapi_opt=naming=proto,enum_type=string \
@@ -28,10 +30,10 @@ ${API_DIR}/client/${V}/%/http.go: ${PROTO_DIR}/%_openapi.yaml
 		-o ${API_DIR}/client/${V}/$(*F)/http.go \
 		${PROTO_DIR}/$(*F)_openapi.yaml
 
-generate: ${GEN_DIR}/api.pb.go ${GEN_DIR}/api.pb.gw.go ${PROTO_DIR}/api_openapi.yaml \
-${GEN_DIR}/health.pb.go ${GEN_DIR}/health.pb.gw.go ${PROTO_DIR}/health_openapi.yaml \
-${GEN_DIR}/admin.pb.go ${GEN_DIR}/admin.pb.gw.go ${PROTO_DIR}/admin_openapi.yaml \
-${GEN_DIR}/auth.pb.go ${GEN_DIR}/auth.pb.gw.go ${PROTO_DIR}/auth_openapi.yaml
+generate: \
+	$(COMPONENTS:%=$(GEN_DIR)/%.pb.go) \
+	$(COMPONENTS:%=$(GEN_DIR)/%.pb.gw.go) \
+	$(COMPONENTS:%=$(PROTO_DIR)/%_openapi.yaml)
 
 client: ${API_DIR}/client/${V}/api/http.go
 
