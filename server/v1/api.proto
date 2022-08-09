@@ -396,13 +396,13 @@ message FacetCount {
 // Additional stats for faceted field
 message FacetStats {
   // Average of all values in a field. Only available for numeric fields
-  double avg = 1;
+  optional double avg = 1;
   // Maximum of all values in a field. Only available for numeric fields
-  double max = 2;
+  optional double max = 2;
   // Minimum of all values in a field. Only available for numeric fields
-  double min = 3;
+  optional double min = 3;
   // Sum of all values in a field. Only available for numeric fields
-  double sum = 4;
+  optional double sum = 4;
   // Total number of values in a field
   int64 count = 5;
 }
