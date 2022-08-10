@@ -1,0 +1,50 @@
+// Copyright 2022 Tigris Data, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package tigrisdata.auth.v1;
+
+import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
+
+option go_package = "github.com/tigrisdata/tigris/api";
+option java_package = "com.tigrisdata.db.api.v1.grpc";
+
+message GetAccessTokenRequest{
+  // A valid refresh token.
+  string refresh_token = 1;
+}
+
+message GetAccessTokenResponse{
+  // An access token.
+  string access_token = 1;
+  // Refresh token.
+  string refresh_token = 2;
+}
+
+service Auth {
+  // Gets an access token.
+  rpc getAccessToken(GetAccessTokenRequest) returns
+      (GetAccessTokenResponse) {
+    option (google.api.http) = {
+      post : "/oauth/token"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Gets an access token"
+      tags: "auth"
+    };
+  }
+}

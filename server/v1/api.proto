@@ -396,13 +396,13 @@ message FacetCount {
 // Additional stats for faceted field
 message FacetStats {
   // Average of all values in a field. Only available for numeric fields
-  double avg = 1;
+  optional double avg = 1;
   // Maximum of all values in a field. Only available for numeric fields
-  double max = 2;
+  optional double max = 2;
   // Minimum of all values in a field. Only available for numeric fields
-  double min = 3;
+  optional double min = 3;
   // Sum of all values in a field. Only available for numeric fields
-  double sum = 4;
+  optional double sum = 4;
   // Total number of values in a field
   int64 count = 5;
 }
@@ -481,6 +481,7 @@ message CreateOrUpdateCollectionRequest {
   bytes schema = 3;
   bool only_create = 4;
   CollectionOptions options = 5;
+  CollectionType type = 6;
 }
 
 message CreateOrUpdateCollectionResponse {
@@ -611,6 +612,12 @@ message DatabaseMetadata {
 }
 
 message CollectionMetadata {
+  CollectionType type = 1;
+}
+
+enum CollectionType {
+  DOCUMENTS = 0;
+  MESSAGES = 1;
 }
 
 message EventsRequestOptions {
@@ -647,19 +654,29 @@ message GetInfoResponse {
   Error error = 2;
 }
 
+message PublishRequestOptions {
+}
+
 message PublishRequest {
   string db = 1;
-  string topic = 2;
-  bytes message = 3;
+  string collection = 2;
+  repeated bytes messages = 3;
+  PublishRequestOptions options = 4;
 }
 
 message PublishResponse {
-  string status = 1;
+  ResponseMetadata metadata = 1;
+  string status = 2;
+  repeated bytes keys = 3;
+}
+
+message SubscribeRequestOptions {
 }
 
 message SubscribeRequest {
   string db = 1;
-  string topic = 2;
+  string collection = 2;
+  SubscribeRequestOptions options = 3;
 }
 
 message SubscribeResponse {
@@ -894,23 +911,23 @@ service Tigris {
 
   rpc Publish(PublishRequest) returns (PublishResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/topic/{topic}/publish"
+      post : "/api/v1/databases/{db}/collections/{collection}/publish"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Publish a message to a topic"
-      tags: "Topics"
+      summary: "Publish a message to a collection"
+      tags: "Collections"
     };
   }
 
   rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/topic/{topic}/subscribe"
+      post : "/api/v1/databases/{db}/collections/{collection}/subscribe"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Subscribe to a topic for a stream of messages"
-      tags: "Topics"
+      summary: "Subscribe to a collection for a stream of messages"
+      tags: "Collections"
     };
   }
 }
