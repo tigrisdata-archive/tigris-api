@@ -36,7 +36,7 @@ paths:
             tags:
                 - Databases
             summary: List Collections
-            description: List all collections in the database passed in the request.
+            description: List all the collections present in the database passed in the request.
             operationId: Tigris_ListCollections
             parameters:
                 - name: db
@@ -70,8 +70,12 @@ paths:
                 - Collections
             summary: Create or update a collection
             description: |-
-                Creates a new collection or atomically upgrades the collection to the new schema changes in the database
-                 passed in the request.
+                Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
+                 Schema changes are applied atomically and immediately without any downtime.
+                 This endpoint allows the creation of a collection based on the type. <p></p>
+                 There are two collection types supported by Tigris:
+                    <li> DOCUMENTS: Support CRUD APIs.
+                    <li> MESSAGES: Supports Pub/Sub APIs.
             operationId: Tigris_CreateOrUpdateCollection
             parameters:
                 - name: db
@@ -110,7 +114,7 @@ paths:
             tags:
                 - Collections
             summary: Describe Collection
-            description: Describe collection describes the information related to collection.
+            description: Returns the information related to the collection. This can be used to retrieve the schema or size of the collection.
             operationId: Tigris_DescribeCollection
             parameters:
                 - name: db
@@ -230,7 +234,13 @@ paths:
             tags:
                 - Documents
             summary: Read Documents
-            description: Reads range of documents from the collection using the condition in the filter.
+            description: |-
+                Reads a range of documents from the collection. Tigris does not require you to
+                 index any fields and automatically index all the fields which means you can filter by any field in the document.
+                 An empty filter will trigger reading all the documents inside this collection. The API supports pagination that
+                 can be used by passing `Limit/Skip` parameters. The `skip` parameter skips the number of documents from the start and
+                 the `limit` parameter is used to specify the number of documents to read. You can find more detailed documentation
+                 of the Read API <a href="https://docs.tigrisdata.com/overview/query" title="here">here</a>.
             operationId: Tigris_Read
             parameters:
                 - name: db
@@ -308,7 +318,11 @@ paths:
             tags:
                 - Documents
             summary: Search Documents
-            description: Searches a collection for documents matching the query
+            description: |-
+                Searches a collection for the documents matching the query. A search can be a term search or a phrase search.
+                 Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
+                 You can also perform a faceted search by passing the fields in the facet parameter.
+                 You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
             operationId: Tigris_Search
             parameters:
                 - name: db
@@ -386,7 +400,7 @@ paths:
             tags:
                 - Collections
             summary: Drop Collection
-            description: Drop the collection and all its documents in the database passed in the request.
+            description: Drop the collection inside this database. This API deletes all of the documents inside this collection and any metadata associated with it.
             operationId: Tigris_DropCollection
             parameters:
                 - name: db
@@ -426,8 +440,9 @@ paths:
                 - Events
             summary: Events Stream
             description: |-
-                Provides real time events for the changes made into the database. Streams by default publish all events for a database
-                 but can be restricted to a specific collection. These events can be useful to build event-driven applications.
+                Stream real-time events for mutations made to the collections in the database. Each stream will have a transaction
+                 identifier attached to it and will have a boolean flag “last” set to the last event of the transaction which will be useful
+                 if a transaction performed more than one operation in the collection.
             operationId: Tigris_Events
             parameters:
                 - name: db
@@ -462,8 +477,9 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/publish:
         post:
             tags:
-                - Collections
+                - Topics
             summary: Publish a message to a collection
+            description: Publish API is use to publish messages to the collection.
             operationId: Tigris_Publish
             parameters:
                 - name: db
@@ -498,8 +514,9 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/subscribe:
         post:
             tags:
-                - Collections
+                - Topics
             summary: Subscribe to a collection for a stream of messages
+            description: Subscribe is used to subscribe to the collection and receive messages from it.
             operationId: Tigris_Subscribe
             parameters:
                 - name: db
@@ -536,7 +553,7 @@ paths:
             tags:
                 - Databases
             summary: Create Database
-            description: Creates a new database and returns a AlreadyExists error if the database already exists.
+            description: Creates a new database. Returns an AlreadyExists error with a status code 409 if the database already exists.
             operationId: Tigris_CreateDatabase
             parameters:
                 - name: db
@@ -570,8 +587,8 @@ paths:
                 - Databases
             summary: Describe Database
             description: |-
-                Describe database describes the information related to database along
-                 with all the collections inside database.
+                This API returns information related to the database along with all the collections inside the database.
+                 This can be used to retrieve the size of the database or to retrieve schemas and the size of all the collections present in this database.
             operationId: Tigris_DescribeDatabase
             parameters:
                 - name: db
@@ -604,7 +621,7 @@ paths:
             tags:
                 - Databases
             summary: Drop Database
-            description: Drop database deletes all the collections in the database along with all it documents.
+            description: Drop database deletes all the collections in this database along with all of the documents, and associated metadata for these collections.
             operationId: Tigris_DropDatabase
             parameters:
                 - name: db
@@ -839,6 +856,7 @@ components:
                     description: 'Schema of the documents in this collection. The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>. <p></p>The following is an schema example: `{  "title": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "integer"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 100    },    "balance": {      "description": "User account balance",      "type": "number"    }  },  "primary_key": ["id"] }`'
                 only_create:
                     type: boolean
+                    description: If set to true then the update schema request to the collection will fail by returning a conflict with HTTP Status code 409. The default is false.
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
                 type:
@@ -846,6 +864,7 @@ components:
                         - DOCUMENTS
                         - MESSAGES
                     type: string
+                    description: 'Type of the collection. <li> DOCUMENTS: Support CRUD APIs. <li> MESSAGES: Supports Pub/Sub APIs.'
                     format: enum
         CreateOrUpdateCollectionResponse:
             type: object
@@ -914,12 +933,12 @@ components:
                     $ref: '#/components/schemas/CollectionMetadata'
                 schema:
                     type: object
-                    description: Collections schema
+                    description: Schema of this collection.
                 size:
                     type: integer
-                    description: Collection size in bytes
+                    description: The size of this collection in bytes.
                     format: int64
-            description: A detailed description about the collection. The description returns collection metadata and the schema.
+            description: A detailed description of the collection. The description returns collection metadata and the schema.
         DescribeDatabaseRequest:
             type: object
             properties:
@@ -941,9 +960,9 @@ components:
                     description: A detailed description about all the collections. The description returns collection metadata and the schema.
                 size:
                     type: integer
-                    description: Sum all database collections sizes
+                    description: Sum of all the collections sizes present in this database
                     format: int64
-            description: A detailed description about the database and all associated collections. Description of the collection includes schema details as well.
+            description: A detailed description of the database and all the associated collections. Description of the collection includes schema details as well.
         DropCollectionRequest:
             type: object
             properties:
@@ -1165,7 +1184,7 @@ components:
             properties:
                 filter:
                     type: object
-                    description: 'Returns documents matching this filter. A filter can simply be key, value where key is the field name and value would be the value for this field. Or a filter can be logical where two or more fields can be logically joined using $or and $and. A few examples of filter: <li> To read a user document where the id has a value 1: ```{"id": 1 }``` <li> To read all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`'
+                    description: 'Returns documents matching this filter. A filter can simply be a key, value pair where a key is the field name and the value would be the value for this field. Tigris also allows complex filtering by passing logical expressions. Logical filters are applied on two or more fields using `$or` and `$and`. A few examples of filters: <li> To read a user document where the id has a value 1: ```{"id": 1 }``` <li> To read all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}` The detailed documentation of the filter is <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.'
                 fields:
                     type: object
                     description: To read specific fields from a document. Default is all.
@@ -1313,7 +1332,7 @@ components:
                     description: Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
                 facet:
                     type: object
-                    description: Facet query to aggregate results on given fields
+                    description: 'Facet query to aggregate results on given fields. The field name for the facet search can be passed like this `{"brand": { "size": 10 }}` where the size controls the total facets for this field.'
                 sort:
                     type: string
                     description: 'Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`'
@@ -1481,12 +1500,14 @@ tags:
     - name: Admin
       description: APIs to manage or get more information about the server.
     - name: Collections
-      description: APIs that can used to manage collections.
+      description: The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents.
     - name: Databases
-      description: APIs that can used to manage databases. A single database can have one or more collections.
+      description: The Databases section provide APIs that can be used to manage databases. A single database can have one or more collections.
     - name: Documents
-      description: APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
-    - name: Streams
-      description: APIs that provide real-time events for writes made to collections in the database.
+      description: The Documents section provide APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
+    - name: Events
+      description: Real time events for the changes made into the collection.
+    - name: Topics
+      description: Built-in event streaming to support Pub/Sub APIs. This functionality is enabled for the “Messages” collection type. This type of collection exposes two endpoints Publish and Subscribe which enable building event-driven applications. Tigris guarantees total ordering of events which eliminates the need of managing any partition level metadata.
     - name: Transactions
-      description: APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
+      description: Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability.
