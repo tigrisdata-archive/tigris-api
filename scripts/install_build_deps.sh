@@ -29,5 +29,5 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 		brew install protobuf
 	fi
 else
-	sudo apt-get install -y protobuf-compiler
+	sudo snap install protobuf --classic
 fi
