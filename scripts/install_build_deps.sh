@@ -24,10 +24,31 @@ go install github.com/google/gnostic/cmd/protoc-gen-openapi@v0 #generate openapi
 go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1 #generate go http client
 go install github.com/mikefarah/yq/v4@latest # used to fix OpenAPI spec in scripts/fix_openapi.sh
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
+ARCH=$(uname -m)
+OS=$(uname -s)
+PROTO_VERSION=3.15.8
+PB_REL="https://github.com/protocolbuffers/protobuf/releases"
+
+if [[ "$OS" == "Darwin" ]]; then
 	if command -v brew > /dev/null 2>&1; then
 		brew install protobuf
 	fi
 else
-	sudo snap install protobuf --classic
+	case "${OS}-${ARCH}" in
+		"Linux-aarch64")
+			RELEASE=protoc-$PROTO_VERSION-linux-aarch_64.zip
+			;;
+		"Linux-x86_64")
+			RELEASE=protoc-$PROTO_VERSION-linux-x86_64.zip
+			;;
+		*)
+			echo "Unsupported architecture ${ARCH} or operating system ${OS}"
+			exit 1
+	esac
+
+	DOWNLOAD_URL=$PB_REL/download/v$PROTO_VERSION/$RELEASE
+	echo "Fetching release ${DOWNLOAD_URL}"
+	curl -LO $DOWNLOAD_URL
+	unzip $RELEASE -d "$HOME/.local"
+	export PATH="$PATH:$HOME/.local/bin"
 fi
