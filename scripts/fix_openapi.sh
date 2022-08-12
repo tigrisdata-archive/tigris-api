@@ -121,6 +121,7 @@ yq_fix_object ReadRequest fields
 yq_fix_object ReadResponse data
 yq_fix_object SearchRequest fields
 yq_fix_object SearchRequest facet
+yq_fix_object SearchRequest sort
 yq_fix_object SearchHit data
 yq_fix_object CreateOrUpdateCollectionRequest schema
 yq_fix_object StreamEvent data
