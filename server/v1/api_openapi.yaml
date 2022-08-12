@@ -1334,9 +1334,8 @@ components:
                     type: object
                     description: 'Facet query to aggregate results on given fields. The field name for the facet search can be passed like this `{"brand": { "size": 10 }}` where the size controls the total facets for this field.'
                 sort:
-                    type: string
+                    type: object
                     description: 'Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`'
-                    format: byte
                 include_fields:
                     type: array
                     items:
