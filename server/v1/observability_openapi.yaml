@@ -54,13 +54,17 @@ components:
         QueryTimeSeriesMetricsRequest:
             type: object
             properties:
+                db:
+                    type: string
+                collection:
+                    type: string
                 from:
                     type: integer
                     format: int64
                 to:
                     type: integer
                     format: int64
-                query:
+                metric_name:
                     type: string
         QueryTimeSeriesMetricsResponse:
             type: object

@@ -23,9 +23,11 @@ option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
 message QueryTimeSeriesMetricsRequest {
-  int64 from = 1;
-  int64 to = 2;
-  string query = 3;
+  string db = 1;
+  string collection = 2;
+  int64 from = 3;
+  int64 to = 4;
+  string metric_name = 5;
 }
 
 message QueryTimeSeriesMetricsResponse {
