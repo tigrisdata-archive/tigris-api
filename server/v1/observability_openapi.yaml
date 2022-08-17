@@ -66,6 +66,24 @@ components:
                     format: int64
                 metric_name:
                     type: string
+                space_aggregation:
+                    enum:
+                        - AVG
+                        - MIN
+                        - MAX
+                        - SUM
+                    type: string
+                    format: enum
+                space_aggregated_by:
+                    type: array
+                    items:
+                        type: string
+                function:
+                    enum:
+                        - RATE
+                        - COUNT
+                    type: string
+                    format: enum
         QueryTimeSeriesMetricsResponse:
             type: object
             properties:

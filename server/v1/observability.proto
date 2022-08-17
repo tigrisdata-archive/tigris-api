@@ -28,6 +28,21 @@ message QueryTimeSeriesMetricsRequest {
   int64 from = 3;
   int64 to = 4;
   string metric_name = 5;
+  MetricQuerySpaceAggregation space_aggregation = 6;
+  repeated string space_aggregated_by = 7;
+  MetricQueryFunction function = 8;
+}
+
+enum MetricQueryFunction {
+  RATE = 0;
+  COUNT = 1;
+}
+
+enum MetricQuerySpaceAggregation {
+  AVG = 0;
+  MIN = 1;
+  MAX = 2;
+  SUM = 3;
 }
 
 message QueryTimeSeriesMetricsResponse {
