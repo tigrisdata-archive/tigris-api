@@ -34,7 +34,7 @@ option (openapi.v3.document) = {
     }
   }
   tags: [{
-    name: "Admin"
+    name: "Info"
     description: "APIs to manage or get more information about the server."
   }, {
     name: "Databases"
@@ -929,7 +929,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Information about the server"
-      tags: "Admin"
+      tags: "Info"
     };
   }
 

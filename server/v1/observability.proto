@@ -22,6 +22,38 @@ import "openapiv3/annotations.proto";
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
+
+option (openapi.v3.document) = {
+  info: {
+    title: "Observability API Reference"
+    version: "0.0.1"
+    description: "\n## Overview\nThis section is organized around Tigris observability HTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
+    license: {
+      name: "Apache License"
+      url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
+    }
+  }
+  tags: [{
+    name: "metrics"
+    description: "Tigris supports pluggable observability providers. The metrics section of API provides way to query Tigris metrics"
+  }]
+  components: {
+    security_schemes: {
+      additional_properties: [
+        {
+          name: "BearerAuth";
+          value: {
+            security_scheme: {
+              type: "http";
+              scheme: "bearer";
+            }
+          }
+        }
+      ]
+    }
+  }
+};
+
 message QueryTimeSeriesMetricsRequest {
   string db = 1;
   string collection = 2;
@@ -66,7 +98,7 @@ service Observability {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Queries time series metrics"
+      summary: "Queries time series metrics."
       tags: "metrics"
     };
   }

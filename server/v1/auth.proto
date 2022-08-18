@@ -22,6 +22,38 @@ import "openapiv3/annotations.proto";
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
+
+option (openapi.v3.document) = {
+  info: {
+    title: "Authorization API Reference"
+    version: "0.0.1"
+    description: "\n## Overview\nThis section is organized around Tigris authorization HTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
+    license: {
+      name: "Apache License"
+      url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
+    }
+  }
+  tags: [{
+    name: "auth"
+    description: "Tigris supports pluggable oauth provider. The auth section of API provides open authorization (OAuth 2.0) APIs"
+  }]
+  components: {
+    security_schemes: {
+      additional_properties: [
+        {
+          name: "BearerAuth";
+          value: {
+            security_scheme: {
+              type: "http";
+              scheme: "bearer";
+            }
+          }
+        }
+      ]
+    }
+  }
+};
+
 message GetAccessTokenRequest{
   // A valid refresh token.
   string refresh_token = 1;
@@ -43,7 +75,7 @@ service Auth {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Gets an access token"
+      summary: "Gets an access token using refresh token."
       tags: "auth"
     };
   }

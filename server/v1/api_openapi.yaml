@@ -757,7 +757,7 @@ paths:
     /api/v1/info:
         get:
             tags:
-                - Admin
+                - Info
             summary: Information about the server
             description: Provides the information about the server. This information includes returning the server version, etc.
             operationId: Tigris_GetInfo
@@ -1496,8 +1496,6 @@ components:
             type: http
             scheme: bearer
 tags:
-    - name: Admin
-      description: APIs to manage or get more information about the server.
     - name: Collections
       description: The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents.
     - name: Databases
@@ -1506,6 +1504,8 @@ tags:
       description: The Documents section provide APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
     - name: Events
       description: Real time events for the changes made into the collection.
+    - name: Info
+      description: APIs to manage or get more information about the server.
     - name: Topics
       description: Built-in event streaming to support Pub/Sub APIs. This functionality is enabled for the “Messages” collection type. This type of collection exposes two endpoints Publish and Subscribe which enable building event-driven applications. Tigris guarantees total ordering of events which eliminates the need of managing any partition level metadata.
     - name: Transactions

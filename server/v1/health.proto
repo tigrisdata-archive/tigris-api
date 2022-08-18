@@ -13,11 +13,31 @@
 // limitations under the License.
 
 syntax = "proto3";
+
 import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
+
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
+option (openapi.v3.document) = {
+  info: {
+    title: "HealthCheck API Reference"
+    version: "0.0.1"
+    description: "\n## Overview\nThis section is organized around HTTP healthcheck APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
+    license: {
+      name: "Apache License"
+      url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
+    }
+  }
+  tags: [{
+    name: "healthcheck"
+    description: "APIs to perform health check."
+  }]
+};
+
 message HealthCheckInput {}
+
 message HealthCheckResponse {
   string response = 1;
 }
@@ -26,6 +46,10 @@ service HealthAPI {
   rpc Health(HealthCheckInput) returns (HealthCheckResponse) {
     option (google.api.http) = {
       get : "/api/v1/health"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Liveliness healthcheck"
+      tags: "healthcheck"
     };
   }
 }

@@ -2,7 +2,13 @@
 # https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
 openapi: 3.0.3
 info:
-    title: Observability API
+    title: Observability API Reference
+    description: |4-
+        ## Overview
+        This section is organized around Tigris observability HTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes.
+    license:
+        name: Apache License
+        url: https://github.com/tigrisdata/tigris/blob/main/LICENSE
     version: 0.0.1
 paths:
     /observability/v1/metrics/timeseries/query:
@@ -10,7 +16,7 @@ paths:
             tags:
                 - Observability
                 - metrics
-            summary: Queries time series metrics
+            summary: Queries time series metrics.
             description: Queries time series metrics
             operationId: Observability_QueryTimeSeriesMetrics
             requestBody:
@@ -115,5 +121,11 @@ components:
                         $ref: '#/components/schemas/GoogleProtobufAny'
                     description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
             description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    securitySchemes:
+        BearerAuth:
+            type: http
+            scheme: bearer
 tags:
     - name: Observability
+    - name: metrics
+      description: Tigris supports pluggable observability providers. The metrics section of API provides way to query Tigris metrics
