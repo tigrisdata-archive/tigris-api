@@ -11,13 +11,96 @@ info:
         url: https://github.com/tigrisdata/tigris/blob/main/LICENSE
     version: 0.0.1
 paths:
+    /oauth/applications/create:
+        post:
+            tags:
+                - Auth
+                - application
+            summary: Creates the application.
+            description: Create an application.
+            operationId: Auth_CreateApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /oauth/applications/delete:
+        delete:
+            tags:
+                - Auth
+                - application
+            summary: Creates the application.
+            description: Delete an application.
+            operationId: Auth_DeleteApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteApplicationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /oauth/applications/list:
+        post:
+            tags:
+                - Auth
+                - application
+            summary: List applications.
+            description: Lists all application visible to requesting actor.
+            operationId: Auth_ListApplications
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListApplicationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListApplicationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /oauth/token:
         post:
             tags:
                 - Auth
                 - auth
-            summary: Gets an access token using refresh token.
-            description: Gets an access token.
+            summary: 'Gets an access token using refresh token. Supports two grant_type: [refresh_token, client_credentials] - when refresh_token is used only refresh_token as request is required, for the client_credentials [client_id, client_secret] are required'
+            description: |-
+                Gets an access token.
+                 supports two grant_type: [refresh_token, client_credentials]
             operationId: Auth_GetAccessToken
             requestBody:
                 content:
@@ -40,12 +123,75 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
+        Application:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Generated client id
+                name:
+                    type: string
+                    description: A human readable app name
+                description:
+                    type: string
+                    description: A human readable app description
+                secret:
+                    type: string
+                    description: Generated app secret
+                created_at:
+                    type: integer
+                    description: Created at
+                    format: int64
+                created_by:
+                    type: string
+                    description: Created by
+            description: An user application
+        CreateApplicationRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: A human readable app name
+                description:
+                    type: string
+                    description: A human readable app description
+            description: Request creation of user application
+        CreateApplicationResponse:
+            type: object
+            properties:
+                created_application:
+                    $ref: '#/components/schemas/Application'
+            description: CreateApplication returns created application
+        DeleteApplicationResponse:
+            type: object
+            properties:
+                deleted:
+                    type: boolean
+            description: DeleteApplication returns the flag to convey if application was deleted
+        DeleteApplicationsRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+            description: Request deletion of an application
         GetAccessTokenRequest:
             type: object
             properties:
+                grant_type:
+                    enum:
+                        - REFRESH_TOKEN
+                        - CLIENT_CREDENTIALS
+                    type: string
+                    format: enum
                 refresh_token:
                     type: string
-                    description: A valid refresh token.
+                    description: 'case: refresh_token: A valid refresh token'
+                client_id:
+                    type: string
+                    description: 'case: client_credentials: A valid credentials (client_id, client_secret, audience)'
+                client_secret:
+                    type: string
+            description: Requests the access token by specifying grant_type:refresh_token & refresh_token or grant_type:client_credentials & [client_id, client_secret]
         GetAccessTokenResponse:
             type: object
             properties:
@@ -55,6 +201,7 @@ components:
                 refresh_token:
                     type: string
                     description: Refresh token.
+            description: GetAccessToken returns response containing access_token and optionally refresh_token
         GoogleProtobufAny:
             type: object
             properties:
@@ -63,6 +210,18 @@ components:
                     description: The type of the serialized message.
             additionalProperties: true
             description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        ListApplicationsRequest:
+            type: object
+            properties: {}
+            description: Request listing of all the application those are visible to requesting actor
+        ListApplicationsResponse:
+            type: object
+            properties:
+                applications:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Application'
+            description: ListApplication returns one or more visible application to user
         Status:
             type: object
             properties:
@@ -85,5 +244,7 @@ components:
             scheme: bearer
 tags:
     - name: Auth
+    - name: application
+      description: Tigris supports application based authentication. This section provides API to manage user applications
     - name: auth
       description: Tigris supports pluggable oauth provider. The auth section of API provides open authorization (OAuth 2.0) APIs

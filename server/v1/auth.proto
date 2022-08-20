@@ -36,7 +36,11 @@ option (openapi.v3.document) = {
   tags: [{
     name: "auth"
     description: "Tigris supports pluggable oauth provider. The auth section of API provides open authorization (OAuth 2.0) APIs"
-  }]
+  },
+    {
+      name: "application"
+      description: "Tigris supports application based authentication. This section provides API to manage user applications"
+    }]
   components: {
     security_schemes: {
       additional_properties: [
@@ -54,11 +58,28 @@ option (openapi.v3.document) = {
   }
 };
 
+// Requests the access token by specifying
+// grant_type:refresh_token & refresh_token
+// or
+// grant_type:client_credentials & [client_id, client_secret]
 message GetAccessTokenRequest{
-  // A valid refresh token.
-  string refresh_token = 1;
+  GrantType grant_type = 1;
+  // case: refresh_token: A valid refresh token
+  string refresh_token = 2;
+
+  // case: client_credentials: A valid credentials (client_id, client_secret,
+  // audience)
+  string client_id = 3;
+  string client_secret = 4;
 }
 
+enum GrantType{
+  REFRESH_TOKEN = 0;
+  CLIENT_CREDENTIALS = 1;
+}
+
+// GetAccessToken returns response containing access_token and optionally
+// refresh_token
 message GetAccessTokenResponse{
   // An access token.
   string access_token = 1;
@@ -66,8 +87,57 @@ message GetAccessTokenResponse{
   string refresh_token = 2;
 }
 
+// Request creation of user application
+message CreateApplicationRequest {
+  // A human readable app name
+  string name = 1;
+  // A human readable app description
+  string description = 2;
+}
+
+// CreateApplication returns created application
+message CreateApplicationResponse {
+  Application created_application = 1;
+}
+
+// An user application
+message Application {
+  // Generated client id
+  string id = 1;
+  // A human readable app name
+  string name = 2;
+  // A human readable app description
+  string description = 3;
+  // Generated app secret
+  string secret = 4;
+  // Created at
+  int64 created_at = 5;
+  // Created by
+  string created_by = 6;
+}
+
+// Request listing of all the application those are visible to requesting actor
+message ListApplicationsRequest {
+}
+
+// ListApplication returns one or more visible application to user
+message ListApplicationsResponse {
+  repeated Application applications = 1;
+}
+
+// Request deletion of an application
+message DeleteApplicationsRequest {
+  string id = 1;
+}
+
+// DeleteApplication returns the flag to convey if application was deleted
+message DeleteApplicationResponse{
+  bool deleted = 1;
+}
+
 service Auth {
   // Gets an access token.
+  // supports two grant_type: [refresh_token, client_credentials]
   rpc getAccessToken(GetAccessTokenRequest) returns
       (GetAccessTokenResponse) {
     option (google.api.http) = {
@@ -75,8 +145,47 @@ service Auth {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Gets an access token using refresh token."
+      summary: "Gets an access token using refresh token. Supports two grant_type: [refresh_token, client_credentials] - when refresh_token is used only refresh_token as request is required, for the client_credentials [client_id, client_secret] are required"
       tags: "auth"
+    };
+  }
+
+  // Create an application.
+  rpc createApplication(CreateApplicationRequest) returns
+      (CreateApplicationResponse) {
+    option (google.api.http) = {
+      post : "/oauth/applications/create"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Creates the application."
+      tags: "application"
+    };
+  }
+
+  // Delete an application.
+  rpc deleteApplication(DeleteApplicationsRequest) returns
+      (DeleteApplicationResponse) {
+    option (google.api.http) = {
+      delete : "/oauth/applications/delete"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Creates the application."
+      tags: "application"
+    };
+  }
+
+  // Lists all application visible to requesting actor.
+  rpc listApplications(ListApplicationsRequest) returns
+      (ListApplicationsResponse) {
+    option (google.api.http) = {
+      post : "/oauth/applications/list"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "List applications."
+      tags: "application"
     };
   }
 }
