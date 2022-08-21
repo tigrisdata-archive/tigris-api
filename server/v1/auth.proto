@@ -200,8 +200,8 @@ service Auth {
   }
 
   // RotateApplicationRequest returns the new application with rotated secret
-  rpc rotateApplicationSecret(ListApplicationsRequest) returns
-      (ListApplicationsResponse) {
+  rpc rotateApplicationSecret(RotateApplicationSecretRequest) returns
+      (RotateApplicationSecretResponse) {
     option (google.api.http) = {
       post : "/oauth/applications/rotate"
       body : "*"

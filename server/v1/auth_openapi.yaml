@@ -104,7 +104,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/ListApplicationsRequest'
+                            $ref: '#/components/schemas/RotateApplicationSecretRequest'
                 required: true
             responses:
                 "200":
@@ -112,7 +112,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ListApplicationsResponse'
+                                $ref: '#/components/schemas/RotateApplicationSecretResponse'
                 default:
                     description: Default error response
                     content:
@@ -249,6 +249,18 @@ components:
                     items:
                         $ref: '#/components/schemas/Application'
             description: ListApplication returns one or more visible application to user
+        RotateApplicationSecretRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+            description: Request rotation of an application secret
+        RotateApplicationSecretResponse:
+            type: object
+            properties:
+                application:
+                    $ref: '#/components/schemas/Application'
+            description: RotateApplicationRequest returns the new application with rotated secret
         Status:
             type: object
             properties:
