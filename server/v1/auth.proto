@@ -135,6 +135,16 @@ message DeleteApplicationResponse{
   bool deleted = 1;
 }
 
+// Request rotation of an application secret
+message RotateApplicationSecretRequest {
+  string id = 1;
+}
+
+// RotateApplicationRequest returns the new application with rotated secret
+message RotateApplicationSecretResponse{
+  Application application = 1;
+}
+
 service Auth {
   // Gets an access token.
   // supports two grant_type: [refresh_token, client_credentials]
@@ -185,6 +195,19 @@ service Auth {
     };
     option(openapi.v3.operation) = {
       summary: "List applications."
+      tags: "application"
+    };
+  }
+
+  // RotateApplicationRequest returns the new application with rotated secret
+  rpc rotateApplicationSecret(ListApplicationsRequest) returns
+      (ListApplicationsResponse) {
+    option (google.api.http) = {
+      post : "/oauth/applications/rotate"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Rotates the application secret."
       tags: "application"
     };
   }

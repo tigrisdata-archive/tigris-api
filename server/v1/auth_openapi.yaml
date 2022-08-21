@@ -92,6 +92,33 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /oauth/applications/rotate:
+        post:
+            tags:
+                - Auth
+                - application
+            summary: Rotates the application secret.
+            description: RotateApplicationRequest returns the new application with rotated secret
+            operationId: Auth_RotateApplicationSecret
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListApplicationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListApplicationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /oauth/token:
         post:
             tags:
