@@ -88,8 +88,12 @@ components:
                     enum:
                         - RATE
                         - COUNT
+                        - NONE
                     type: string
                     format: enum
+                quantile:
+                    type: number
+                    format: float
         QueryTimeSeriesMetricsResponse:
             type: object
             properties:
