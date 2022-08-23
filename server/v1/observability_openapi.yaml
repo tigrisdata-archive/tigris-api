@@ -100,8 +100,10 @@ components:
                 quantile:
                     type: number
                     format: float
-                additionalFunction:
-                    $ref: '#/components/schemas/AdditionalFunction'
+                additionalFunctions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AdditionalFunction'
         QueryTimeSeriesMetricsResponse:
             type: object
             properties:

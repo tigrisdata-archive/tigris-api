@@ -64,7 +64,7 @@ message QueryTimeSeriesMetricsRequest {
   repeated string space_aggregated_by = 7;
   MetricQueryFunction function = 8;
   float quantile = 9;
-  optional AdditionalFunction additionalFunction = 10;
+  repeated AdditionalFunction additionalFunctions = 10;
 }
 
 enum MetricQueryFunction {
