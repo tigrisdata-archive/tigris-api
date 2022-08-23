@@ -34,23 +34,26 @@ option (openapi.v3.document) = {
     }
   }
   tags: [{
-    name: "Admin"
+    name: "Info"
     description: "APIs to manage or get more information about the server."
   }, {
     name: "Databases"
-    description: "APIs that can used to manage databases. A single database can have one or more collections."
+    description: "The Databases section provide APIs that can be used to manage databases. A single database can have one or more collections."
   },{
     name: "Collections"
-    description: "APIs that can used to manage collections."
+    description: "The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents."
   },{
     name: "Documents"
-    description: "APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key."
+    description: "The Documents section provide APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key."
   }, {
     name: "Transactions"
-    description: "APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key."
+    description: "Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability."
   }, {
-    name: "Streams"
-    description: "APIs that provide real-time events for writes made to collections in the database."
+    name: "Events"
+    description: "Real time events for the changes made into the collection."
+  }, {
+    name: "Topics"
+    description: "Built-in event streaming to support Pub/Sub APIs. This functionality is enabled for the “Messages” collection type. This type of collection exposes two endpoints Publish and Subscribe which enable building event-driven applications. Tigris guarantees total ordering of events which eliminates the need of managing any partition level metadata."
   }]
   components: {
     security_schemes: {
@@ -313,16 +316,16 @@ message ReadRequest {
   string db = 1;
   // Collection name to read documents from.
   string collection = 2;
-  // Returns documents matching this filter.
-  // A filter can simply be key, value where key
-  // is the field name and value would be the value for this field. Or a filter can be logical where
-  // two or more fields can be logically joined using $or and $and. A few examples of filter:
+  // Returns documents matching this filter. A filter can simply be a key, value pair where a key is the field name and the value would be the value for this field.
+  // Tigris also allows complex filtering by passing logical expressions. Logical filters are applied on two or more fields using `$or` and `$and`.
+  // A few examples of filters:
   // <li> To read a user document where the id has a value 1: ```{"id": 1 }```
   // <li> To read all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
+  // The detailed documentation of the filter is <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
   bytes filter = 3;
   // To read specific fields from a document. Default is all.
   bytes fields = 4;
-  // Options that can be used to modify the results, for example "limit" to control the number of documents
+  // Options that can be used to modify the results, for example `limit` to control the number of documents
   // returned by the server.
   ReadRequestOptions options = 5;
 }
@@ -347,7 +350,8 @@ message SearchRequest {
   repeated string search_fields = 4;
   // Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
   bytes filter = 5;
-  // Facet query to aggregate results on given fields
+  // Facet query to aggregate results on given fields. The field name for the facet search can be passed like this `{"brand": { "size": 10 }}`
+  // where the size controls the total facets for this field.
   bytes facet = 6;
   // Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`
   bytes sort = 7;
@@ -479,8 +483,13 @@ message CreateOrUpdateCollectionRequest {
   //  "primary_key": ["id"]
   // }`
   bytes schema = 3;
+  // If set to true then the update schema request to the collection will fail by returning a conflict with HTTP Status
+  // code 409. The default is false.
   bool only_create = 4;
   CollectionOptions options = 5;
+  // Type of the collection.
+  // <li> DOCUMENTS: Support CRUD APIs.
+  // <li> MESSAGES: Supports Pub/Sub APIs.
   CollectionType type = 6;
 }
 
@@ -510,7 +519,7 @@ message DatabaseInfo {
   // Database name.
   string db = 1;
 
-  // Metadata about the database. (ex. ...)
+  // Metadata about the database.
   DatabaseMetadata metadata = 2;
 }
 
@@ -560,7 +569,7 @@ message DescribeCollectionRequest {
   CollectionOptions options = 3;
 }
 
-// A detailed description about the database and all associated collections.
+// A detailed description of the database and all the associated collections.
 // Description of the collection includes schema details as well.
 message DescribeDatabaseResponse {
   // Name of the database.
@@ -573,11 +582,11 @@ message DescribeDatabaseResponse {
   // The description returns collection metadata and the schema.
   repeated CollectionDescription collections = 3;
 
-  // Sum all database collections sizes
+  // Sum of all the collections sizes present in this database
   int64 size = 4;
 }
 
-// A detailed description about the collection.
+// A detailed description of the collection.
 // The description returns collection metadata and the schema.
 message DescribeCollectionResponse {
   // Name of the collection.
@@ -586,9 +595,9 @@ message DescribeCollectionResponse {
   // Metadata about the collection.
   CollectionMetadata metadata = 2;
 
-  // Collections schema
+  // Schema of this collection.
   bytes schema = 3;
-  // Collection size in bytes
+  // The size of this collection in bytes.
   int64 size = 4;
 }
 
@@ -615,6 +624,8 @@ message CollectionMetadata {
   CollectionType type = 1;
 }
 
+// The type of this collection. Tigris supports Document based APIs for DOCUMENTS collection and Pub/Sub APIs for
+// MESSAGES collection.
 enum CollectionType {
   DOCUMENTS = 0;
   MESSAGES = 1;
@@ -767,7 +778,12 @@ service Tigris {
       tags: "Documents"
     };
   }
-  //  Reads range of documents from the collection using the condition in the filter.
+  // Reads a range of documents from the collection. Tigris does not require you to
+  // index any fields and automatically index all the fields which means you can filter by any field in the document.
+  // An empty filter will trigger reading all the documents inside this collection. The API supports pagination that
+  // can be used by passing `Limit/Skip` parameters. The `skip` parameter skips the number of documents from the start and
+  // the `limit` parameter is used to specify the number of documents to read. You can find more detailed documentation
+  // of the Read API <a href="https://docs.tigrisdata.com/overview/query" title="here">here</a>.
   rpc Read(ReadRequest) returns (stream ReadResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/documents/read"
@@ -779,7 +795,10 @@ service Tigris {
     };
   }
 
-  //  Searches a collection for documents matching the query
+  // Searches a collection for the documents matching the query. A search can be a term search or a phrase search.
+  // Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
+  // You can also perform a faceted search by passing the fields in the facet parameter.
+  // You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
   rpc Search(SearchRequest) returns (stream SearchResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/documents/search"
@@ -791,8 +810,12 @@ service Tigris {
     };
   }
 
-  // Creates a new collection or atomically upgrades the collection to the new schema changes in the database
-  // passed in the request.
+  // Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
+  // Schema changes are applied atomically and immediately without any downtime.
+  // This endpoint allows the creation of a collection based on the type. <p></p>
+  // There are two collection types supported by Tigris:
+  //    <li> DOCUMENTS: Support CRUD APIs.
+  //    <li> MESSAGES: Supports Pub/Sub APIs.
   rpc CreateOrUpdateCollection(CreateOrUpdateCollectionRequest) returns (CreateOrUpdateCollectionResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/createOrUpdate"
@@ -803,7 +826,7 @@ service Tigris {
       tags: "Collections"
     };
   }
-  // Drop the collection and all its documents in the database passed in the request.
+  // Drop the collection inside this database. This API deletes all of the documents inside this collection and any metadata associated with it.
   rpc DropCollection(DropCollectionRequest) returns (DropCollectionResponse) {
     option (google.api.http) = {
       delete : "/api/v1/databases/{db}/collections/{collection}/drop"
@@ -824,7 +847,7 @@ service Tigris {
       tags: "Databases"
     };
   }
-  // List all collections in the database passed in the request.
+  // List all the collections present in the database passed in the request.
   rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/list"
@@ -835,7 +858,7 @@ service Tigris {
       tags: "Databases"
     };
   }
-  // Creates a new database and returns a AlreadyExists error if the database already exists.
+  // Creates a new database. Returns an AlreadyExists error with a status code 409 if the database already exists.
   rpc CreateDatabase(CreateDatabaseRequest) returns (CreateDatabaseResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/create"
@@ -847,7 +870,7 @@ service Tigris {
     };
   }
 
-  // Drop database deletes all the collections in the database along with all it documents.
+  // Drop database deletes all the collections in this database along with all of the documents, and associated metadata for these collections.
   rpc DropDatabase(DropDatabaseRequest) returns (DropDatabaseResponse) {
     option (google.api.http) = {
       delete : "/api/v1/databases/{db}/drop"
@@ -859,8 +882,8 @@ service Tigris {
     };
   }
 
-  // Describe database describes the information related to database along
-  // with all the collections inside database.
+  // This API returns information related to the database along with all the collections inside the database.
+  // This can be used to retrieve the size of the database or to retrieve schemas and the size of all the collections present in this database.
   rpc DescribeDatabase(DescribeDatabaseRequest) returns (DescribeDatabaseResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/describe"
@@ -872,7 +895,7 @@ service Tigris {
     };
   }
 
-  // Describe collection describes the information related to collection.
+  // Returns the information related to the collection. This can be used to retrieve the schema or size of the collection.
   rpc DescribeCollection(DescribeCollectionRequest) returns (DescribeCollectionResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/describe"
@@ -884,8 +907,9 @@ service Tigris {
     };
   }
 
-  // Provides real time events for the changes made into the database. Streams by default publish all events for a database
-  // but can be restricted to a specific collection. These events can be useful to build event-driven applications.
+  // Stream real-time events for mutations made to the collections in the database. Each stream will have a transaction
+  // identifier attached to it and will have a boolean flag “last” set to the last event of the transaction which will be useful
+  // if a transaction performed more than one operation in the collection.
   rpc Events(EventsRequest) returns (stream EventsResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/events"
@@ -905,10 +929,11 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Information about the server"
-      tags: "Admin"
+      tags: "Info"
     };
   }
 
+  // Publish API is use to publish messages to the collection.
   rpc Publish(PublishRequest) returns (PublishResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/publish"
@@ -916,10 +941,11 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Publish a message to a collection"
-      tags: "Collections"
+      tags: "Topics"
     };
   }
 
+  // Subscribe is used to subscribe to the collection and receive messages from it.
   rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/subscribe"
@@ -927,7 +953,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Subscribe to a collection for a stream of messages"
-      tags: "Collections"
+      tags: "Topics"
     };
   }
 }
