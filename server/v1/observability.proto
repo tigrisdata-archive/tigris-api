@@ -54,19 +54,29 @@ option (openapi.v3.document) = {
   }
 };
 
+// Requests the time series metrics
 message QueryTimeSeriesMetricsRequest {
   string db = 1;
   string collection = 2;
   int64 from = 3;
   int64 to = 4;
   string metric_name = 5;
-  MetricQuerySpaceAggregation space_aggregation = 6;
-  repeated string space_aggregated_by = 7;
-  MetricQueryFunction function = 8;
-  float quantile = 9;
-  repeated AdditionalFunction additionalFunctions = 10;
+  TigrisOperation tigris_operation=6;
+  MetricQuerySpaceAggregation space_aggregation = 7;
+  repeated string space_aggregated_by = 8;
+  MetricQueryFunction function = 9;
+  float quantile = 10;
+  repeated AdditionalFunction additionalFunctions = 11;
 }
 
+// Represents Tigris operation category
+enum TigrisOperation {
+  ALL = 0;
+  READ = 1;
+  WRITE =2;
+}
+
+// Function to apply on metrics query
 enum MetricQueryFunction {
   RATE = 0;
   COUNT = 1;
@@ -86,6 +96,8 @@ message RollupFunction {
   int64 interval = 2;
 }
 
+// Specifies how the initial query's result buckets should be processed in
+// next stage.
 enum RollupAggregator {
   ROLLUP_AGGREGATOR_SUM = 0;
   ROLLUP_AGGREGATOR_COUNT = 1;
@@ -94,7 +106,7 @@ enum RollupAggregator {
   ROLLUP_AGGREGATOR_AVG = 4;
 }
 
-
+// Specifies how the metric should be aggregated for the time slices.
 enum MetricQuerySpaceAggregation {
   AVG = 0;
   MIN = 1;
@@ -102,7 +114,7 @@ enum MetricQuerySpaceAggregation {
   SUM = 3;
 }
 
-
+// QueryTimeSeriesMetric responds with this type.
 message QueryTimeSeriesMetricsResponse {
   int64 from = 1;
   int64 to = 2;
@@ -110,6 +122,7 @@ message QueryTimeSeriesMetricsResponse {
   repeated MetricSeries series = 4;
 }
 
+// Represents series in timeseries based on input query.
 message MetricSeries {
   int64 from = 1;
   int64 to = 2;
@@ -118,6 +131,7 @@ message MetricSeries {
   repeated DataPoint dataPoints = 5;
 }
 
+// Represents the data point in timeseries.
 message DataPoint {
   int64 timestamp = 1;
   double value = 2;

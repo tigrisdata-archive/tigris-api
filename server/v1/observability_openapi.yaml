@@ -55,6 +55,7 @@ components:
                 value:
                     type: number
                     format: double
+            description: Represents the data point in timeseries.
         GoogleProtobufAny:
             type: object
             properties:
@@ -80,6 +81,7 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/DataPoint'
+            description: Represents series in timeseries based on input query.
         QueryTimeSeriesMetricsRequest:
             type: object
             properties:
@@ -95,6 +97,13 @@ components:
                     format: int64
                 metric_name:
                     type: string
+                tigris_operation:
+                    enum:
+                        - ALL
+                        - READ
+                        - WRITE
+                    type: string
+                    format: enum
                 space_aggregation:
                     enum:
                         - AVG
@@ -121,6 +130,7 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/AdditionalFunction'
+            description: Requests the time series metrics
         QueryTimeSeriesMetricsResponse:
             type: object
             properties:
@@ -136,6 +146,7 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/MetricSeries'
+            description: QueryTimeSeriesMetric responds with this type.
         RollupFunction:
             type: object
             properties:
