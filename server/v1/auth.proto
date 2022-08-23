@@ -151,7 +151,7 @@ service Auth {
   rpc getAccessToken(GetAccessTokenRequest) returns
       (GetAccessTokenResponse) {
     option (google.api.http) = {
-      post : "/oauth/token"
+      post : "/auth/token"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -164,7 +164,7 @@ service Auth {
   rpc createApplication(CreateApplicationRequest) returns
       (CreateApplicationResponse) {
     option (google.api.http) = {
-      post : "/oauth/applications/create"
+      post : "/auth/applications/create"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -177,7 +177,7 @@ service Auth {
   rpc deleteApplication(DeleteApplicationsRequest) returns
       (DeleteApplicationResponse) {
     option (google.api.http) = {
-      delete : "/oauth/applications/delete"
+      delete : "/auth/applications/delete"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -190,7 +190,7 @@ service Auth {
   rpc listApplications(ListApplicationsRequest) returns
       (ListApplicationsResponse) {
     option (google.api.http) = {
-      post : "/oauth/applications/list"
+      post : "/auth/applications/list"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -203,7 +203,7 @@ service Auth {
   rpc rotateApplicationSecret(RotateApplicationSecretRequest) returns
       (RotateApplicationSecretResponse) {
     option (google.api.http) = {
-      post : "/oauth/applications/rotate"
+      post : "/auth/applications/rotate"
       body : "*"
     };
     option(openapi.v3.operation) = {
