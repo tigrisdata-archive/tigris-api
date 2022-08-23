@@ -107,7 +107,15 @@ message QueryTimeSeriesMetricsResponse {
   int64 from = 1;
   int64 to = 2;
   string query = 3;
-  repeated DataPoint dataPoints = 4;
+  repeated MetricSeries series = 4;
+}
+
+message MetricSeries {
+  int64 from = 1;
+  int64 to = 2;
+  string metric = 3;
+  string scope=4;
+  repeated DataPoint dataPoints = 5;
 }
 
 message DataPoint {

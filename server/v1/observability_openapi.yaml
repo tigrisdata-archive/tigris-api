@@ -63,6 +63,23 @@ components:
                     description: The type of the serialized message.
             additionalProperties: true
             description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        MetricSeries:
+            type: object
+            properties:
+                from:
+                    type: integer
+                    format: int64
+                to:
+                    type: integer
+                    format: int64
+                metric:
+                    type: string
+                scope:
+                    type: string
+                dataPoints:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataPoint'
         QueryTimeSeriesMetricsRequest:
             type: object
             properties:
@@ -115,10 +132,10 @@ components:
                     format: int64
                 query:
                     type: string
-                dataPoints:
+                series:
                     type: array
                     items:
-                        $ref: '#/components/schemas/DataPoint'
+                        $ref: '#/components/schemas/MetricSeries'
         RollupFunction:
             type: object
             properties:
