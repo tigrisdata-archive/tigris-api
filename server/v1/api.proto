@@ -666,6 +666,7 @@ message GetInfoResponse {
 }
 
 message PublishRequestOptions {
+  int32 partition = 1;
 }
 
 message PublishRequest {
@@ -682,6 +683,7 @@ message PublishResponse {
 }
 
 message SubscribeRequestOptions {
+  repeated int32 partitions = 1;
 }
 
 message SubscribeRequest {

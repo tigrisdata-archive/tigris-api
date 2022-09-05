@@ -1166,7 +1166,10 @@ components:
                     $ref: '#/components/schemas/PublishRequestOptions'
         PublishRequestOptions:
             type: object
-            properties: {}
+            properties:
+                partition:
+                    type: integer
+                    format: int32
         PublishResponse:
             type: object
             properties:
@@ -1404,7 +1407,12 @@ components:
                     $ref: '#/components/schemas/SubscribeRequestOptions'
         SubscribeRequestOptions:
             type: object
-            properties: {}
+            properties:
+                partitions:
+                    type: array
+                    items:
+                        type: integer
+                        format: int32
         SubscribeResponse:
             type: object
             properties:
