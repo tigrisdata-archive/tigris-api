@@ -235,7 +235,7 @@ paths:
                 - Documents
             summary: Read Documents
             description: |-
-                Reads a range of documents from the collection. Tigris does not require you to
+                Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
                  index any fields and automatically index all the fields which means you can filter by any field in the document.
                  An empty filter will trigger reading all the documents inside this collection. The API supports pagination that
                  can be used by passing `Limit/Skip` parameters. The `skip` parameter skips the number of documents from the start and
@@ -319,8 +319,8 @@ paths:
                 - Documents
             summary: Search Documents
             description: |-
-                Searches a collection for the documents matching the query. A search can be a term search or a phrase search.
-                 Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
+                Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
+                 a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
                  You can also perform a faceted search by passing the fields in the facet parameter.
                  You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
             operationId: Tigris_Search

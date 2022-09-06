@@ -780,7 +780,7 @@ service Tigris {
       tags: "Documents"
     };
   }
-  // Reads a range of documents from the collection. Tigris does not require you to
+  // Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
   // index any fields and automatically index all the fields which means you can filter by any field in the document.
   // An empty filter will trigger reading all the documents inside this collection. The API supports pagination that
   // can be used by passing `Limit/Skip` parameters. The `skip` parameter skips the number of documents from the start and
@@ -790,6 +790,10 @@ service Tigris {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/documents/read"
       body : "*"
+      additional_bindings {
+        post : "/api/v1/databases/{db}/collections/{collection}/messages/read"
+        body : "*"
+      }
     };
     option(openapi.v3.operation) = {
       summary: "Read Documents"
@@ -797,21 +801,24 @@ service Tigris {
     };
   }
 
-  // Searches a collection for the documents matching the query. A search can be a term search or a phrase search.
-  // Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
+  // Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
+  // a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
   // You can also perform a faceted search by passing the fields in the facet parameter.
   // You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
   rpc Search(SearchRequest) returns (stream SearchResponse) {
     option (google.api.http) = {
       post : "/api/v1/databases/{db}/collections/{collection}/documents/search"
       body : "*"
+      additional_bindings {
+        post : "/api/v1/databases/{db}/collections/{collection}/messages/search"
+        body : "*"
+      }
     };
     option(openapi.v3.operation) = {
       summary: "Search Documents"
       tags: "Documents"
     };
   }
-
   // Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
   // Schema changes are applied atomically and immediately without any downtime.
   // This endpoint allows the creation of a collection based on the type. <p></p>
