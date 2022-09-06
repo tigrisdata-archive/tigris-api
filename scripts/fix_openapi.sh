@@ -146,7 +146,7 @@ done
 yq_streaming_response ReadResponse "collections/{collection}/documents/read"
 yq_streaming_response SearchResponse "collections/{collection}/documents/search"
 yq_streaming_response EventsResponse "collections/{collection}/events"
-yq_streaming_response SubscribeResponse "collections/{collection}/subscribe"
+yq_streaming_response SubscribeResponse "collections/{collection}/messages/subscribe"
 
 yq_error_response
 
