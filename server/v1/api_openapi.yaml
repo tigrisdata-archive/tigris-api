@@ -474,7 +474,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/publish:
+    /api/v1/databases/{db}/collections/{collection}/messages/publish:
         post:
             tags:
                 - Topics
@@ -511,7 +511,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/subscribe:
+    /api/v1/databases/{db}/collections/{collection}/messages/subscribe:
         post:
             tags:
                 - Topics

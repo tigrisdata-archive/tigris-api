@@ -938,7 +938,7 @@ service Tigris {
   // Publish API is use to publish messages to the collection.
   rpc Publish(PublishRequest) returns (PublishResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/{collection}/publish"
+      post : "/api/v1/databases/{db}/collections/{collection}/messages/publish"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -950,7 +950,7 @@ service Tigris {
   // Subscribe is used to subscribe to the collection and receive messages from it.
   rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/{collection}/subscribe"
+      post : "/api/v1/databases/{db}/collections/{collection}/messages/subscribe"
       body : "*"
     };
     option(openapi.v3.operation) = {
