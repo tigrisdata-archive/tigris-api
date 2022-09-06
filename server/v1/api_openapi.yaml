@@ -437,8 +437,8 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/events:
         post:
             tags:
-                - Events
-            summary: Events Stream
+                - Collections
+            summary: Change Events
             description: |-
                 Stream real-time events for mutations made to the collections in the database. Each stream will have a transaction
                  identifier attached to it and will have a boolean flag “last” set to the last event of the transaction which will be useful
@@ -477,7 +477,7 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/messages/publish:
         post:
             tags:
-                - Topics
+                - Event Streaming
             summary: Publish a message to a collection
             description: Publish API is use to publish messages to the collection.
             operationId: Tigris_Publish
@@ -514,7 +514,7 @@ paths:
     /api/v1/databases/{db}/collections/{collection}/messages/subscribe:
         post:
             tags:
-                - Topics
+                - Event Streaming
             summary: Subscribe to a collection for a stream of messages
             description: Subscribe is used to subscribe to the collection and receive messages from it.
             operationId: Tigris_Subscribe
@@ -1510,11 +1510,9 @@ tags:
       description: The Databases section provide APIs that can be used to manage databases. A single database can have one or more collections.
     - name: Documents
       description: The Documents section provide APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
-    - name: Events
-      description: Real time events for the changes made into the collection.
+    - name: Event Streaming
+      description: Tigris has built-in event streaming support. This functionality is enabled for the “Messages” collection type. This type of collection exposes endpoints that allows you to both subscribe and publish to a collection which enable building event-driven applications. Ordering is guaranteed on a partition level
     - name: Info
       description: APIs to manage or get more information about the server.
-    - name: Topics
-      description: Built-in event streaming to support Pub/Sub APIs. This functionality is enabled for the “Messages” collection type. This type of collection exposes two endpoints Publish and Subscribe which enable building event-driven applications. Tigris guarantees total ordering of events which eliminates the need of managing any partition level metadata.
     - name: Transactions
       description: Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability.
