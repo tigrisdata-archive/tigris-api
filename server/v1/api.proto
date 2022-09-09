@@ -484,10 +484,6 @@ message CreateOrUpdateCollectionRequest {
   // code 409. The default is false.
   bool only_create = 4;
   CollectionOptions options = 5;
-  // Type of the collection.
-  // <li> DOCUMENTS: Support CRUD APIs.
-  // <li> MESSAGES: Supports Pub/Sub APIs.
-  CollectionType type = 6;
 }
 
 message CreateOrUpdateCollectionResponse {
@@ -618,14 +614,6 @@ message DatabaseMetadata {
 }
 
 message CollectionMetadata {
-  CollectionType type = 1;
-}
-
-// The type of this collection. Tigris supports Document based APIs for DOCUMENTS collection and Pub/Sub APIs for
-// MESSAGES collection.
-enum CollectionType {
-  DOCUMENTS = 0;
-  MESSAGES = 1;
 }
 
 message EventsRequestOptions {

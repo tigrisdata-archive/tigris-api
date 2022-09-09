@@ -813,13 +813,7 @@ components:
                     $ref: '#/components/schemas/CollectionMetadata'
         CollectionMetadata:
             type: object
-            properties:
-                type:
-                    enum:
-                        - DOCUMENTS
-                        - MESSAGES
-                    type: string
-                    format: enum
+            properties: {}
         CollectionOptions:
             type: object
             properties: {}
@@ -859,13 +853,6 @@ components:
                     description: If set to true then the update schema request to the collection will fail by returning a conflict with HTTP Status code 409. The default is false.
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
-                type:
-                    enum:
-                        - DOCUMENTS
-                        - MESSAGES
-                    type: string
-                    description: 'Type of the collection. <li> DOCUMENTS: Support CRUD APIs. <li> MESSAGES: Supports Pub/Sub APIs.'
-                    format: enum
         CreateOrUpdateCollectionResponse:
             type: object
             properties:
