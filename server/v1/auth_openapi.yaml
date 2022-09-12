@@ -264,6 +264,10 @@ components:
                 refresh_token:
                     type: string
                     description: Refresh token.
+                expires_in:
+                    type: integer
+                    description: Access token expiration timeout in seconds
+                    format: int32
             description: GetAccessToken returns response containing access_token and optionally refresh_token
         GoogleProtobufAny:
             type: object

@@ -85,6 +85,8 @@ message GetAccessTokenResponse{
   string access_token = 1;
   // Refresh token.
   string refresh_token = 2;
+  // Access token expiration timeout in seconds
+  int32 expires_in = 3;
 }
 
 // Request creation of user application
