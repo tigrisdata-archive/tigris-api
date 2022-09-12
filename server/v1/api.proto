@@ -376,6 +376,9 @@ message SearchRequest {
   int32 page_size = 10;
   // Optionally can specify the page to retrieve. If page is set then only hits for this page is returned
   int32 page = 11;
+  // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+  // this option to 'ci' that will apply to all the text fields in the filters.
+  Collation collation = 12;
 }
 
 // Response struct for search
