@@ -123,6 +123,12 @@ message Error {
 message WriteOptions {
 }
 
+// A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+// this option to 'ci' that will apply to all the text fields in the filters.
+message Collation {
+  string case = 1;
+}
+
 // Options that can be used to modify the results, for example "limit" to control the number of documents
 // returned by the server.
 message ReadRequestOptions {
@@ -132,6 +138,9 @@ message ReadRequestOptions {
   int64 skip = 3;
   // A cursor for use in pagination. The next streams will return documents after this offset.
   bytes offset = 4;
+  // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+  // this option to 'ci' that will apply to all the text fields in the filters.
+  Collation collation = 5;
 }
 
 // Database requests modifying options.
@@ -251,6 +260,9 @@ message ReplaceResponse {
 // Additional options for deleted requests.
 message DeleteRequestOptions {
   WriteOptions write_options = 1;
+  // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+  // this option to 'ci' that will apply to all the text fields in the filters.
+  Collation collation = 2;
 }
 
 message DeleteRequest {
@@ -278,6 +290,9 @@ message DeleteResponse {
 // Additional options for update requests.
 message UpdateRequestOptions {
   WriteOptions write_options = 1;
+  // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+  // this option to 'ci' that will apply to all the text fields in the filters.
+  Collation collation = 2;
 }
 
 message UpdateRequest {
@@ -318,6 +333,7 @@ message ReadRequest {
   // A few examples of filters:
   // <li> To read a user document where the id has a value 1: ```{"id": 1 }```
   // <li> To read all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
+  // Filter allows setting collation on an individual field level. To set collation for all the fields see options.
   // The detailed documentation of the filter is <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
   bytes filter = 3;
   // To read specific fields from a document. Default is all.
