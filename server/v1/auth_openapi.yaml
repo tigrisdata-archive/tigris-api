@@ -119,6 +119,33 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /auth/applications/update:
+        post:
+            tags:
+                - Auth
+                - application
+            summary: Updates the application.
+            description: Update an application.
+            operationId: Auth_UpdateApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /auth/token:
         post:
             tags:
@@ -172,6 +199,13 @@ components:
                 created_by:
                     type: string
                     description: Created by
+                updated_at:
+                    type: integer
+                    description: Updated at
+                    format: int64
+                updated_by:
+                    type: string
+                    description: Updated by
             description: An user application
         CreateApplicationRequest:
             type: object
@@ -194,12 +228,14 @@ components:
             properties:
                 deleted:
                     type: boolean
+                    description: status flag for delete operation
             description: DeleteApplication returns the flag to convey if application was deleted
         DeleteApplicationsRequest:
             type: object
             properties:
                 id:
                     type: string
+                    description: application id
             description: Request deletion of an application
         GetAccessTokenRequest:
             type: object
@@ -228,6 +264,10 @@ components:
                 refresh_token:
                     type: string
                     description: Refresh token.
+                expires_in:
+                    type: integer
+                    description: Access token expiration timeout in seconds
+                    format: int32
             description: GetAccessToken returns response containing access_token and optionally refresh_token
         GoogleProtobufAny:
             type: object
@@ -277,6 +317,25 @@ components:
                         $ref: '#/components/schemas/GoogleProtobufAny'
                     description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
             description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        UpdateApplicationRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: application id
+                name:
+                    type: string
+                    description: A new human readable app name
+                description:
+                    type: string
+                    description: A new human readable app description
+            description: Request creation of user application
+        UpdateApplicationResponse:
+            type: object
+            properties:
+                updated_application:
+                    $ref: '#/components/schemas/Application'
+            description: CreateApplication returns created application
     securitySchemes:
         BearerAuth:
             type: http

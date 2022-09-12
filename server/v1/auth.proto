@@ -85,6 +85,8 @@ message GetAccessTokenResponse{
   string access_token = 1;
   // Refresh token.
   string refresh_token = 2;
+  // Access token expiration timeout in seconds
+  int32 expires_in = 3;
 }
 
 // Request creation of user application
@@ -97,7 +99,24 @@ message CreateApplicationRequest {
 
 // CreateApplication returns created application
 message CreateApplicationResponse {
+  // created app object
   Application created_application = 1;
+}
+
+// Request creation of user application
+message UpdateApplicationRequest {
+  // application id
+  string id = 1;
+  // A new human readable app name
+  string name = 2;
+  // A new human readable app description
+  string description = 3;
+}
+
+// CreateApplication returns created application
+message UpdateApplicationResponse {
+  // updated application object
+  Application updated_application = 1;
 }
 
 // An user application
@@ -114,6 +133,10 @@ message Application {
   int64 created_at = 5;
   // Created by
   string created_by = 6;
+  // Updated at
+  int64 updated_at = 7;
+  // Updated by
+  string updated_by = 8;
 }
 
 // Request listing of all the application those are visible to requesting actor
@@ -127,11 +150,13 @@ message ListApplicationsResponse {
 
 // Request deletion of an application
 message DeleteApplicationsRequest {
+  // application id
   string id = 1;
 }
 
 // DeleteApplication returns the flag to convey if application was deleted
-message DeleteApplicationResponse{
+message DeleteApplicationResponse {
+  // status flag for delete operation
   bool deleted = 1;
 }
 
@@ -169,6 +194,19 @@ service Auth {
     };
     option(openapi.v3.operation) = {
       summary: "Creates the application."
+      tags: "application"
+    };
+  }
+
+  // Update an application.
+  rpc updateApplication(UpdateApplicationRequest) returns
+      (UpdateApplicationResponse) {
+    option (google.api.http) = {
+      post : "/auth/applications/update"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Updates the application."
       tags: "application"
     };
   }

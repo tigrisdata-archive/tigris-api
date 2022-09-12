@@ -49,11 +49,8 @@ option (openapi.v3.document) = {
     name: "Transactions"
     description: "Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability."
   }, {
-    name: "Events"
-    description: "Real time events for the changes made into the collection."
-  }, {
-    name: "Topics"
-    description: "Built-in event streaming to support Pub/Sub APIs. This functionality is enabled for the “Messages” collection type. This type of collection exposes two endpoints Publish and Subscribe which enable building event-driven applications. Tigris guarantees total ordering of events which eliminates the need of managing any partition level metadata."
+    name: "Event Streaming"
+    description: "Tigris has built-in event streaming support. This functionality is enabled for the “Messages” collection type. This type of collection exposes endpoints that allows you to both subscribe and publish to a collection which enable building event-driven applications. Ordering is guaranteed on a partition level"
   }]
   components: {
     security_schemes: {
@@ -487,10 +484,6 @@ message CreateOrUpdateCollectionRequest {
   // code 409. The default is false.
   bool only_create = 4;
   CollectionOptions options = 5;
-  // Type of the collection.
-  // <li> DOCUMENTS: Support CRUD APIs.
-  // <li> MESSAGES: Supports Pub/Sub APIs.
-  CollectionType type = 6;
 }
 
 message CreateOrUpdateCollectionResponse {
@@ -621,14 +614,6 @@ message DatabaseMetadata {
 }
 
 message CollectionMetadata {
-  CollectionType type = 1;
-}
-
-// The type of this collection. Tigris supports Document based APIs for DOCUMENTS collection and Pub/Sub APIs for
-// MESSAGES collection.
-enum CollectionType {
-  DOCUMENTS = 0;
-  MESSAGES = 1;
 }
 
 message EventsRequestOptions {
@@ -925,8 +910,8 @@ service Tigris {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Events Stream"
-      tags: "Events"
+      summary: "Change Events"
+      tags: "Collections"
     };
   }
 
@@ -950,7 +935,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Publish a message to a collection"
-      tags: "Topics"
+      tags: "Event Streaming"
     };
   }
 
@@ -962,7 +947,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Subscribe to a collection for a stream of messages"
-      tags: "Topics"
+      tags: "Event Streaming"
     };
   }
 }
