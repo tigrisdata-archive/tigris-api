@@ -332,7 +332,8 @@ components:
                     type: integer
                     format: uint32
                 value:
-                    $ref: '#/components/schemas/UserMetadataValue'
+                    type: string
+                    format: byte
             description: User metadata response
         GoogleProtobufAny:
             type: object
@@ -348,7 +349,8 @@ components:
                 metadataKey:
                     type: string
                 value:
-                    $ref: '#/components/schemas/UserMetadataValue'
+                    type: string
+                    format: byte
             description: Request insertion of user metadata
         InsertUserMetadataResponse:
             type: object
@@ -361,7 +363,8 @@ components:
                     type: integer
                     format: uint32
                 value:
-                    $ref: '#/components/schemas/UserMetadataValue'
+                    type: string
+                    format: byte
             description: Insertion of user metadata response
         ListApplicationsRequest:
             type: object
@@ -428,7 +431,8 @@ components:
                 metadataKey:
                     type: string
                 value:
-                    $ref: '#/components/schemas/UserMetadataValue'
+                    type: string
+                    format: byte
             description: Request update of user metadata
         UpdateUserMetadataResponse:
             type: object
@@ -441,14 +445,9 @@ components:
                     type: integer
                     format: uint32
                 value:
-                    $ref: '#/components/schemas/UserMetadataValue'
-            description: Update of user metadata response
-        UserMetadataValue:
-            type: object
-            properties:
-                value:
                     type: string
                     format: byte
+            description: Update of user metadata response
     securitySchemes:
         BearerAuth:
             type: http

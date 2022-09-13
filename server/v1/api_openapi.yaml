@@ -1467,6 +1467,30 @@ components:
             type: object
             properties: {}
             description: Additional options to modify write requests.
+        InsertUserMetadataRequest:
+            properties:
+                value:
+                    type: object
+        InsertUserMetadataResponse:
+            properties:
+                value:
+                    type: object
+        UpdateUserMetadataRequest:
+            properties:
+                value:
+                    type: object
+        UpdateUserMetadataResponse:
+            properties:
+                value:
+                    type: object
+        GetUserMetadataRequest:
+            properties:
+                value:
+                    type: object
+        GetUserMetadataResponse:
+            properties:
+                value:
+                    type: object
         StreamingReadResponse:
             type: object
             properties:

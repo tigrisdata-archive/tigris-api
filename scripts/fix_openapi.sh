@@ -128,6 +128,12 @@ yq_fix_object StreamEvent data
 yq_fix_object PublishRequest messages.items
 yq_fix_timestamp ResponseMetadata created_at
 yq_fix_timestamp ResponseMetadata updated_at
+yq_fix_object InsertUserMetadataRequest value
+yq_fix_object InsertUserMetadataResponse value
+yq_fix_object UpdateUserMetadataRequest value
+yq_fix_object UpdateUserMetadataResponse value
+yq_fix_object GetUserMetadataRequest value
+yq_fix_object GetUserMetadataResponse value
 
 yq_fix_object DescribeCollectionResponse schema
 yq_fix_object CollectionDescription schema

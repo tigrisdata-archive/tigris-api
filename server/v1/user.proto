@@ -155,13 +155,13 @@ message GetUserMetadataResponse {
   string metadataKey = 1;
   string userId = 2;
   uint32 namespaceId = 3;
-  UserMetadataValue value = 4;
+  bytes value = 4;
 }
 
 // Request insertion of user metadata
 message InsertUserMetadataRequest {
   string metadataKey = 1;
-  UserMetadataValue value = 2;
+  bytes value = 2;
 }
 
 // Insertion of user metadata response
@@ -169,13 +169,13 @@ message InsertUserMetadataResponse {
   string metadataKey = 1;
   string userId = 2;
   uint32 namespaceId = 3;
-  UserMetadataValue value = 4;
+  bytes value = 4;
 }
 
 // Request update of user metadata
 message UpdateUserMetadataRequest {
   string metadataKey = 1;
-  UserMetadataValue value = 2;
+  bytes value = 2;
 }
 
 // Update of user metadata response
@@ -183,11 +183,7 @@ message UpdateUserMetadataResponse {
   string metadataKey = 1;
   string userId = 2;
   uint32 namespaceId = 3;
-  UserMetadataValue value = 4;
-}
-
-message UserMetadataValue {
-  bytes value = 1;
+  bytes value = 4;
 }
 
 service User {
