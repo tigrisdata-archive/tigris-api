@@ -3,7 +3,7 @@
 openapi: 3.0.3
 info:
     title: User API Reference
-    description: |4-
+    description: |-
         ## Overview
         This section is organized around Tigris userHTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes.
     license:
@@ -320,6 +320,8 @@ components:
             properties:
                 metadataKey:
                     type: string
+                value:
+                    type: object
             description: Request user metadata
         GetUserMetadataResponse:
             type: object
@@ -332,8 +334,7 @@ components:
                     type: integer
                     format: uint32
                 value:
-                    type: string
-                    format: byte
+                    type: object
             description: User metadata response
         GoogleProtobufAny:
             type: object
@@ -349,8 +350,7 @@ components:
                 metadataKey:
                     type: string
                 value:
-                    type: string
-                    format: byte
+                    type: object
             description: Request insertion of user metadata
         InsertUserMetadataResponse:
             type: object
@@ -363,8 +363,7 @@ components:
                     type: integer
                     format: uint32
                 value:
-                    type: string
-                    format: byte
+                    type: object
             description: Insertion of user metadata response
         ListApplicationsRequest:
             type: object
@@ -431,8 +430,7 @@ components:
                 metadataKey:
                     type: string
                 value:
-                    type: string
-                    format: byte
+                    type: object
             description: Request update of user metadata
         UpdateUserMetadataResponse:
             type: object
@@ -445,13 +443,14 @@ components:
                     type: integer
                     format: uint32
                 value:
-                    type: string
-                    format: byte
+                    type: object
             description: Update of user metadata response
     securitySchemes:
         BearerAuth:
             type: http
             scheme: bearer
+security:
+    - BearerAuth: []
 tags:
     - name: User
     - name: application

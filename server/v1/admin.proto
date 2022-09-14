@@ -32,6 +32,14 @@ option (openapi.v3.document) = {
       url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
     }
   }
+  security: {
+    additional_properties: {
+      name: "BearerAuth"
+      value: {
+        value: []
+      }
+    }
+  }
   tags: [{
     name: "Namespace"
     description: "APIs to manage Tigris namespaces."

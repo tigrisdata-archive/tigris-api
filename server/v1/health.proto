@@ -30,6 +30,9 @@ option (openapi.v3.document) = {
       url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
     }
   }
+  // empty security is not reflected in the health_openapi.yaml
+  // it's fixed by scripts/fix_openapi.sh
+  security: []
   tags: [{
     name: "healthcheck"
     description: "APIs to perform health check."

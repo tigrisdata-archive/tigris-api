@@ -183,6 +183,8 @@ components:
         BearerAuth:
             type: http
             scheme: bearer
+security:
+    - BearerAuth: []
 tags:
     - name: Observability
     - name: metrics

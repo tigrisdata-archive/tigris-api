@@ -129,6 +129,8 @@ components:
         BearerAuth:
             type: http
             scheme: bearer
+security:
+    - BearerAuth: []
 tags:
     - name: Admin
     - name: Namespace

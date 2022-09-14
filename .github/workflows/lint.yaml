@@ -14,8 +14,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - uses: actions/setup-go@v3
         with:
           go-version: '1.17.6'
       - name: Install dependencies
@@ -24,5 +25,7 @@ jobs:
         run: |
           make generate
           git diff --quiet HEAD || (echo -e "\nRun 'make clean && make generate' and check-in OpenAPI specification" && exit 1)
+      - name: Install Redocly CLI
+        run: npm install @redocly/cli -g
       - name: Make lint
         run: make lint

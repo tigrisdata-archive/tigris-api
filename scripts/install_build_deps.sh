@@ -23,6 +23,7 @@ go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2
 go install github.com/google/gnostic/cmd/protoc-gen-openapi@v0 #generate openapi 3.0 spec
 go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1 #generate go http client
 go install github.com/mikefarah/yq/v4@latest # used to fix OpenAPI spec in scripts/fix_openapi.sh
+#npm install @redocly/cli -g
 
 ARCH=$(uname -m)
 OS=$(uname -s)

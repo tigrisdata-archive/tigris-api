@@ -40,6 +40,11 @@ client: ${API_DIR}/client/${V}/api/http.go
 lint: generate client
 	yq --exit-status 'tag == "!!map" or tag== "!!seq"' .github/workflows/*.yaml server/v1/*.yaml
 	shellcheck scripts/*
+	! which redocly || redocly lint ${PROTO_DIR}/*_openapi.yaml \
+		--extends=recommended \
+		--skip-rule=operation-4xx-response \
+		--skip-rule=no-empty-servers \
+		--skip-rule=tag-description
 
 clean:
 	rm -f server/${V}/*.pb.go \

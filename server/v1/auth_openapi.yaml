@@ -102,6 +102,8 @@ components:
         BearerAuth:
             type: http
             scheme: bearer
+security:
+    - BearerAuth: []
 tags:
     - name: Auth
     - name: application

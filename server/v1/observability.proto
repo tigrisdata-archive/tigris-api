@@ -33,6 +33,14 @@ option (openapi.v3.document) = {
       url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
     }
   }
+  security: {
+    additional_properties: {
+      name: "BearerAuth"
+      value: {
+        value: []
+      }
+    }
+  }
   tags: [{
     name: "metrics"
     description: "Tigris supports pluggable observability providers. The metrics section of API provides way to query Tigris metrics"

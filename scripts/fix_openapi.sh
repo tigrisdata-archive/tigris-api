@@ -19,6 +19,76 @@ set -e
 IN_FILE=$1
 OUT_FILE=$2
 
+main() {
+	fix_bytes
+
+	if [[ "$OUT_FILE" == *"user_openapi"* ]]; then
+		for i in InsertUserMetadataRequest \
+			InsertUserMetadataResponse \
+			UpdateUserMetadataRequest \
+			UpdateUserMetadataResponse \
+			GetUserMetadataRequest \
+			GetUserMetadataResponse; do
+
+			yq_fix_object $i value
+		done
+	fi
+
+  # Empty security in the health.proto doesn't work,
+  # so fixing it here
+	if [[ "$OUT_FILE" == *"health_openapi"* ]]; then
+	  yq_cmd ".security=[]"
+	fi
+
+	if [[ "$OUT_FILE" != *"api_openapi"* ]]; then
+		yq_del_namespace_name CreateNamespaceRequest
+		exit 0
+	fi
+
+	# Fix the types of filter and document fields to be object on HTTP wire.
+	# The original format in proto file is "bytes", which allows to skip
+	# unmarshalling in GRPC, we also implement custom unmarshalling for HTTP
+	for i in DeleteRequest UpdateRequest ReadRequest SearchRequest; do
+		yq_fix_object $i filter
+	done
+
+	yq_fix_object InsertRequest documents.items
+	yq_fix_object ReplaceRequest documents.items
+	yq_fix_object UpdateRequest fields
+	yq_fix_object ReadRequest fields
+	yq_fix_object ReadResponse data
+	yq_fix_object SearchRequest fields
+	yq_fix_object SearchRequest facet
+	yq_fix_object SearchRequest sort
+	yq_fix_object SearchHit data
+	yq_fix_object CreateOrUpdateCollectionRequest schema
+	yq_fix_object StreamEvent data
+	yq_fix_object PublishRequest messages.items
+	yq_fix_timestamp ResponseMetadata created_at
+	yq_fix_timestamp ResponseMetadata updated_at
+
+	yq_fix_object DescribeCollectionResponse schema
+	yq_fix_object CollectionDescription schema
+
+	yq_del_service_tags
+
+	for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
+		CreateOrUpdateCollectionRequest DropCollectionRequest \
+		CreateDatabaseRequest DropDatabaseRequest \
+		ListDatabasesRequest ListCollectionsRequest SearchRequest \
+		BeginTransactionRequest CommitTransactionRequest RollbackTransactionRequest; do
+
+		yq_del_db_coll $i
+	done
+
+	yq_streaming_response ReadResponse "collections/{collection}/documents/read"
+	yq_streaming_response SearchResponse "collections/{collection}/documents/search"
+	yq_streaming_response EventsResponse "collections/{collection}/events"
+	yq_streaming_response SubscribeResponse "collections/{collection}/messages/subscribe"
+
+	yq_error_response
+}
+
 fix_bytes() {
 	# According to the OpenAPI spec format should be "byte",
 	# but protoc-gen-openapi generates it as "bytes".
@@ -28,19 +98,13 @@ fix_bytes() {
 }
 
 yq_cmd() {
-	yq -I 4 -i "$1" "$IN_FILE"
+	yq -I 4 -i "$1" "$OUT_FILE"
 }
 
 # Delete name attribute from body
 yq_del_namespace_name() {
 	yq_cmd "del(.components.schemas.$1.properties.name)"
 }
-
-if [[ "$OUT_FILE" != *"api_openapi"* ]]; then
- 	yq_del_namespace_name CreateNamespaceRequest
-	fix_bytes
-	exit 0
-fi
 
 # Change type of documents, filters, fields, schema to be JSON object
 # instead of bytes.
@@ -105,56 +169,7 @@ yq_error_response() {
 	.properties.error.$ref="#/components/schemas/Error"
 	)'
 	yq_cmd "del(.components.schemas.GetInfoResponse.properties.error)"
+	yq_cmd "del(.components.schemas.GoogleProtobufAny)"
 }
 
-# Fix the types of filter and document fields to be object on HTTP wire.
-# The original format in proto file is "bytes", which allows to skip
-# unmarshalling in GRPC, we also implement custom unmarshalling for HTTP
-for i in DeleteRequest UpdateRequest ReadRequest SearchRequest; do
-	yq_fix_object $i filter
-done
-
-yq_fix_object InsertRequest documents.items
-yq_fix_object ReplaceRequest documents.items
-yq_fix_object UpdateRequest fields
-yq_fix_object ReadRequest fields
-yq_fix_object ReadResponse data
-yq_fix_object SearchRequest fields
-yq_fix_object SearchRequest facet
-yq_fix_object SearchRequest sort
-yq_fix_object SearchHit data
-yq_fix_object CreateOrUpdateCollectionRequest schema
-yq_fix_object StreamEvent data
-yq_fix_object PublishRequest messages.items
-yq_fix_timestamp ResponseMetadata created_at
-yq_fix_timestamp ResponseMetadata updated_at
-yq_fix_object InsertUserMetadataRequest value
-yq_fix_object InsertUserMetadataResponse value
-yq_fix_object UpdateUserMetadataRequest value
-yq_fix_object UpdateUserMetadataResponse value
-yq_fix_object GetUserMetadataRequest value
-yq_fix_object GetUserMetadataResponse value
-
-yq_fix_object DescribeCollectionResponse schema
-yq_fix_object CollectionDescription schema
-
-yq_del_service_tags
-
-for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
-	CreateOrUpdateCollectionRequest DropCollectionRequest \
-	CreateDatabaseRequest DropDatabaseRequest \
-	ListDatabasesRequest ListCollectionsRequest SearchRequest \
-	BeginTransactionRequest CommitTransactionRequest RollbackTransactionRequest; do
-
-	yq_del_db_coll $i
-done
-
-yq_streaming_response ReadResponse "collections/{collection}/documents/read"
-yq_streaming_response SearchResponse "collections/{collection}/documents/search"
-yq_streaming_response EventsResponse "collections/{collection}/events"
-yq_streaming_response SubscribeResponse "collections/{collection}/messages/subscribe"
-
-yq_error_response
-
-fix_bytes
-
+main

@@ -3,7 +3,7 @@
 openapi: 3.0.3
 info:
     title: HealthCheck API Reference
-    description: |4-
+    description: |-
         ## Overview
         This section is organized around HTTP healthcheck APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes.
     license:
@@ -66,3 +66,4 @@ tags:
     - name: HealthAPI
     - name: healthcheck
       description: APIs to perform health check.
+security: []

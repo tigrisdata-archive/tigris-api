@@ -33,6 +33,14 @@ option (openapi.v3.document) = {
       url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
     }
   }
+  security: {
+    additional_properties: {
+      name: "BearerAuth"
+      value: {
+        value: []
+      }
+    }
+  }
   tags: [{
     name: "Info"
     description: "APIs to manage or get more information about the server."
