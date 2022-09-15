@@ -713,7 +713,7 @@ service Tigris {
   // within a transaction will run with serializable isolation.
   rpc BeginTransaction(BeginTransactionRequest) returns (BeginTransactionResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/transactions/begin"
+      post : "/v1/databases/{db}/transactions/begin"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -725,7 +725,7 @@ service Tigris {
   // or nothing semantics by ensuring no partial updates are in the database due to a transaction failure.
   rpc CommitTransaction(CommitTransactionRequest) returns (CommitTransactionResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/transactions/commit"
+      post : "/v1/databases/{db}/transactions/commit"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -737,7 +737,7 @@ service Tigris {
   // performed in the transaction
   rpc RollbackTransaction(RollbackTransactionRequest) returns (RollbackTransactionResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/transactions/rollback"
+      post : "/v1/databases/{db}/transactions/rollback"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -751,7 +751,7 @@ service Tigris {
   // already exists. To replace documents, use REPLACE API instead of INSERT.
   rpc Insert(InsertRequest) returns (InsertResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/{collection}/documents/insert"
+      post : "/v1/databases/{db}/collections/{collection}/documents/insert"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -762,7 +762,7 @@ service Tigris {
   // Inserts the documents or replaces the existing documents in the collections.
   rpc Replace(ReplaceRequest) returns (ReplaceResponse) {
     option (google.api.http) = {
-      put : "/api/v1/databases/{db}/collections/{collection}/documents/replace"
+      put : "/v1/databases/{db}/collections/{collection}/documents/replace"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -773,7 +773,7 @@ service Tigris {
   // Delete a range of documents in the collection using the condition provided in the filter.
   rpc Delete(DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
-      delete : "/api/v1/databases/{db}/collections/{collection}/documents/delete"
+      delete : "/v1/databases/{db}/collections/{collection}/documents/delete"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -784,7 +784,7 @@ service Tigris {
   // Update a range of documents in the collection using the condition provided in the filter.
   rpc Update(UpdateRequest) returns (UpdateResponse) {
     option (google.api.http) = {
-      put : "/api/v1/databases/{db}/collections/{collection}/documents/update"
+      put : "/v1/databases/{db}/collections/{collection}/documents/update"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -800,10 +800,10 @@ service Tigris {
   // of the Read API <a href="https://docs.tigrisdata.com/overview/query" title="here">here</a>.
   rpc Read(ReadRequest) returns (stream ReadResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/{collection}/documents/read"
+      post : "/v1/databases/{db}/collections/{collection}/documents/read"
       body : "*"
       additional_bindings {
-        post : "/api/v1/databases/{db}/collections/{collection}/messages/read"
+        post : "/v1/databases/{db}/collections/{collection}/messages/read"
         body : "*"
       }
     };
@@ -819,10 +819,10 @@ service Tigris {
   // You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
   rpc Search(SearchRequest) returns (stream SearchResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/{collection}/documents/search"
+      post : "/v1/databases/{db}/collections/{collection}/documents/search"
       body : "*"
       additional_bindings {
-        post : "/api/v1/databases/{db}/collections/{collection}/messages/search"
+        post : "/v1/databases/{db}/collections/{collection}/messages/search"
         body : "*"
       }
     };
@@ -839,7 +839,7 @@ service Tigris {
   //    <li> MESSAGES: Supports Pub/Sub APIs.
   rpc CreateOrUpdateCollection(CreateOrUpdateCollectionRequest) returns (CreateOrUpdateCollectionResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/{collection}/createOrUpdate"
+      post : "/v1/databases/{db}/collections/{collection}/createOrUpdate"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -850,7 +850,7 @@ service Tigris {
   // Drop the collection inside this database. This API deletes all of the documents inside this collection and any metadata associated with it.
   rpc DropCollection(DropCollectionRequest) returns (DropCollectionResponse) {
     option (google.api.http) = {
-      delete : "/api/v1/databases/{db}/collections/{collection}/drop"
+      delete : "/v1/databases/{db}/collections/{collection}/drop"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -861,7 +861,7 @@ service Tigris {
   // List returns all the databases.
   rpc ListDatabases(ListDatabasesRequest) returns (ListDatabasesResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/list"
+      post : "/v1/databases/list"
     };
     option(openapi.v3.operation) = {
       summary: "List Databases"
@@ -871,7 +871,7 @@ service Tigris {
   // List all the collections present in the database passed in the request.
   rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/list"
+      post : "/v1/databases/{db}/collections/list"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -882,7 +882,7 @@ service Tigris {
   // Creates a new database. Returns an AlreadyExists error with a status code 409 if the database already exists.
   rpc CreateDatabase(CreateDatabaseRequest) returns (CreateDatabaseResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/create"
+      post : "/v1/databases/{db}/create"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -894,7 +894,7 @@ service Tigris {
   // Drop database deletes all the collections in this database along with all of the documents, and associated metadata for these collections.
   rpc DropDatabase(DropDatabaseRequest) returns (DropDatabaseResponse) {
     option (google.api.http) = {
-      delete : "/api/v1/databases/{db}/drop"
+      delete : "/v1/databases/{db}/drop"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -907,7 +907,7 @@ service Tigris {
   // This can be used to retrieve the size of the database or to retrieve schemas and the size of all the collections present in this database.
   rpc DescribeDatabase(DescribeDatabaseRequest) returns (DescribeDatabaseResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/describe"
+      post : "/v1/databases/{db}/describe"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -919,7 +919,7 @@ service Tigris {
   // Returns the information related to the collection. This can be used to retrieve the schema or size of the collection.
   rpc DescribeCollection(DescribeCollectionRequest) returns (DescribeCollectionResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/{collection}/describe"
+      post : "/v1/databases/{db}/collections/{collection}/describe"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -933,7 +933,7 @@ service Tigris {
   // if a transaction performed more than one operation in the collection.
   rpc Events(EventsRequest) returns (stream EventsResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/{collection}/events"
+      post : "/v1/databases/{db}/collections/{collection}/events"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -946,7 +946,7 @@ service Tigris {
   rpc GetInfo(GetInfoRequest) returns
       (GetInfoResponse) {
     option (google.api.http) = {
-      get : "/api/v1/info"
+      get : "/v1/info"
     };
     option(openapi.v3.operation) = {
       summary: "Information about the server"
@@ -957,7 +957,7 @@ service Tigris {
   // Publish API is use to publish messages to the collection.
   rpc Publish(PublishRequest) returns (PublishResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/{collection}/messages/publish"
+      post : "/v1/databases/{db}/collections/{collection}/messages/publish"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -969,7 +969,7 @@ service Tigris {
   // Subscribe is used to subscribe to the collection and receive messages from it.
   rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {
     option (google.api.http) = {
-      post : "/api/v1/databases/{db}/collections/{collection}/messages/subscribe"
+      post : "/v1/databases/{db}/collections/{collection}/messages/subscribe"
       body : "*"
     };
     option(openapi.v3.operation) = {

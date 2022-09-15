@@ -71,7 +71,7 @@ service Auth {
   rpc getAccessToken(GetAccessTokenRequest) returns
       (GetAccessTokenResponse) {
     option (google.api.http) = {
-      post : "/auth/token"
+      post : "/v1/auth/token"
       body : "*"
     };
     option(openapi.v3.operation) = {

@@ -36,7 +36,7 @@ message HealthCheckResponse {
 service HealthAPI {
   rpc Health(HealthCheckInput) returns (HealthCheckResponse) {
     option (google.api.http) = {
-      get : "/api/v1/health"
+      get : "/v1/health"
     };
     option(openapi.v3.operation) = {
       summary: "Liveliness healthcheck"

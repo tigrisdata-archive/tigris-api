@@ -11,7 +11,7 @@ info:
         url: https://github.com/tigrisdata/tigris/blob/main/LICENSE
     version: 0.0.1
 paths:
-    /admin/v1/namespaces/list:
+    /v1/admin/namespaces/list:
         post:
             tags:
                 - Namespace
@@ -31,7 +31,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /admin/v1/namespaces/{name}/create:
+    /v1/admin/namespaces/{name}/create:
         post:
             tags:
                 - Namespace
@@ -64,7 +64,170 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/list:
+    /v1/applications/create:
+        post:
+            tags:
+                - application
+                - user
+            summary: Creates the application.
+            description: Create an application.
+            operationId: User_CreateApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/applications/delete:
+        delete:
+            tags:
+                - application
+                - user
+            summary: Creates the application.
+            description: Delete an application.
+            operationId: User_DeleteApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteApplicationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/applications/list:
+        post:
+            tags:
+                - application
+                - user
+            summary: List applications.
+            description: Lists all application visible to requesting actor.
+            operationId: User_ListApplications
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListApplicationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListApplicationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/applications/rotate:
+        post:
+            tags:
+                - application
+                - user
+            summary: Rotates the application secret.
+            description: rotateApplicationSecret returns the new application with rotated secret
+            operationId: User_RotateApplicationSecret
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RotateApplicationSecretRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RotateApplicationSecretResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/applications/update:
+        post:
+            tags:
+                - application
+                - user
+            summary: Updates the application.
+            description: Update an application.
+            operationId: User_UpdateApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/auth/token:
+        post:
+            tags:
+                - auth
+            summary: 'Gets an access token using refresh token. Supports two grant_type: [refresh_token, client_credentials] - when refresh_token is used only refresh_token as request is required, for the client_credentials [client_id, client_secret] are required'
+            description: |-
+                Gets an access token.
+                 supports two grant_type: [refresh_token, client_credentials]
+            operationId: Auth_GetAccessToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetAccessTokenRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetAccessTokenResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/databases/list:
         post:
             tags:
                 - Databases
@@ -84,7 +247,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/list:
+    /v1/databases/{db}/collections/list:
         post:
             tags:
                 - Databases
@@ -117,7 +280,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/createOrUpdate:
+    /v1/databases/{db}/collections/{collection}/createOrUpdate:
         post:
             tags:
                 - Collections
@@ -162,7 +325,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/describe:
+    /v1/databases/{db}/collections/{collection}/describe:
         post:
             tags:
                 - Collections
@@ -201,7 +364,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/delete:
+    /v1/databases/{db}/collections/{collection}/documents/delete:
         delete:
             tags:
                 - Documents
@@ -240,7 +403,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/insert:
+    /v1/databases/{db}/collections/{collection}/documents/insert:
         post:
             tags:
                 - Documents
@@ -282,7 +445,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/read:
+    /v1/databases/{db}/collections/{collection}/documents/read:
         post:
             tags:
                 - Documents
@@ -327,7 +490,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/replace:
+    /v1/databases/{db}/collections/{collection}/documents/replace:
         put:
             tags:
                 - Documents
@@ -366,7 +529,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/search:
+    /v1/databases/{db}/collections/{collection}/documents/search:
         post:
             tags:
                 - Documents
@@ -409,7 +572,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/update:
+    /v1/databases/{db}/collections/{collection}/documents/update:
         put:
             tags:
                 - Documents
@@ -448,7 +611,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/drop:
+    /v1/databases/{db}/collections/{collection}/drop:
         delete:
             tags:
                 - Collections
@@ -487,7 +650,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/events:
+    /v1/databases/{db}/collections/{collection}/events:
         post:
             tags:
                 - Collections
@@ -527,7 +690,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/messages/publish:
+    /v1/databases/{db}/collections/{collection}/messages/publish:
         post:
             tags:
                 - Event Streaming
@@ -564,7 +727,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/messages/subscribe:
+    /v1/databases/{db}/collections/{collection}/messages/subscribe:
         post:
             tags:
                 - Event Streaming
@@ -601,7 +764,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/create:
+    /v1/databases/{db}/create:
         post:
             tags:
                 - Databases
@@ -634,7 +797,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/describe:
+    /v1/databases/{db}/describe:
         post:
             tags:
                 - Databases
@@ -669,7 +832,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/drop:
+    /v1/databases/{db}/drop:
         delete:
             tags:
                 - Databases
@@ -702,7 +865,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/transactions/begin:
+    /v1/databases/{db}/transactions/begin:
         post:
             tags:
                 - Transactions
@@ -737,7 +900,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/transactions/commit:
+    /v1/databases/{db}/transactions/commit:
         post:
             tags:
                 - Transactions
@@ -772,7 +935,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/transactions/rollback:
+    /v1/databases/{db}/transactions/rollback:
         post:
             tags:
                 - Transactions
@@ -807,7 +970,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/health:
+    /v1/health:
         get:
             tags:
                 - healthcheck
@@ -827,7 +990,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/Status'
             security: []
-    /api/v1/info:
+    /v1/info:
         get:
             tags:
                 - Info
@@ -847,35 +1010,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /auth/token:
-        post:
-            tags:
-                - auth
-            summary: 'Gets an access token using refresh token. Supports two grant_type: [refresh_token, client_credentials] - when refresh_token is used only refresh_token as request is required, for the client_credentials [client_id, client_secret] are required'
-            description: |-
-                Gets an access token.
-                 supports two grant_type: [refresh_token, client_credentials]
-            operationId: Auth_GetAccessToken
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/GetAccessTokenRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/GetAccessTokenResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /observability/v1/metrics/timeseries/query:
+    /v1/observability/metrics/timeseries/query:
         post:
             tags:
                 - metrics
@@ -901,142 +1036,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /users/v1/applications/create:
-        post:
-            tags:
-                - application
-                - user
-            summary: Creates the application.
-            description: Create an application.
-            operationId: User_CreateApplication
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateApplicationRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateApplicationResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /users/v1/applications/delete:
-        delete:
-            tags:
-                - application
-                - user
-            summary: Creates the application.
-            description: Delete an application.
-            operationId: User_DeleteApplication
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DeleteApplicationsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DeleteApplicationResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /users/v1/applications/list:
-        post:
-            tags:
-                - application
-                - user
-            summary: List applications.
-            description: Lists all application visible to requesting actor.
-            operationId: User_ListApplications
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ListApplicationsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListApplicationsResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /users/v1/applications/rotate:
-        post:
-            tags:
-                - application
-                - user
-            summary: Rotates the application secret.
-            description: rotateApplicationSecret returns the new application with rotated secret
-            operationId: User_RotateApplicationSecret
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/RotateApplicationSecretRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/RotateApplicationSecretResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /users/v1/applications/update:
-        post:
-            tags:
-                - application
-                - user
-            summary: Updates the application.
-            description: Update an application.
-            operationId: User_UpdateApplication
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UpdateApplicationRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UpdateApplicationResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /users/v1/metadata/{metadataKey}/get:
+    /v1/users/metadata/{metadataKey}/get:
         post:
             tags:
                 - metadata
@@ -1069,7 +1069,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /users/v1/metadata/{metadataKey}/insert:
+    /v1/users/metadata/{metadataKey}/insert:
         post:
             tags:
                 - metadata
@@ -1102,7 +1102,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /users/v1/metadata/{metadataKey}/update:
+    /v1/users/metadata/{metadataKey}/update:
         post:
             tags:
                 - metadata

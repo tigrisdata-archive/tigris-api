@@ -116,7 +116,7 @@ service Observability {
   rpc QueryTimeSeriesMetrics(QueryTimeSeriesMetricsRequest)
       returns (QueryTimeSeriesMetricsResponse) {
     option (google.api.http) = {
-      post : "/observability/v1/metrics/timeseries/query"
+      post : "/v1/observability/metrics/timeseries/query"
       body : "*"
     };
     option (openapi.v3.operation) = {

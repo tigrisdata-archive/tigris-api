@@ -34,7 +34,7 @@ main() {
 
 	# Empty security in the health.proto doesn't work,
 	# so fixing it here
-	yq_cmd '.paths."/api/v1/health".get.security=[]'
+	yq_cmd '.paths."/v1/health".get.security=[]'
 
 	yq_del_namespace_name CreateNamespaceRequest
 
@@ -144,7 +144,7 @@ yq_streaming_response() {
 	.properties.error.$ref="#/components/schemas/Error"
 	)'
 
-	yq_cmd '.paths."/api/v1/databases/{db}/'"$2"'".post.responses.200.content."application/json".schema.$ref="#/components/schemas/Streaming'"$1"'"'
+	yq_cmd '.paths."/v1/databases/{db}/'"$2"'".post.responses.200.content."application/json".schema.$ref="#/components/schemas/Streaming'"$1"'"'
 }
 
 # Rewrite default response Status to look like:

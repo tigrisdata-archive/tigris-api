@@ -62,7 +62,7 @@ service Admin {
   rpc createNamespace(CreateNamespaceRequest) returns 
       (CreateNamespaceResponse) {
     option (google.api.http) = {
-      post : "/admin/v1/namespaces/{name}/create"
+      post : "/v1/admin/namespaces/{name}/create"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -75,7 +75,7 @@ service Admin {
   rpc listNamespaces(ListNamespacesRequest) returns
       (ListNamespacesResponse) {
     option (google.api.http) = {
-      post : "/admin/v1/namespaces/list"
+      post : "/v1/admin/namespaces/list"
     };
     option(openapi.v3.operation) = {
       summary: "Lists all namespaces."
