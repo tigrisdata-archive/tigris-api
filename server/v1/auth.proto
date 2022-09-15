@@ -24,46 +24,14 @@ option java_package = "com.tigrisdata.db.api.v1.grpc";
 
 
 option (openapi.v3.document) = {
-  info: {
-    title: "Authorization API Reference"
-    version: "0.0.1"
-    description: "\n## Overview\nThis section is organized around Tigris authorization HTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
-    license: {
-      name: "Apache License"
-      url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
-    }
-  }
-  security: {
-    additional_properties: {
-      name: "BearerAuth"
-      value: {
-        value: []
-      }
-    }
-  }
   tags: [{
     name: "auth"
     description: "Tigris supports pluggable oauth provider. The auth section of API provides open authorization (OAuth 2.0) APIs"
   },
-    {
-      name: "application"
-      description: "Tigris supports application based authentication. This section provides API to manage user applications"
-    }]
-  components: {
-    security_schemes: {
-      additional_properties: [
-        {
-          name: "BearerAuth";
-          value: {
-            security_scheme: {
-              type: "http";
-              scheme: "bearer";
-            }
-          }
-        }
-      ]
-    }
-  }
+  {
+    name: "application"
+    description: "Tigris supports application based authentication. This section provides API to manage user applications"
+  }]
 };
 
 // Requests the access token by specifying

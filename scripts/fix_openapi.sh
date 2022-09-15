@@ -17,33 +17,26 @@
 set -e
 
 IN_FILE=$1
-OUT_FILE=$2
 
 main() {
 	fix_bytes
 
-	if [[ "$OUT_FILE" == *"user_openapi"* ]]; then
-		for i in InsertUserMetadataRequest \
-			InsertUserMetadataResponse \
-			UpdateUserMetadataRequest \
-			UpdateUserMetadataResponse \
-			GetUserMetadataRequest \
-			GetUserMetadataResponse; do
+	# user_openapi
+	for i in InsertUserMetadataRequest \
+		InsertUserMetadataResponse \
+		UpdateUserMetadataRequest \
+		UpdateUserMetadataResponse \
+		GetUserMetadataRequest \
+		GetUserMetadataResponse; do
 
-			yq_fix_object $i value
-		done
-	fi
+		yq_fix_object $i value
+	done
 
-  # Empty security in the health.proto doesn't work,
-  # so fixing it here
-	if [[ "$OUT_FILE" == *"health_openapi"* ]]; then
-	  yq_cmd ".security=[]"
-	fi
+	# Empty security in the health.proto doesn't work,
+	# so fixing it here
+	yq_cmd '.paths."/api/v1/health".get.security=[]'
 
-	if [[ "$OUT_FILE" != *"api_openapi"* ]]; then
-		yq_del_namespace_name CreateNamespaceRequest
-		exit 0
-	fi
+	yq_del_namespace_name CreateNamespaceRequest
 
 	# Fix the types of filter and document fields to be object on HTTP wire.
 	# The original format in proto file is "bytes", which allows to skip
@@ -94,11 +87,11 @@ fix_bytes() {
 	# but protoc-gen-openapi generates it as "bytes".
 	# We fix it here
 	# This is done last to also copy input file to output
-	sed -e 's/format: bytes/format: byte/g' "$IN_FILE" >"$OUT_FILE"
+	sed -i -e 's/format: bytes/format: byte/g' "$IN_FILE"
 }
 
 yq_cmd() {
-	yq -I 4 -i "$1" "$OUT_FILE"
+	yq -I 4 -i "$1" "$IN_FILE"
 }
 
 # Delete name attribute from body
@@ -125,11 +118,11 @@ yq_del_db_coll() {
 }
 
 yq_del_service_tags() {
-  yq_cmd "del(.paths[] | .get.tags[0])"
-  yq_cmd "del(.paths[] | .post.tags[0])"
-  yq_cmd "del(.paths[] | .put.tags[0])"
-  yq_cmd "del(.paths[] | .delete.tags[0])"
-  yq_cmd "del(.tags[] | select(.name == \"Tigris\"))"
+	yq_cmd "del(.paths[] | .get.tags[0])"
+	yq_cmd "del(.paths[] | .post.tags[0])"
+	yq_cmd "del(.paths[] | .put.tags[0])"
+	yq_cmd "del(.paths[] | .delete.tags[0])"
+	yq_cmd "del(.tags[] | select(.name == \"Tigris\"))"
 }
 
 # By default GRPC gateway returns streaming response and error wrapped in a new
@@ -145,13 +138,13 @@ yq_del_service_tags() {
 #
 # shellcheck disable=SC2016
 yq_streaming_response() {
-  yq_cmd 'with(.components.schemas.Streaming'"$1"';
-    .type="object" |
-    .properties.result.$ref="#/components/schemas/'"$1"'" |
-    .properties.error.$ref="#/components/schemas/Error"
-  )'
+	yq_cmd 'with(.components.schemas.Streaming'"$1"';
+	.type="object" |
+	.properties.result.$ref="#/components/schemas/'"$1"'" |
+	.properties.error.$ref="#/components/schemas/Error"
+	)'
 
-  yq_cmd '.paths."/api/v1/databases/{db}/'"$2"'".post.responses.200.content."application/json".schema.$ref="#/components/schemas/Streaming'"$1"'"'
+	yq_cmd '.paths."/api/v1/databases/{db}/'"$2"'".post.responses.200.content."application/json".schema.$ref="#/components/schemas/Streaming'"$1"'"'
 }
 
 # Rewrite default response Status to look like:

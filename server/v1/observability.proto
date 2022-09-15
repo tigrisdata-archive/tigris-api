@@ -22,44 +22,12 @@ import "openapiv3/annotations.proto";
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
-
 option (openapi.v3.document) = {
-  info: {
-    title: "Observability API Reference"
-    version: "0.0.1"
-    description: "\n## Overview\nThis section is organized around Tigris observability HTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
-    license: {
-      name: "Apache License"
-      url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
-    }
-  }
-  security: {
-    additional_properties: {
-      name: "BearerAuth"
-      value: {
-        value: []
-      }
-    }
-  }
-  tags: [{
-    name: "metrics"
-    description: "Tigris supports pluggable observability providers. The metrics section of API provides way to query Tigris metrics"
-  }]
-  components: {
-    security_schemes: {
-      additional_properties: [
-        {
-          name: "BearerAuth";
-          value: {
-            security_scheme: {
-              type: "http";
-              scheme: "bearer";
-            }
-          }
-        }
-      ]
-    }
-  }
+  tags : [ {
+    name : "metrics"
+    description : "Tigris supports pluggable observability providers. The "
+                  "metrics section of API provides way to query Tigris metrics"
+  } ]
 };
 
 // Requests the time series metrics
@@ -69,7 +37,7 @@ message QueryTimeSeriesMetricsRequest {
   int64 from = 3;
   int64 to = 4;
   string metric_name = 5;
-  TigrisOperation tigris_operation=6;
+  TigrisOperation tigris_operation = 6;
   MetricQuerySpaceAggregation space_aggregation = 7;
   repeated string space_aggregated_by = 8;
   MetricQueryFunction function = 9;
@@ -81,7 +49,7 @@ message QueryTimeSeriesMetricsRequest {
 enum TigrisOperation {
   ALL = 0;
   READ = 1;
-  WRITE =2;
+  WRITE = 2;
 }
 
 // Function to apply on metrics query
@@ -92,9 +60,7 @@ enum MetricQueryFunction {
 }
 
 // Additional function to apply on metrics query
-message AdditionalFunction {
-  optional RollupFunction rollup = 1;
-}
+message AdditionalFunction { optional RollupFunction rollup = 1; }
 
 // Rollup function aggregates the slices of metrics returned by original query
 // and lets you operate on the slices using aggregator and constructs the
@@ -135,7 +101,7 @@ message MetricSeries {
   int64 from = 1;
   int64 to = 2;
   string metric = 3;
-  string scope=4;
+  string scope = 4;
   repeated DataPoint dataPoints = 5;
 }
 
@@ -147,15 +113,15 @@ message DataPoint {
 
 service Observability {
   // Queries time series metrics
-  rpc QueryTimeSeriesMetrics(QueryTimeSeriesMetricsRequest) returns
-      (QueryTimeSeriesMetricsResponse) {
+  rpc QueryTimeSeriesMetrics(QueryTimeSeriesMetricsRequest)
+      returns (QueryTimeSeriesMetricsResponse) {
     option (google.api.http) = {
       post : "/observability/v1/metrics/timeseries/query"
       body : "*"
     };
-    option(openapi.v3.operation) = {
-      summary: "Queries time series metrics."
-      tags: "metrics"
+    option (openapi.v3.operation) = {
+      summary : "Queries time series metrics."
+      tags : "metrics"
     };
   }
 }

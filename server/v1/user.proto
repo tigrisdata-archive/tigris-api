@@ -24,23 +24,6 @@ option java_package = "com.tigrisdata.db.api.v1.grpc";
 
 
 option (openapi.v3.document) = {
-  info: {
-    title: "User API Reference"
-    version: "0.0.1"
-    description: "\n## Overview\nThis section is organized around Tigris userHTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
-    license: {
-      name: "Apache License"
-      url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
-    }
-  }
-  security: {
-    additional_properties: {
-      name: "BearerAuth"
-      value: {
-        value: []
-      }
-    }
-  }
   tags: [
     {
       name: "application"
@@ -55,21 +38,6 @@ option (openapi.v3.document) = {
       description: "Tigris supports user metadata management. This section provides API to manage metadata about user"
     }
   ]
-  components: {
-    security_schemes: {
-      additional_properties: [
-        {
-          name: "BearerAuth";
-          value: {
-            security_scheme: {
-              type: "http";
-              scheme: "bearer";
-            }
-          }
-        }
-      ]
-    }
-  }
 };
 
 // Request creation of user application

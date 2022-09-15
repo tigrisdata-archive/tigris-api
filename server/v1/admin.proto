@@ -23,42 +23,10 @@ option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
 option (openapi.v3.document) = {
-  info: {
-    title: "Admin API Reference"
-    version: "0.0.1"
-    description: "\n## Overview\nThis section is organized around Tigris admin HTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
-    license: {
-      name: "Apache License"
-      url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
-    }
-  }
-  security: {
-    additional_properties: {
-      name: "BearerAuth"
-      value: {
-        value: []
-      }
-    }
-  }
   tags: [{
     name: "Namespace"
     description: "APIs to manage Tigris namespaces."
   }]
-  components: {
-    security_schemes: {
-      additional_properties: [
-        {
-          name: "BearerAuth";
-          value: {
-            security_scheme: {
-              type: "http";
-              scheme: "bearer";
-            }
-          }
-        }
-      ]
-    }
-  }
 };
 
 message CreateNamespaceRequest{
