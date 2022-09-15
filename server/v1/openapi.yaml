@@ -11,7 +11,223 @@ info:
         url: https://github.com/tigrisdata/tigris/blob/main/LICENSE
     version: 0.0.1
 paths:
-    /api/v1/databases/list:
+    /v1/admin/namespaces/list:
+        post:
+            tags:
+                - Namespace
+            summary: Lists all namespaces.
+            description: List all namespace
+            operationId: Admin_ListNamespaces
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListNamespacesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/admin/namespaces/{name}/create:
+        post:
+            tags:
+                - Namespace
+            summary: Creates a namespace.
+            description: Creates a new namespace, if it does not exist
+            operationId: Admin_CreateNamespace
+            parameters:
+                - name: name
+                  in: path
+                  description: A namespace name.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateNamespaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateNamespaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/applications/create:
+        post:
+            tags:
+                - application
+                - user
+            summary: Creates the application.
+            description: Create an application.
+            operationId: User_CreateApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/applications/delete:
+        delete:
+            tags:
+                - application
+                - user
+            summary: Creates the application.
+            description: Delete an application.
+            operationId: User_DeleteApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteApplicationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/applications/list:
+        post:
+            tags:
+                - application
+                - user
+            summary: List applications.
+            description: Lists all application visible to requesting actor.
+            operationId: User_ListApplications
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListApplicationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListApplicationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/applications/rotate:
+        post:
+            tags:
+                - application
+                - user
+            summary: Rotates the application secret.
+            description: rotateApplicationSecret returns the new application with rotated secret
+            operationId: User_RotateApplicationSecret
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RotateApplicationSecretRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RotateApplicationSecretResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/applications/update:
+        post:
+            tags:
+                - application
+                - user
+            summary: Updates the application.
+            description: Update an application.
+            operationId: User_UpdateApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/auth/token:
+        post:
+            tags:
+                - auth
+            summary: 'Gets an access token using refresh token. Supports two grant_type: [refresh_token, client_credentials] - when refresh_token is used only refresh_token as request is required, for the client_credentials [client_id, client_secret] are required'
+            description: |-
+                Gets an access token.
+                 supports two grant_type: [refresh_token, client_credentials]
+            operationId: Auth_GetAccessToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetAccessTokenRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetAccessTokenResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/databases/list:
         post:
             tags:
                 - Databases
@@ -31,7 +247,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/list:
+    /v1/databases/{db}/collections/list:
         post:
             tags:
                 - Databases
@@ -64,7 +280,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/createOrUpdate:
+    /v1/databases/{db}/collections/{collection}/createOrUpdate:
         post:
             tags:
                 - Collections
@@ -109,7 +325,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/describe:
+    /v1/databases/{db}/collections/{collection}/describe:
         post:
             tags:
                 - Collections
@@ -148,7 +364,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/delete:
+    /v1/databases/{db}/collections/{collection}/documents/delete:
         delete:
             tags:
                 - Documents
@@ -187,7 +403,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/insert:
+    /v1/databases/{db}/collections/{collection}/documents/insert:
         post:
             tags:
                 - Documents
@@ -229,7 +445,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/read:
+    /v1/databases/{db}/collections/{collection}/documents/read:
         post:
             tags:
                 - Documents
@@ -274,7 +490,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/replace:
+    /v1/databases/{db}/collections/{collection}/documents/replace:
         put:
             tags:
                 - Documents
@@ -313,7 +529,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/search:
+    /v1/databases/{db}/collections/{collection}/documents/search:
         post:
             tags:
                 - Documents
@@ -356,7 +572,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/documents/update:
+    /v1/databases/{db}/collections/{collection}/documents/update:
         put:
             tags:
                 - Documents
@@ -395,7 +611,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/drop:
+    /v1/databases/{db}/collections/{collection}/drop:
         delete:
             tags:
                 - Collections
@@ -434,7 +650,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/events:
+    /v1/databases/{db}/collections/{collection}/events:
         post:
             tags:
                 - Collections
@@ -474,7 +690,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/messages/publish:
+    /v1/databases/{db}/collections/{collection}/messages/publish:
         post:
             tags:
                 - Event Streaming
@@ -511,7 +727,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/collections/{collection}/messages/subscribe:
+    /v1/databases/{db}/collections/{collection}/messages/subscribe:
         post:
             tags:
                 - Event Streaming
@@ -548,7 +764,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/create:
+    /v1/databases/{db}/create:
         post:
             tags:
                 - Databases
@@ -581,7 +797,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/describe:
+    /v1/databases/{db}/describe:
         post:
             tags:
                 - Databases
@@ -616,7 +832,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/drop:
+    /v1/databases/{db}/drop:
         delete:
             tags:
                 - Databases
@@ -649,7 +865,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/transactions/begin:
+    /v1/databases/{db}/transactions/begin:
         post:
             tags:
                 - Transactions
@@ -684,7 +900,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/transactions/commit:
+    /v1/databases/{db}/transactions/commit:
         post:
             tags:
                 - Transactions
@@ -719,7 +935,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/databases/{db}/transactions/rollback:
+    /v1/databases/{db}/transactions/rollback:
         post:
             tags:
                 - Transactions
@@ -754,7 +970,27 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/info:
+    /v1/health:
+        get:
+            tags:
+                - healthcheck
+            summary: Liveliness healthcheck
+            operationId: HealthAPI_Health
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HealthCheckResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+            security: []
+    /v1/info:
         get:
             tags:
                 - Info
@@ -774,8 +1010,169 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/observability/metrics/timeseries/query:
+        post:
+            tags:
+                - metrics
+            summary: Queries time series metrics.
+            description: Queries time series metrics
+            operationId: Observability_QueryTimeSeriesMetrics
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/QueryTimeSeriesMetricsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/QueryTimeSeriesMetricsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/users/metadata/{metadataKey}/get:
+        post:
+            tags:
+                - metadata
+                - user
+            summary: Reads the user metadata.
+            description: insertUserMetadata inserts the user metadata object
+            operationId: User_GetUserMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetUserMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetUserMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/users/metadata/{metadataKey}/insert:
+        post:
+            tags:
+                - metadata
+                - user
+            summary: Inserts user metadata.
+            description: insertUserMetadata inserts the user metadata object
+            operationId: User_InsertUserMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/InsertUserMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InsertUserMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/users/metadata/{metadataKey}/update:
+        post:
+            tags:
+                - metadata
+                - user
+            summary: Updates user metadata.
+            description: updateUserMetadata updates the user metadata object
+            operationId: User_UpdateUserMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateUserMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateUserMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
+        AdditionalFunction:
+            type: object
+            properties:
+                rollup:
+                    $ref: '#/components/schemas/RollupFunction'
+            description: Additional function to apply on metrics query
+        Application:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Generated client id
+                name:
+                    type: string
+                    description: A human readable app name
+                description:
+                    type: string
+                    description: A human readable app description
+                secret:
+                    type: string
+                    description: Generated app secret
+                created_at:
+                    type: integer
+                    description: Created at
+                    format: int64
+                created_by:
+                    type: string
+                    description: Created by
+                updated_at:
+                    type: integer
+                    description: Updated at
+                    format: int64
+                updated_by:
+                    type: string
+                    description: Updated by
+            description: An user application
         BeginTransactionRequest:
             type: object
             properties:
@@ -788,6 +1185,12 @@ components:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
             description: Start transaction returns transaction context  which uniquely identifies the transaction
+        Collation:
+            type: object
+            properties:
+                case:
+                    type: string
+            description: A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set this option to 'ci' that will apply to all the text fields in the filters.
         CollectionDescription:
             type: object
             properties:
@@ -828,12 +1231,44 @@ components:
                 status:
                     type: string
                     description: Status of commit transaction operation.
+        CreateApplicationRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: A human readable app name
+                description:
+                    type: string
+                    description: A human readable app description
+            description: Request creation of user application
+        CreateApplicationResponse:
+            type: object
+            properties:
+                created_application:
+                    $ref: '#/components/schemas/Application'
+            description: CreateApplication returns created application
         CreateDatabaseRequest:
             type: object
             properties:
                 options:
                     $ref: '#/components/schemas/DatabaseOptions'
         CreateDatabaseResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "created".
+        CreateNamespaceRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: A unique namespace id.
+                    format: int32
+        CreateNamespaceResponse:
             type: object
             properties:
                 message:
@@ -862,6 +1297,16 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created" or "updated"
+        DataPoint:
+            type: object
+            properties:
+                timestamp:
+                    type: integer
+                    format: int64
+                value:
+                    type: number
+                    format: double
+            description: Represents the data point in timeseries.
         DatabaseInfo:
             type: object
             properties:
@@ -877,6 +1322,20 @@ components:
             type: object
             properties: {}
             description: Database requests modifying options.
+        DeleteApplicationResponse:
+            type: object
+            properties:
+                deleted:
+                    type: boolean
+                    description: status flag for delete operation
+            description: DeleteApplication returns the flag to convey if application was deleted
+        DeleteApplicationsRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: application id
+            description: Request deletion of an application
         DeleteRequest:
             type: object
             properties:
@@ -890,6 +1349,8 @@ components:
             properties:
                 write_options:
                     $ref: '#/components/schemas/WriteOptions'
+                collation:
+                    $ref: '#/components/schemas/Collation'
             description: Additional options for deleted requests.
         DeleteResponse:
             type: object
@@ -1059,19 +1520,69 @@ components:
                     description: Total number of values in a field
                     format: int64
             description: Additional stats for faceted field
+        GetAccessTokenRequest:
+            type: object
+            properties:
+                grant_type:
+                    enum:
+                        - REFRESH_TOKEN
+                        - CLIENT_CREDENTIALS
+                    type: string
+                    format: enum
+                refresh_token:
+                    type: string
+                    description: 'case: refresh_token: A valid refresh token'
+                client_id:
+                    type: string
+                    description: 'case: client_credentials: A valid credentials (client_id, client_secret, audience)'
+                client_secret:
+                    type: string
+            description: Requests the access token by specifying grant_type:refresh_token & refresh_token or grant_type:client_credentials & [client_id, client_secret]
+        GetAccessTokenResponse:
+            type: object
+            properties:
+                access_token:
+                    type: string
+                    description: An access token.
+                refresh_token:
+                    type: string
+                    description: Refresh token.
+                expires_in:
+                    type: integer
+                    description: Access token expiration timeout in seconds
+                    format: int32
+            description: GetAccessToken returns response containing access_token and optionally refresh_token
         GetInfoResponse:
             type: object
             properties:
                 server_version:
                     type: string
-        GoogleProtobufAny:
+        GetUserMetadataRequest:
             type: object
             properties:
-                '@type':
+                metadataKey:
                     type: string
-                    description: The type of the serialized message.
-            additionalProperties: true
-            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+                value:
+                    type: object
+            description: Request user metadata
+        GetUserMetadataResponse:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                userId:
+                    type: string
+                namespaceId:
+                    type: integer
+                    format: uint32
+                value:
+                    type: object
+            description: User metadata response
+        HealthCheckResponse:
+            type: object
+            properties:
+                response:
+                    type: string
         InsertRequest:
             type: object
             properties:
@@ -1102,6 +1613,39 @@ components:
                         type: string
                         format: byte
                     description: an array returns the value of the primary keys.
+        InsertUserMetadataRequest:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                value:
+                    type: object
+            description: Request insertion of user metadata
+        InsertUserMetadataResponse:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                userId:
+                    type: string
+                namespaceId:
+                    type: integer
+                    format: uint32
+                value:
+                    type: object
+            description: Insertion of user metadata response
+        ListApplicationsRequest:
+            type: object
+            properties: {}
+            description: Request listing of all the application those are visible to requesting actor
+        ListApplicationsResponse:
+            type: object
+            properties:
+                applications:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Application'
+            description: ListApplication returns one or more visible application to user
         ListCollectionsRequest:
             type: object
             properties:
@@ -1126,6 +1670,41 @@ components:
                     items:
                         $ref: '#/components/schemas/DatabaseInfo'
                     description: List of the databases.
+        ListNamespacesResponse:
+            type: object
+            properties:
+                namespaces:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/NamespaceInfo'
+        MetricSeries:
+            type: object
+            properties:
+                from:
+                    type: integer
+                    format: int64
+                to:
+                    type: integer
+                    format: int64
+                metric:
+                    type: string
+                scope:
+                    type: string
+                dataPoints:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataPoint'
+            description: Represents series in timeseries based on input query.
+        NamespaceInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: A unique namespace id.
+                    format: int32
+                name:
+                    type: string
+                    description: A namespace name.
         Page:
             type: object
             properties:
@@ -1169,12 +1748,77 @@ components:
                     items:
                         type: string
                         format: byte
+        QueryTimeSeriesMetricsRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                collection:
+                    type: string
+                from:
+                    type: integer
+                    format: int64
+                to:
+                    type: integer
+                    format: int64
+                metric_name:
+                    type: string
+                tigris_operation:
+                    enum:
+                        - ALL
+                        - READ
+                        - WRITE
+                    type: string
+                    format: enum
+                space_aggregation:
+                    enum:
+                        - AVG
+                        - MIN
+                        - MAX
+                        - SUM
+                    type: string
+                    format: enum
+                space_aggregated_by:
+                    type: array
+                    items:
+                        type: string
+                function:
+                    enum:
+                        - RATE
+                        - COUNT
+                        - NONE
+                    type: string
+                    format: enum
+                quantile:
+                    type: number
+                    format: float
+                additionalFunctions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AdditionalFunction'
+            description: Requests the time series metrics
+        QueryTimeSeriesMetricsResponse:
+            type: object
+            properties:
+                from:
+                    type: integer
+                    format: int64
+                to:
+                    type: integer
+                    format: int64
+                query:
+                    type: string
+                series:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MetricSeries'
+            description: QueryTimeSeriesMetric responds with this type.
         ReadRequest:
             type: object
             properties:
                 filter:
                     type: object
-                    description: 'Returns documents matching this filter. A filter can simply be a key, value pair where a key is the field name and the value would be the value for this field. Tigris also allows complex filtering by passing logical expressions. Logical filters are applied on two or more fields using `$or` and `$and`. A few examples of filters: <li> To read a user document where the id has a value 1: ```{"id": 1 }``` <li> To read all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}` The detailed documentation of the filter is <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.'
+                    description: 'Returns documents matching this filter. A filter can simply be a key, value pair where a key is the field name and the value would be the value for this field. Tigris also allows complex filtering by passing logical expressions. Logical filters are applied on two or more fields using `$or` and `$and`. A few examples of filters: <li> To read a user document where the id has a value 1: ```{"id": 1 }``` <li> To read all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}` Filter allows setting collation on an individual field level. To set collation for all the fields see options. The detailed documentation of the filter is <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.'
                 fields:
                     type: object
                     description: To read specific fields from a document. Default is all.
@@ -1195,6 +1839,8 @@ components:
                     type: string
                     description: A cursor for use in pagination. The next streams will return documents after this offset.
                     format: byte
+                collation:
+                    $ref: '#/components/schemas/Collation'
             description: Options that can be used to modify the results, for example "limit" to control the number of documents returned by the server.
         ReadResponse:
             type: object
@@ -1264,6 +1910,34 @@ components:
                 status:
                     type: string
                     description: Status of rollback transaction operation.
+        RollupFunction:
+            type: object
+            properties:
+                aggregator:
+                    enum:
+                        - ROLLUP_AGGREGATOR_SUM
+                        - ROLLUP_AGGREGATOR_COUNT
+                        - ROLLUP_AGGREGATOR_MIN
+                        - ROLLUP_AGGREGATOR_MAX
+                        - ROLLUP_AGGREGATOR_AVG
+                    type: string
+                    format: enum
+                interval:
+                    type: integer
+                    format: int64
+            description: Rollup function aggregates the slices of metrics returned by original query and lets you operate on the slices using aggregator and constructs the bigger slice of your choice of interval (specified in seconds).
+        RotateApplicationSecretRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+            description: Request rotation of an application secret
+        RotateApplicationSecretResponse:
+            type: object
+            properties:
+                application:
+                    $ref: '#/components/schemas/Application'
+            description: RotateApplicationRequest returns the new application with rotated secret
         SearchFacet:
             type: object
             properties:
@@ -1344,6 +2018,8 @@ components:
                     type: integer
                     description: Optionally can specify the page to retrieve. If page is set then only hits for this page is returned
                     format: int32
+                collation:
+                    $ref: '#/components/schemas/Collation'
                 fields:
                     type: object
         SearchResponse:
@@ -1420,6 +2096,25 @@ components:
             type: object
             properties: {}
             description: Options that can be used to modify the transaction semantics.
+        UpdateApplicationRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: application id
+                name:
+                    type: string
+                    description: A new human readable app name
+                description:
+                    type: string
+                    description: A new human readable app description
+            description: Request creation of user application
+        UpdateApplicationResponse:
+            type: object
+            properties:
+                updated_application:
+                    $ref: '#/components/schemas/Application'
+            description: CreateApplication returns created application
         UpdateRequest:
             type: object
             properties:
@@ -1436,6 +2131,8 @@ components:
             properties:
                 write_options:
                     $ref: '#/components/schemas/WriteOptions'
+                collation:
+                    $ref: '#/components/schemas/Collation'
             description: Additional options for update requests.
         UpdateResponse:
             type: object
@@ -1449,6 +2146,27 @@ components:
                 status:
                     type: string
                     description: an enum with value set as "updated".
+        UpdateUserMetadataRequest:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                value:
+                    type: object
+            description: Request update of user metadata
+        UpdateUserMetadataResponse:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                userId:
+                    type: string
+                namespaceId:
+                    type: integer
+                    format: uint32
+                value:
+                    type: object
+            description: Update of user metadata response
         WriteOptions:
             type: object
             properties: {}
@@ -1490,7 +2208,11 @@ components:
         BearerAuth:
             type: http
             scheme: bearer
+security:
+    - BearerAuth: []
 tags:
+    - name: Admin
+    - name: Auth
     - name: Collections
       description: The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents.
     - name: Databases
@@ -1499,7 +2221,26 @@ tags:
       description: The Documents section provide APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
     - name: Event Streaming
       description: Tigris has built-in event streaming support. This functionality is enabled for the “Messages” collection type. This type of collection exposes endpoints that allows you to both subscribe and publish to a collection which enable building event-driven applications. Ordering is guaranteed on a partition level
+    - name: HealthAPI
     - name: Info
       description: APIs to manage or get more information about the server.
+    - name: Namespace
+      description: APIs to manage Tigris namespaces.
+    - name: Observability
     - name: Transactions
       description: Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability.
+    - name: User
+    - name: application
+      description: Tigris supports application based authentication. This section provides API to manage user applications
+    - name: application
+      description: Tigris supports application based authentication. This section provides API to manage user applications
+    - name: auth
+      description: Tigris supports pluggable oauth provider. The auth section of API provides open authorization (OAuth 2.0) APIs
+    - name: healthcheck
+      description: APIs to perform health check.
+    - name: metadata
+      description: Tigris supports user metadata management. This section provides API to manage metadata about user
+    - name: metrics
+      description: Tigris supports pluggable observability providers. The metrics section of API provides way to query Tigris metrics
+    - name: user
+      description: Tigris supports basic user management. This section provides API to manage user
