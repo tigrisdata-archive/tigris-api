@@ -462,46 +462,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/events:
-        post:
-            tags:
-                - Collections
-            summary: Change Events
-            description: |-
-                Stream real-time events for mutations made to the collections in the database. Each stream will have a transaction
-                 identifier attached to it and will have a boolean flag “last” set to the last event of the transaction which will be useful
-                 if a transaction performed more than one operation in the collection.
-            operationId: Tigris_Events
-            parameters:
-                - name: db
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/EventsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/StreamingEventsResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /v1/databases/{db}/collections/{collection}/messages/publish:
         post:
             tags:

@@ -11,9 +11,9 @@ endif
 
 all: lint
 
-.PRECIOUS: ${PROTO_DIR}/%_openapi.yaml ${PROTO_DIR}/%.proto
+.PRECIOUS: ${PROTO_DIR}/openapi.yaml ${PROTO_DIR}/%.proto
 
-COMPONENTS = api health admin auth observability management
+COMPONENTS = api health auth observability management
 
 # Generate GRPC client/server, openapi spec, http server
 ${GEN_DIR}/%.pb.go ${GEN_DIR}/%.pb.gw.go: ${PROTO_DIR}/%.proto
