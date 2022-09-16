@@ -168,7 +168,7 @@ service User {
   rpc createApplication(CreateApplicationRequest) returns
       (CreateApplicationResponse) {
     option (google.api.http) = {
-      post : "/v1/applications/create"
+      post : "/v1/users/applications/create"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -181,7 +181,7 @@ service User {
   rpc updateApplication(UpdateApplicationRequest) returns
       (UpdateApplicationResponse) {
     option (google.api.http) = {
-      post : "/v1/applications/update"
+      post : "/v1/users/applications/update"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -194,7 +194,7 @@ service User {
   rpc deleteApplication(DeleteApplicationsRequest) returns
       (DeleteApplicationResponse) {
     option (google.api.http) = {
-      delete : "/v1/applications/delete"
+      delete : "/v1/users/applications/delete"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -207,7 +207,7 @@ service User {
   rpc listApplications(ListApplicationsRequest) returns
       (ListApplicationsResponse) {
     option (google.api.http) = {
-      post : "/v1/applications/list"
+      post : "/v1/users/applications/list"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -220,7 +220,7 @@ service User {
   rpc rotateApplicationSecret(RotateApplicationSecretRequest) returns
       (RotateApplicationSecretResponse) {
     option (google.api.http) = {
-      post : "/v1/applications/rotate"
+      post : "/v1/users/applications/rotate"
       body : "*"
     };
     option(openapi.v3.operation) = {
