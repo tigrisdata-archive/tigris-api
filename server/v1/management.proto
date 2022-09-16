@@ -194,7 +194,7 @@ message UpdateUserMetadataResponse {
 
 service Management {
   // Creates a new namespace, if it does not exist
-  rpc createNamespace(CreateNamespaceRequest) returns
+  rpc CreateNamespace(CreateNamespaceRequest) returns
       (CreateNamespaceResponse) {
     option (google.api.http) = {
       post : "/v1/management/namespaces/{name}/create"
@@ -207,7 +207,7 @@ service Management {
   }
 
   // List all namespace
-  rpc listNamespaces(ListNamespacesRequest) returns
+  rpc ListNamespaces(ListNamespacesRequest) returns
       (ListNamespacesResponse) {
     option (google.api.http) = {
       post : "/v1/management/namespaces/list"
@@ -220,7 +220,7 @@ service Management {
 
 
   // Create an application.
-  rpc createApplication(CreateApplicationRequest) returns
+  rpc CreateApplication(CreateApplicationRequest) returns
       (CreateApplicationResponse) {
     option (google.api.http) = {
       post : "/v1/management/applications/create"
@@ -233,7 +233,7 @@ service Management {
   }
 
   // Update an application.
-  rpc updateApplication(UpdateApplicationRequest) returns
+  rpc UpdateApplication(UpdateApplicationRequest) returns
       (UpdateApplicationResponse) {
     option (google.api.http) = {
       post : "/v1/management/applications/update"
@@ -246,7 +246,7 @@ service Management {
   }
 
   // Delete an application.
-  rpc deleteApplication(DeleteApplicationsRequest) returns
+  rpc DeleteApplication(DeleteApplicationsRequest) returns
       (DeleteApplicationResponse) {
     option (google.api.http) = {
       delete : "/v1/management/applications/delete"
@@ -259,7 +259,7 @@ service Management {
   }
 
   // Lists all application visible to requesting actor.
-  rpc listApplications(ListApplicationsRequest) returns
+  rpc ListApplications(ListApplicationsRequest) returns
       (ListApplicationsResponse) {
     option (google.api.http) = {
       post : "/v1/management/applications/list"
@@ -272,7 +272,7 @@ service Management {
   }
 
   // rotateApplicationSecret returns the new application with rotated secret
-  rpc rotateApplicationSecret(RotateApplicationSecretRequest) returns
+  rpc RotateApplicationSecret(RotateApplicationSecretRequest) returns
       (RotateApplicationSecretResponse) {
     option (google.api.http) = {
       post : "/v1/management/applications/rotate"
@@ -285,7 +285,7 @@ service Management {
   }
 
   // insertUserMetadata inserts the user metadata object
-  rpc insertUserMetadata(InsertUserMetadataRequest) returns
+  rpc InsertUserMetadata(InsertUserMetadataRequest) returns
       (InsertUserMetadataResponse) {
     option (google.api.http) = {
       post : "/v1/management/users/metadata/{metadataKey}/insert"
@@ -298,7 +298,7 @@ service Management {
   }
 
   // insertUserMetadata inserts the user metadata object
-  rpc getUserMetadata(GetUserMetadataRequest) returns
+  rpc GetUserMetadata(GetUserMetadataRequest) returns
       (GetUserMetadataResponse) {
     option (google.api.http) = {
       post : "/v1/management/users/metadata/{metadataKey}/get"
@@ -311,7 +311,7 @@ service Management {
   }
 
   // updateUserMetadata updates the user metadata object
-  rpc updateUserMetadata(UpdateUserMetadataRequest) returns
+  rpc UpdateUserMetadata(UpdateUserMetadataRequest) returns
       (UpdateUserMetadataResponse) {
     option (google.api.http) = {
       post : "/v1/management/users/metadata/{metadataKey}/update"
