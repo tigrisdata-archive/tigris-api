@@ -42,9 +42,6 @@ option (openapi.v3.document) = {
     }
   }
   tags: [{
-    name: "Info"
-    description: "APIs to manage or get more information about the server."
-  }, {
     name: "Databases"
     description: "The Databases section provide APIs that can be used to manage databases. A single database can have one or more collections."
   },{
@@ -76,56 +73,6 @@ option (openapi.v3.document) = {
     }
   }
 };
-
-// Codes returned by the Tigris server in the case of error
-enum Code {
-  OK = 0; // 200
-  CANCELLED = 1; // 499
-  UNKNOWN = 2; // 500
-  INVALID_ARGUMENT = 3; // 400
-  DEADLINE_EXCEEDED = 4; // 504
-  NOT_FOUND = 5; // 404
-  ALREADY_EXISTS = 6; // 409
-  PERMISSION_DENIED = 7; // 403
-  RESOURCE_EXHAUSTED = 8; // 429
-  FAILED_PRECONDITION = 9; // 412
-  ABORTED = 10; // 409
-  OUT_OF_RANGE = 11; // 400
-  UNIMPLEMENTED = 12; // 501
-  INTERNAL = 13; // 500
-  UNAVAILABLE = 14; // 503
-  DATA_LOSS = 15; // 500
-  UNAUTHENTICATED = 16; // 401
-  // Above code are identical to GRPC standard codes: https://cloud.google.com/apis/design/errors
-  // Below Tigris specific extended error codes are defined:
-
-  CONFLICT = 17; // 409
-  BAD_GATEWAY = 18; // 502
-  METHOD_NOT_ALLOWED = 19; // 405
-}
-
-// Contains retry information
-message RetryInfo {
-  // retry delay advice in milliseconds
-  int32 delay = 3;
-}
-
-// ErrorDetails defines error format passed by Tigris HTTP protocol
-message ErrorDetails {
-  string code = 1;
-  string message = 2;
-  RetryInfo retry = 3;
-}
-
-// The Error type defines a logical error model
-message Error {
-  // The status code is a short, machine parsable string,
-  // which uniquely identifies the error type.
-  // Tigris to HTTP code mapping [here](/reference/http-code)
-  Code code = 1;
-  // A developer-facing descriptive error message
-  string message = 2;
-}
 
 // Additional options to modify write requests.
 message WriteOptions {
@@ -667,16 +614,6 @@ message StreamEvent {
   bool last = 8;
 }
 
-message GetInfoRequest {
-}
-
-message GetInfoResponse {
-  string server_version = 1;
-
-  // NOTE: This is a hack to propagate this object definition to OpenAPI
-  Error error = 2;
-}
-
 message PublishRequestOptions {
   int32 partition = 1;
 }
@@ -702,6 +639,8 @@ message SubscribeRequest {
   string db = 1;
   string collection = 2;
   SubscribeRequestOptions options = 3;
+  // Filter allows you to subscribe only for events that you need. Filter syntax is similar to `ReadRequest.filter`.
+  bytes filter = 4;
 }
 
 message SubscribeResponse {
@@ -939,18 +878,6 @@ service Tigris {
     option(openapi.v3.operation) = {
       summary: "Change Events"
       tags: "Collections"
-    };
-  }
-
-  // Provides the information about the server. This information includes returning the server version, etc.
-  rpc GetInfo(GetInfoRequest) returns
-      (GetInfoResponse) {
-    option (google.api.http) = {
-      get : "/v1/info"
-    };
-    option(openapi.v3.operation) = {
-      summary: "Information about the server"
-      tags: "Info"
     };
   }
 

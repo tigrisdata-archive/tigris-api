@@ -13,7 +13,7 @@ all: lint
 
 .PRECIOUS: ${PROTO_DIR}/%_openapi.yaml ${PROTO_DIR}/%.proto
 
-COMPONENTS = api health admin auth observability user
+COMPONENTS = api health admin auth observability management
 
 # Generate GRPC client/server, openapi spec, http server
 ${GEN_DIR}/%.pb.go ${GEN_DIR}/%.pb.gw.go: ${PROTO_DIR}/%.proto

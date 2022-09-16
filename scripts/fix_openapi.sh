@@ -41,7 +41,7 @@ main() {
 	# Fix the types of filter and document fields to be object on HTTP wire.
 	# The original format in proto file is "bytes", which allows to skip
 	# unmarshalling in GRPC, we also implement custom unmarshalling for HTTP
-	for i in DeleteRequest UpdateRequest ReadRequest SearchRequest; do
+	for i in DeleteRequest UpdateRequest ReadRequest SearchRequest SubscribeRequest; do
 		yq_fix_object $i filter
 	done
 
@@ -87,7 +87,7 @@ fix_bytes() {
 	# but protoc-gen-openapi generates it as "bytes".
 	# We fix it here
 	# This is done last to also copy input file to output
-	sed -i -e 's/format: bytes/format: byte/g' "$IN_FILE"
+	sed -i'' -e 's/format: bytes/format: byte/g' "$IN_FILE"
 }
 
 yq_cmd() {
