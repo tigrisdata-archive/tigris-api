@@ -23,12 +23,67 @@ option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
 option (openapi.v3.document) = {
-  tags : [ {
+  tags : [{
     name : "metrics"
     description : "Tigris supports pluggable observability providers. The "
-                  "metrics section of API provides way to query Tigris metrics"
-  } ]
+        "metrics section of API provides way to query Tigris metrics"
+  },
+    {
+      name: "info"
+      description: "APIs to manage or get more information about the server."
+    }]
 };
+
+
+// Codes returned by the Tigris server in the case of error
+enum Code {
+  OK = 0; // 200
+  CANCELLED = 1; // 499
+  UNKNOWN = 2; // 500
+  INVALID_ARGUMENT = 3; // 400
+  DEADLINE_EXCEEDED = 4; // 504
+  NOT_FOUND = 5; // 404
+  ALREADY_EXISTS = 6; // 409
+  PERMISSION_DENIED = 7; // 403
+  RESOURCE_EXHAUSTED = 8; // 429
+  FAILED_PRECONDITION = 9; // 412
+  ABORTED = 10; // 409
+  OUT_OF_RANGE = 11; // 400
+  UNIMPLEMENTED = 12; // 501
+  INTERNAL = 13; // 500
+  UNAVAILABLE = 14; // 503
+  DATA_LOSS = 15; // 500
+  UNAUTHENTICATED = 16; // 401
+  // Above code are identical to GRPC standard codes: https://cloud.google.com/apis/design/errors
+  // Below Tigris specific extended error codes are defined:
+
+  CONFLICT = 17; // 409
+  BAD_GATEWAY = 18; // 502
+  METHOD_NOT_ALLOWED = 19; // 405
+}
+
+// Contains retry information
+message RetryInfo {
+  // retry delay advice in milliseconds
+  int32 delay = 3;
+}
+
+// ErrorDetails defines error format passed by Tigris HTTP protocol
+message ErrorDetails {
+  string code = 1;
+  string message = 2;
+  RetryInfo retry = 3;
+}
+
+// The Error type defines a logical error model
+message Error {
+  // The status code is a short, machine parsable string,
+  // which uniquely identifies the error type.
+  // Tigris to HTTP code mapping [here](/reference/http-code)
+  Code code = 1;
+  // A developer-facing descriptive error message
+  string message = 2;
+}
 
 // Requests the time series metrics
 message QueryTimeSeriesMetricsRequest {
@@ -60,7 +115,7 @@ enum MetricQueryFunction {
 }
 
 // Additional function to apply on metrics query
-message AdditionalFunction { optional RollupFunction rollup = 1; }
+message AdditionalFunction {optional RollupFunction rollup = 1;}
 
 // Rollup function aggregates the slices of metrics returned by original query
 // and lets you operate on the slices using aggregator and constructs the
@@ -111,6 +166,17 @@ message DataPoint {
   double value = 2;
 }
 
+
+message GetInfoRequest {
+}
+
+message GetInfoResponse {
+  string server_version = 1;
+
+  // NOTE: This is a hack to propagate this object definition to OpenAPI
+  Error error = 2;
+}
+
 service Observability {
   // Queries time series metrics
   rpc QueryTimeSeriesMetrics(QueryTimeSeriesMetricsRequest)
@@ -122,6 +188,18 @@ service Observability {
     option (openapi.v3.operation) = {
       summary : "Queries time series metrics."
       tags : "metrics"
+    };
+  }
+
+  // Provides the information about the server. This information includes returning the server version, etc.
+  rpc GetInfo(GetInfoRequest) returns
+      (GetInfoResponse) {
+    option (google.api.http) = {
+      get : "/v1/info"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Information about the server"
+      tags: "info"
     };
   }
 }

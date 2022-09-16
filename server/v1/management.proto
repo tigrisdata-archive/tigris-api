@@ -14,7 +14,7 @@
 
 syntax = "proto3";
 
-package tigrisdata.user.v1;
+package tigrisdata.management.v1;
 
 import "google/api/annotations.proto";
 import "openapiv3/annotations.proto";
@@ -22,23 +22,53 @@ import "openapiv3/annotations.proto";
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
-
 option (openapi.v3.document) = {
-  tags: [
-    {
+  tags: [{
+    name: "namespace"
+    description: "APIs to manage Tigris namespaces."
+  },
+  {
       name: "application"
       description: "Tigris supports application based authentication. This section provides API to manage user applications"
-    },
-    {
+  },
+  {
       name: "user"
       description: "Tigris supports basic user management. This section provides API to manage user"
-    },
-    {
+  },
+  {
       name: "metadata"
       description: "Tigris supports user metadata management. This section provides API to manage metadata about user"
-    }
-  ]
+  }]
 };
+
+message CreateNamespaceRequest{
+  // A unique namespace id.
+  int32 id = 1;
+  // A namespace name.
+  string name = 2;
+}
+
+message CreateNamespaceResponse{
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "created".
+  string status = 2;
+}
+
+message NamespaceInfo{
+  // A unique namespace id.
+  int32 id = 1;
+  // A namespace name.
+  string name = 2;
+}
+
+message ListNamespacesRequest {
+}
+
+message ListNamespacesResponse {
+  repeated NamespaceInfo namespaces = 1;
+}
+
 
 // Request creation of user application
 message CreateApplicationRequest {
@@ -162,18 +192,43 @@ message UpdateUserMetadataResponse {
   bytes value = 4;
 }
 
-service User {
+service Management {
+  // Creates a new namespace, if it does not exist
+  rpc createNamespace(CreateNamespaceRequest) returns
+      (CreateNamespaceResponse) {
+    option (google.api.http) = {
+      post : "/v1/management/namespaces/{name}/create"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Creates a namespace."
+      tags: ["namespace"]
+    };
+  }
+
+  // List all namespace
+  rpc listNamespaces(ListNamespacesRequest) returns
+      (ListNamespacesResponse) {
+    option (google.api.http) = {
+      post : "/v1/management/namespaces/list"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Lists all namespaces."
+      tags: ["namespace"]
+    };
+  }
+
 
   // Create an application.
   rpc createApplication(CreateApplicationRequest) returns
       (CreateApplicationResponse) {
     option (google.api.http) = {
-      post : "/v1/users/applications/create"
+      post : "/v1/management/applications/create"
       body : "*"
     };
     option(openapi.v3.operation) = {
       summary: "Creates the application."
-      tags: ["application", "user"]
+      tags: ["application"]
     };
   }
 
@@ -181,12 +236,12 @@ service User {
   rpc updateApplication(UpdateApplicationRequest) returns
       (UpdateApplicationResponse) {
     option (google.api.http) = {
-      post : "/v1/users/applications/update"
+      post : "/v1/management/applications/update"
       body : "*"
     };
     option(openapi.v3.operation) = {
       summary: "Updates the application."
-      tags: ["application", "user"]
+      tags: ["application"]
     };
   }
 
@@ -194,12 +249,12 @@ service User {
   rpc deleteApplication(DeleteApplicationsRequest) returns
       (DeleteApplicationResponse) {
     option (google.api.http) = {
-      delete : "/v1/users/applications/delete"
+      delete : "/v1/management/applications/delete"
       body : "*"
     };
     option(openapi.v3.operation) = {
       summary: "Creates the application."
-      tags: ["application", "user"]
+      tags: ["application"]
     };
   }
 
@@ -207,12 +262,12 @@ service User {
   rpc listApplications(ListApplicationsRequest) returns
       (ListApplicationsResponse) {
     option (google.api.http) = {
-      post : "/v1/users/applications/list"
+      post : "/v1/management/applications/list"
       body : "*"
     };
     option(openapi.v3.operation) = {
       summary: "List applications."
-      tags: ["application", "user"]
+      tags: ["application"]
     };
   }
 
@@ -220,12 +275,12 @@ service User {
   rpc rotateApplicationSecret(RotateApplicationSecretRequest) returns
       (RotateApplicationSecretResponse) {
     option (google.api.http) = {
-      post : "/v1/users/applications/rotate"
+      post : "/v1/management/applications/rotate"
       body : "*"
     };
     option(openapi.v3.operation) = {
       summary: "Rotates the application secret."
-      tags: ["application", "user"]
+      tags: ["application"]
     };
   }
 
@@ -233,7 +288,7 @@ service User {
   rpc insertUserMetadata(InsertUserMetadataRequest) returns
       (InsertUserMetadataResponse) {
     option (google.api.http) = {
-      post : "/v1/users/metadata/{metadataKey}/insert"
+      post : "/v1/management/users/metadata/{metadataKey}/insert"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -246,7 +301,7 @@ service User {
   rpc getUserMetadata(GetUserMetadataRequest) returns
       (GetUserMetadataResponse) {
     option (google.api.http) = {
-      post : "/v1/users/metadata/{metadataKey}/get"
+      post : "/v1/management/users/metadata/{metadataKey}/get"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -259,7 +314,7 @@ service User {
   rpc updateUserMetadata(UpdateUserMetadataRequest) returns
       (UpdateUserMetadataResponse) {
     option (google.api.http) = {
-      post : "/v1/users/metadata/{metadataKey}/update"
+      post : "/v1/management/users/metadata/{metadataKey}/update"
       body : "*"
     };
     option(openapi.v3.operation) = {

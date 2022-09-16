@@ -87,7 +87,7 @@ fix_bytes() {
 	# but protoc-gen-openapi generates it as "bytes".
 	# We fix it here
 	# This is done last to also copy input file to output
-	sed -i -e 's/format: bytes/format: byte/g' "$IN_FILE"
+	sed -i'' -e 's/format: bytes/format: byte/g' "$IN_FILE"
 }
 
 yq_cmd() {

@@ -11,59 +11,6 @@ info:
         url: https://github.com/tigrisdata/tigris/blob/main/LICENSE
     version: 0.0.1
 paths:
-    /v1/admin/namespaces/list:
-        post:
-            tags:
-                - Namespace
-            summary: Lists all namespaces.
-            description: List all namespace
-            operationId: Admin_ListNamespaces
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListNamespacesResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/admin/namespaces/{name}/create:
-        post:
-            tags:
-                - Namespace
-            summary: Creates a namespace.
-            description: Creates a new namespace, if it does not exist
-            operationId: Admin_CreateNamespace
-            parameters:
-                - name: name
-                  in: path
-                  description: A namespace name.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateNamespaceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateNamespaceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /v1/auth/token:
         post:
             tags:
@@ -858,10 +805,10 @@ paths:
     /v1/info:
         get:
             tags:
-                - Info
+                - info
             summary: Information about the server
             description: Provides the information about the server. This information includes returning the server version, etc.
-            operationId: Tigris_GetInfo
+            operationId: Observability_GetInfo
             responses:
                 "200":
                     description: OK
@@ -869,6 +816,288 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/GetInfoResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/applications/create:
+        post:
+            tags:
+                - application
+            summary: Creates the application.
+            description: Create an application.
+            operationId: Management_CreateApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/applications/delete:
+        delete:
+            tags:
+                - application
+            summary: Creates the application.
+            description: Delete an application.
+            operationId: Management_DeleteApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteApplicationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/applications/list:
+        post:
+            tags:
+                - application
+            summary: List applications.
+            description: Lists all application visible to requesting actor.
+            operationId: Management_ListApplications
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListApplicationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListApplicationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/applications/rotate:
+        post:
+            tags:
+                - application
+            summary: Rotates the application secret.
+            description: rotateApplicationSecret returns the new application with rotated secret
+            operationId: Management_RotateApplicationSecret
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RotateApplicationSecretRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RotateApplicationSecretResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/applications/update:
+        post:
+            tags:
+                - application
+            summary: Updates the application.
+            description: Update an application.
+            operationId: Management_UpdateApplication
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/namespaces/list:
+        post:
+            tags:
+                - namespace
+            summary: Lists all namespaces.
+            description: List all namespace
+            operationId: Management_ListNamespaces
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListNamespacesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/namespaces/{name}/create:
+        post:
+            tags:
+                - namespace
+            summary: Creates a namespace.
+            description: Creates a new namespace, if it does not exist
+            operationId: Management_CreateNamespace
+            parameters:
+                - name: name
+                  in: path
+                  description: A namespace name.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateNamespaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateNamespaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/users/metadata/{metadataKey}/get:
+        post:
+            tags:
+                - metadata
+                - user
+            summary: Reads the user metadata.
+            description: insertUserMetadata inserts the user metadata object
+            operationId: Management_GetUserMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetUserMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetUserMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/users/metadata/{metadataKey}/insert:
+        post:
+            tags:
+                - metadata
+                - user
+            summary: Inserts user metadata.
+            description: insertUserMetadata inserts the user metadata object
+            operationId: Management_InsertUserMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/InsertUserMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InsertUserMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/users/metadata/{metadataKey}/update:
+        post:
+            tags:
+                - metadata
+                - user
+            summary: Updates user metadata.
+            description: updateUserMetadata updates the user metadata object
+            operationId: Management_UpdateUserMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateUserMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateUserMetadataResponse'
                 default:
                     description: Default error response
                     content:
@@ -895,240 +1124,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/QueryTimeSeriesMetricsResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/users/applications/create:
-        post:
-            tags:
-                - application
-                - user
-            summary: Creates the application.
-            description: Create an application.
-            operationId: User_CreateApplication
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateApplicationRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateApplicationResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/users/applications/delete:
-        delete:
-            tags:
-                - application
-                - user
-            summary: Creates the application.
-            description: Delete an application.
-            operationId: User_DeleteApplication
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DeleteApplicationsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DeleteApplicationResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/users/applications/list:
-        post:
-            tags:
-                - application
-                - user
-            summary: List applications.
-            description: Lists all application visible to requesting actor.
-            operationId: User_ListApplications
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ListApplicationsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListApplicationsResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/users/applications/rotate:
-        post:
-            tags:
-                - application
-                - user
-            summary: Rotates the application secret.
-            description: rotateApplicationSecret returns the new application with rotated secret
-            operationId: User_RotateApplicationSecret
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/RotateApplicationSecretRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/RotateApplicationSecretResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/users/applications/update:
-        post:
-            tags:
-                - application
-                - user
-            summary: Updates the application.
-            description: Update an application.
-            operationId: User_UpdateApplication
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UpdateApplicationRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UpdateApplicationResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/users/metadata/{metadataKey}/get:
-        post:
-            tags:
-                - metadata
-                - user
-            summary: Reads the user metadata.
-            description: insertUserMetadata inserts the user metadata object
-            operationId: User_GetUserMetadata
-            parameters:
-                - name: metadataKey
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/GetUserMetadataRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/GetUserMetadataResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/users/metadata/{metadataKey}/insert:
-        post:
-            tags:
-                - metadata
-                - user
-            summary: Inserts user metadata.
-            description: insertUserMetadata inserts the user metadata object
-            operationId: User_InsertUserMetadata
-            parameters:
-                - name: metadataKey
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/InsertUserMetadataRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/InsertUserMetadataResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/users/metadata/{metadataKey}/update:
-        post:
-            tags:
-                - metadata
-                - user
-            summary: Updates user metadata.
-            description: updateUserMetadata updates the user metadata object
-            operationId: User_UpdateUserMetadata
-            parameters:
-                - name: metadataKey
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UpdateUserMetadataRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UpdateUserMetadataResponse'
                 default:
                     description: Default error response
                     content:
@@ -2214,7 +2209,6 @@ components:
 security:
     - BearerAuth: []
 tags:
-    - name: Admin
     - name: Auth
     - name: Collections
       description: The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents.
@@ -2225,14 +2219,10 @@ tags:
     - name: Event Streaming
       description: Tigris has built-in event streaming support. This functionality is enabled for the “Messages” collection type. This type of collection exposes endpoints that allows you to both subscribe and publish to a collection which enable building event-driven applications. Ordering is guaranteed on a partition level
     - name: HealthAPI
-    - name: Info
-      description: APIs to manage or get more information about the server.
-    - name: Namespace
-      description: APIs to manage Tigris namespaces.
+    - name: Management
     - name: Observability
     - name: Transactions
       description: Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability.
-    - name: User
     - name: application
       description: Tigris supports application based authentication. This section provides API to manage user applications
     - name: application
@@ -2241,9 +2231,13 @@ tags:
       description: Tigris supports pluggable oauth provider. The auth section of API provides open authorization (OAuth 2.0) APIs
     - name: healthcheck
       description: APIs to perform health check.
+    - name: info
+      description: APIs to manage or get more information about the server.
     - name: metadata
       description: Tigris supports user metadata management. This section provides API to manage metadata about user
     - name: metrics
       description: Tigris supports pluggable observability providers. The metrics section of API provides way to query Tigris metrics
+    - name: namespace
+      description: APIs to manage Tigris namespaces.
     - name: user
       description: Tigris supports basic user management. This section provides API to manage user
