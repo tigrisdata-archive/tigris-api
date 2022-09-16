@@ -68,7 +68,7 @@ message GetAccessTokenResponse{
 service Auth {
   // Gets an access token.
   // supports two grant_type: [refresh_token, client_credentials]
-  rpc getAccessToken(GetAccessTokenRequest) returns
+  rpc GetAccessToken(GetAccessTokenRequest) returns
       (GetAccessTokenResponse) {
     option (google.api.http) = {
       post : "/v1/auth/token"

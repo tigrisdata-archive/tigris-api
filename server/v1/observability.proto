@@ -195,7 +195,7 @@ service Observability {
   rpc GetInfo(GetInfoRequest) returns
       (GetInfoResponse) {
     option (google.api.http) = {
-      get : "/v1/info"
+      get : "/v1/observability/info"
     };
     option(openapi.v3.operation) = {
       summary: "Information about the server"
