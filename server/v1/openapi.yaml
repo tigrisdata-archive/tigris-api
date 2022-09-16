@@ -802,26 +802,6 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/Status'
             security: []
-    /v1/info:
-        get:
-            tags:
-                - info
-            summary: Information about the server
-            description: Provides the information about the server. This information includes returning the server version, etc.
-            operationId: Observability_GetInfo
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/GetInfoResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /v1/management/applications/create:
         post:
             tags:
@@ -1098,6 +1078,26 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/UpdateUserMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/observability/info:
+        get:
+            tags:
+                - info
+            summary: Information about the server
+            description: Provides the information about the server. This information includes returning the server version, etc.
+            operationId: Observability_GetInfo
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetInfoResponse'
                 default:
                     description: Default error response
                     content:
