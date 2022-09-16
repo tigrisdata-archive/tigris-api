@@ -80,6 +80,10 @@ main() {
 	yq_streaming_response SubscribeResponse "collections/{collection}/messages/subscribe"
 
 	yq_error_response
+
+	# Do not expose "events" endpint in openapi
+	# TODO: Remove it once events endpoint is fixed
+	yq_cmd 'del(.paths."/v1/databases/{db}/collections/{collection}/events")'
 }
 
 fix_bytes() {
