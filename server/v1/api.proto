@@ -702,6 +702,8 @@ message SubscribeRequest {
   string db = 1;
   string collection = 2;
   SubscribeRequestOptions options = 3;
+  // Filter allows you to subscribe only for events that you need. Filter syntax is similar to `ReadRequest.filter`.
+  bytes filter = 4;
 }
 
 message SubscribeResponse {

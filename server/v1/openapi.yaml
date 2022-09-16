@@ -2068,6 +2068,9 @@ components:
                     type: string
                 options:
                     $ref: '#/components/schemas/SubscribeRequestOptions'
+                filter:
+                    type: object
+                    description: Filter allows you to subscribe only for events that you need. Filter syntax is similar to `ReadRequest.filter`.
         SubscribeRequestOptions:
             type: object
             properties:
