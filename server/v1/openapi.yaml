@@ -15,7 +15,7 @@ paths:
         post:
             tags:
                 - Authentication
-            summary: OAuth Access Token
+            summary: Access Token
             description: |-
                 Endpoint for receiving access token from Tigris Server. The endpoint requires Grant Type(`grant_type`) which has
                  two possible values <i>"REFRESH_TOKEN"</i> or <i>"CLIENT_CREDENTIALS"</i> based on which either Refresh token(`refresh_token`)
@@ -1725,6 +1725,7 @@ components:
                         - ALL
                         - READ
                         - WRITE
+                        - METADATA
                     type: string
                     format: enum
                 space_aggregation:
