@@ -22,25 +22,6 @@ import "openapiv3/annotations.proto";
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
-option (openapi.v3.document) = {
-  tags: [{
-    name: "namespace"
-    description: "APIs to manage Tigris namespaces."
-  },
-  {
-      name: "application"
-      description: "Tigris supports application based authentication. This section provides API to manage user applications"
-  },
-  {
-      name: "user"
-      description: "Tigris supports basic user management. This section provides API to manage user"
-  },
-  {
-      name: "metadata"
-      description: "Tigris supports user metadata management. This section provides API to manage metadata about user"
-  }]
-};
-
 message CreateNamespaceRequest{
   // A unique namespace id.
   int32 id = 1;
@@ -143,11 +124,13 @@ message DeleteApplicationResponse {
 
 // Request rotation of an application secret
 message RotateApplicationSecretRequest {
+  // application id
   string id = 1;
 }
 
 // RotateApplicationRequest returns the new application with rotated secret
 message RotateApplicationSecretResponse{
+  // A new Application with rotated secret.
   Application application = 1;
 }
 
@@ -201,8 +184,8 @@ service Management {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Creates a namespace."
-      tags: ["namespace"]
+      summary: "Creates a Namespace"
+      tags: "Namespaces"
     };
   }
 
@@ -213,8 +196,8 @@ service Management {
       post : "/v1/management/namespaces/list"
     };
     option(openapi.v3.operation) = {
-      summary: "Lists all namespaces."
-      tags: ["namespace"]
+      summary: "Lists all Namespaces"
+      tags: "Namespaces"
     };
   }
 
@@ -227,8 +210,8 @@ service Management {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Creates the application."
-      tags: ["application"]
+      summary: "Creates the Application"
+      tags: "Management"
     };
   }
 
@@ -240,8 +223,8 @@ service Management {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Updates the application."
-      tags: ["application"]
+      summary: "Updates the Application"
+      tags: "Management"
     };
   }
 
@@ -253,8 +236,8 @@ service Management {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Creates the application."
-      tags: ["application"]
+      summary: "Deletes the Application"
+      tags: "Management"
     };
   }
 
@@ -266,12 +249,12 @@ service Management {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "List applications."
-      tags: ["application"]
+      summary: "List Applications"
+      tags: "Management"
     };
   }
 
-  // rotateApplicationSecret returns the new application with rotated secret
+  // Endpoint is used to rotate the secret for the application.
   rpc RotateApplicationSecret(RotateApplicationSecretRequest) returns
       (RotateApplicationSecretResponse) {
     option (google.api.http) = {
@@ -279,8 +262,8 @@ service Management {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Rotates the application secret."
-      tags: ["application"]
+      summary: "Rotates the Application Secret"
+      tags: "Management"
     };
   }
 
@@ -292,8 +275,8 @@ service Management {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Inserts user metadata."
-      tags: ["metadata", "user"]
+      summary: "Inserts User Metadata"
+      tags: "Management"
     };
   }
 
@@ -305,8 +288,8 @@ service Management {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Reads the user metadata."
-      tags: ["metadata", "user"]
+      summary: "Reads the User Metadata"
+      tags: "Management"
     };
   }
 
@@ -318,8 +301,8 @@ service Management {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Updates user metadata."
-      tags: ["metadata", "user"]
+      summary: "Updates User Metadata"
+      tags: "Management"
     };
   }
 }

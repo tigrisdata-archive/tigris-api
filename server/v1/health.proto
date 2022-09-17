@@ -20,13 +20,6 @@ import "openapiv3/annotations.proto";
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
-option (openapi.v3.document) = {
-  tags: [{
-    name: "healthcheck"
-    description: "APIs to perform health check."
-  }]
-};
-
 message HealthCheckInput {}
 
 message HealthCheckResponse {
@@ -34,13 +27,14 @@ message HealthCheckResponse {
 }
 
 service HealthAPI {
+  // This endpoint can be used to check the liveness of the server.
   rpc Health(HealthCheckInput) returns (HealthCheckResponse) {
     option (google.api.http) = {
       get : "/v1/health"
     };
     option(openapi.v3.operation) = {
-      summary: "Liveliness healthcheck"
-      tags: "healthcheck"
+      summary: "Health Check"
+      tags: "Observability"
       // empty security is not reflected in the health_openapi.yaml
       // it's fixed by scripts/fix_openapi.sh
       security: []
