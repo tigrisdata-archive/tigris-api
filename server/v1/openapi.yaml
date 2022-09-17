@@ -14,11 +14,12 @@ paths:
     /v1/auth/token:
         post:
             tags:
-                - auth
-            summary: 'Gets an access token using refresh token. Supports two grant_type: [refresh_token, client_credentials] - when refresh_token is used only refresh_token as request is required, for the client_credentials [client_id, client_secret] are required'
+                - Authentication
+            summary: OAuth Access Token
             description: |-
-                Gets an access token.
-                 supports two grant_type: [refresh_token, client_credentials]
+                Endpoint for receiving access token from Tigris Server. The endpoint requires Grant Type(`grant_type`) which has
+                 two possible values <i>"REFRESH_TOKEN"</i> or <i>"CLIENT_CREDENTIALS"</i> based on which either Refresh token(`refresh_token`)
+                 needs to be set or client credentials(`client_id`, `client_secret`).
             operationId: Auth_GetAccessToken
             requestBody:
                 content:
@@ -100,10 +101,9 @@ paths:
             description: |-
                 Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
                  Schema changes are applied atomically and immediately without any downtime.
-                 This endpoint allows the creation of a collection based on the type. <p></p>
-                 There are two collection types supported by Tigris:
-                    <li> DOCUMENTS: Support CRUD APIs.
-                    <li> MESSAGES: Supports Pub/Sub APIs.
+                 Tigris Offers two types of collections: <p></p>
+                    <li> `DOCUMENTS`: Offers rich CRUD APIs.
+                    <li> `MESSAGES`: Offers event streaming APIs.
             operationId: Tigris_CreateOrUpdateCollection
             parameters:
                 - name: db
@@ -466,8 +466,8 @@ paths:
         post:
             tags:
                 - Event Streaming
-            summary: Publish a message to a collection
-            description: Publish API is use to publish messages to the collection.
+            summary: Publish Messages to a Topic
+            description: Endpoint for publishing messages to a topic.
             operationId: Tigris_Publish
             parameters:
                 - name: db
@@ -503,8 +503,10 @@ paths:
         post:
             tags:
                 - Event Streaming
-            summary: Subscribe to a collection for a stream of messages
-            description: Subscribe is used to subscribe to the collection and receive messages from it.
+            summary: Subscribe to a Topic
+            description: |-
+                Endpoint for subscribing to a topic to receive a stream of messages. The `partition` can be set to stream only
+                 from a specific partition.
             operationId: Tigris_Subscribe
             parameters:
                 - name: db
@@ -745,8 +747,9 @@ paths:
     /v1/health:
         get:
             tags:
-                - healthcheck
-            summary: Liveliness healthcheck
+                - Observability
+            summary: Health Check
+            description: This endpoint can be used to check the liveness of the server.
             operationId: HealthAPI_Health
             responses:
                 "200":
@@ -765,8 +768,8 @@ paths:
     /v1/management/applications/create:
         post:
             tags:
-                - application
-            summary: Creates the application.
+                - Management
+            summary: Creates the Application
             description: Create an application.
             operationId: Management_CreateApplication
             requestBody:
@@ -791,8 +794,8 @@ paths:
     /v1/management/applications/delete:
         delete:
             tags:
-                - application
-            summary: Creates the application.
+                - Management
+            summary: Deletes the Application
             description: Delete an application.
             operationId: Management_DeleteApplication
             requestBody:
@@ -817,8 +820,8 @@ paths:
     /v1/management/applications/list:
         post:
             tags:
-                - application
-            summary: List applications.
+                - Management
+            summary: List Applications
             description: Lists all application visible to requesting actor.
             operationId: Management_ListApplications
             requestBody:
@@ -843,9 +846,9 @@ paths:
     /v1/management/applications/rotate:
         post:
             tags:
-                - application
-            summary: Rotates the application secret.
-            description: rotateApplicationSecret returns the new application with rotated secret
+                - Management
+            summary: Rotates the Application Secret
+            description: Endpoint is used to rotate the secret for the application.
             operationId: Management_RotateApplicationSecret
             requestBody:
                 content:
@@ -869,8 +872,8 @@ paths:
     /v1/management/applications/update:
         post:
             tags:
-                - application
-            summary: Updates the application.
+                - Management
+            summary: Updates the Application
             description: Update an application.
             operationId: Management_UpdateApplication
             requestBody:
@@ -895,8 +898,8 @@ paths:
     /v1/management/namespaces/list:
         post:
             tags:
-                - namespace
-            summary: Lists all namespaces.
+                - Namespaces
+            summary: Lists all Namespaces
             description: List all namespace
             operationId: Management_ListNamespaces
             responses:
@@ -915,8 +918,8 @@ paths:
     /v1/management/namespaces/{name}/create:
         post:
             tags:
-                - namespace
-            summary: Creates a namespace.
+                - Namespaces
+            summary: Creates a Namespace
             description: Creates a new namespace, if it does not exist
             operationId: Management_CreateNamespace
             parameters:
@@ -948,9 +951,8 @@ paths:
     /v1/management/users/metadata/{metadataKey}/get:
         post:
             tags:
-                - metadata
-                - user
-            summary: Reads the user metadata.
+                - Management
+            summary: Reads the User Metadata
             description: insertUserMetadata inserts the user metadata object
             operationId: Management_GetUserMetadata
             parameters:
@@ -981,9 +983,8 @@ paths:
     /v1/management/users/metadata/{metadataKey}/insert:
         post:
             tags:
-                - metadata
-                - user
-            summary: Inserts user metadata.
+                - Management
+            summary: Inserts User Metadata
             description: insertUserMetadata inserts the user metadata object
             operationId: Management_InsertUserMetadata
             parameters:
@@ -1014,9 +1015,8 @@ paths:
     /v1/management/users/metadata/{metadataKey}/update:
         post:
             tags:
-                - metadata
-                - user
-            summary: Updates user metadata.
+                - Management
+            summary: Updates User Metadata
             description: updateUserMetadata updates the user metadata object
             operationId: Management_UpdateUserMetadata
             parameters:
@@ -1047,7 +1047,7 @@ paths:
     /v1/observability/info:
         get:
             tags:
-                - info
+                - Observability
             summary: Information about the server
             description: Provides the information about the server. This information includes returning the server version, etc.
             operationId: Observability_GetInfo
@@ -1067,8 +1067,8 @@ paths:
     /v1/observability/metrics/timeseries/query:
         post:
             tags:
-                - metrics
-            summary: Queries time series metrics.
+                - Observability
+            summary: Queries time series metrics
             description: Queries time series metrics
             operationId: Observability_QueryTimeSeriesMetrics
             requestBody:
@@ -1237,10 +1237,10 @@ components:
             properties:
                 schema:
                     type: object
-                    description: 'Schema of the documents in this collection. The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>. <p></p>The following is an schema example: `{  "title": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "integer"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 100    },    "balance": {      "description": "User account balance",      "type": "number"    }  },  "primary_key": ["id"] }`'
+                    description: 'The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>. The schema of the `documents` collection differs from the schema of `messages` collection as `messages` collection does not have any concept of `primary_key`. The server recognizes type of the collection by the `collection_type` set in the schema.<p></p> Schema example of `documents`: `{  "title": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "integer"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 100    },    "balance": {      "description": "User account balance",      "type": "number"    }  },  "primary_key": ["id"] }` <p></p>*Note: The `collection_type` is not set as default is documents.* <p></p>Schema example of `messages`: `{  "title": "user_events",  "description": "Topic for user events",  "properties": {    "event_id": {      "description": "A id for the event",      "type": "integer"    },    "event_type": {      "description": "Type of the Event",      "type": "string",      "maxLength": 100    }    "event_details": {      "description": "Details about the Event",      "type": "string"    }  },  "collection_type": "messages" }` <p></p> *Note: The `collection_type` is set as "messages".*'
                 only_create:
                     type: boolean
-                    description: If set to true then the update schema request to the collection will fail by returning a conflict with HTTP Status code 409. The default is false.
+                    description: If set to `true` then the update schema request to the collection will fail by returning a conflict with HTTP Status code 409. The default is false.
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
         CreateOrUpdateCollectionResponse:
@@ -1486,27 +1486,28 @@ components:
                     format: enum
                 refresh_token:
                     type: string
-                    description: 'case: refresh_token: A valid refresh token'
+                    description: Refresh token is required when grant type is set as `REFRESH_TOKEN`.
                 client_id:
                     type: string
-                    description: 'case: client_credentials: A valid credentials (client_id, client_secret, audience)'
+                    description: Client Id is required when grant type is set as `CLIENT_CREDENTIALS`.
                 client_secret:
                     type: string
-            description: Requests the access token by specifying grant_type:refresh_token & refresh_token or grant_type:client_credentials & [client_id, client_secret]
+                    description: Your Tigris API Key is required when grant type is set as `CLIENT_CREDENTIALS`.
+            description: The Request message for the GetAccessToken. The grant type is a required field and based on the grant type the other fields are used as mentioned below.
         GetAccessTokenResponse:
             type: object
             properties:
                 access_token:
                     type: string
-                    description: An access token.
+                    description: An Access Token.
                 refresh_token:
                     type: string
-                    description: Refresh token.
+                    description: The Refresh Token.
                 expires_in:
                     type: integer
-                    description: Access token expiration timeout in seconds
+                    description: Access token expiration timeout in seconds.
                     format: int32
-            description: GetAccessToken returns response containing access_token and optionally refresh_token
+            description: The response of GetAccessToken which contains access_token and optionally refresh_token.
         GetInfoResponse:
             type: object
             properties:
@@ -1683,6 +1684,7 @@ components:
                     type: array
                     items:
                         type: object
+                    description: An array of JSON messages to publish.
                 options:
                     $ref: '#/components/schemas/PublishRequestOptions'
         PublishRequestOptions:
@@ -1886,6 +1888,7 @@ components:
             properties:
                 id:
                     type: string
+                    description: application id
             description: Request rotation of an application secret
         RotateApplicationSecretResponse:
             type: object
@@ -2169,7 +2172,8 @@ components:
 security:
     - BearerAuth: []
 tags:
-    - name: Auth
+    - name: Authentication
+      description: The auth section of API provides open authorization (OAuth 2.0) APIs. Tigris supports pluggable OAuth provider.
     - name: Collections
       description: The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents.
     - name: Databases
@@ -2177,27 +2181,12 @@ tags:
     - name: Documents
       description: The Documents section provide APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
     - name: Event Streaming
-      description: Tigris has built-in event streaming support. This functionality is enabled for the “Messages” collection type. This type of collection exposes endpoints that allows you to both subscribe and publish to a collection which enable building event-driven applications. Ordering is guaranteed on a partition level
-    - name: HealthAPI
+      description: Tigris has built-in event streaming support. This functionality is enabled for the `Messages` collection type. This type of collection is referred as Topic and has endpoints that allows you to both subscribe and publish to a topic which enable building event-driven applications. Ordering is guaranteed on a partition level
     - name: Management
+      description: The Management section provide APIs that can be used to manage users, and applications.
+    - name: Namespaces
+      description: The Namespaces section provide APIs that can be used to manage namespaces. A single namespace can have one or more databases.
     - name: Observability
+      description: The Observability section has APIs that provides full visibility into the health, metrics, and monitoring of the Server.
     - name: Transactions
       description: Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability.
-    - name: application
-      description: Tigris supports application based authentication. This section provides API to manage user applications
-    - name: application
-      description: Tigris supports application based authentication. This section provides API to manage user applications
-    - name: auth
-      description: Tigris supports pluggable oauth provider. The auth section of API provides open authorization (OAuth 2.0) APIs
-    - name: healthcheck
-      description: APIs to perform health check.
-    - name: info
-      description: APIs to manage or get more information about the server.
-    - name: metadata
-      description: Tigris supports user metadata management. This section provides API to manage metadata about user
-    - name: metrics
-      description: Tigris supports pluggable observability providers. The metrics section of API provides way to query Tigris metrics
-    - name: namespace
-      description: APIs to manage Tigris namespaces.
-    - name: user
-      description: Tigris supports basic user management. This section provides API to manage user

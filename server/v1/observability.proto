@@ -22,19 +22,6 @@ import "openapiv3/annotations.proto";
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
-option (openapi.v3.document) = {
-  tags : [{
-    name : "metrics"
-    description : "Tigris supports pluggable observability providers. The "
-        "metrics section of API provides way to query Tigris metrics"
-  },
-    {
-      name: "info"
-      description: "APIs to manage or get more information about the server."
-    }]
-};
-
-
 // Codes returned by the Tigris server in the case of error
 enum Code {
   OK = 0; // 200
@@ -186,8 +173,8 @@ service Observability {
       body : "*"
     };
     option (openapi.v3.operation) = {
-      summary : "Queries time series metrics."
-      tags : "metrics"
+      summary : "Queries time series metrics"
+      tags : "Observability"
     };
   }
 
@@ -199,7 +186,7 @@ service Observability {
     };
     option(openapi.v3.operation) = {
       summary: "Information about the server"
-      tags: "info"
+      tags: "Observability"
     };
   }
 }

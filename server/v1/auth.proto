@@ -23,29 +23,15 @@ option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
 
-option (openapi.v3.document) = {
-  tags: [{
-    name: "auth"
-    description: "Tigris supports pluggable oauth provider. The auth section of API provides open authorization (OAuth 2.0) APIs"
-  },
-  {
-    name: "application"
-    description: "Tigris supports application based authentication. This section provides API to manage user applications"
-  }]
-};
-
-// Requests the access token by specifying
-// grant_type:refresh_token & refresh_token
-// or
-// grant_type:client_credentials & [client_id, client_secret]
+// The Request message for the GetAccessToken. The grant type is a required field and based on the grant type
+// the other fields are used as mentioned below.
 message GetAccessTokenRequest{
   GrantType grant_type = 1;
-  // case: refresh_token: A valid refresh token
+  // Refresh token is required when grant type is set as `REFRESH_TOKEN`.
   string refresh_token = 2;
-
-  // case: client_credentials: A valid credentials (client_id, client_secret,
-  // audience)
+  // Client Id is required when grant type is set as `CLIENT_CREDENTIALS`.
   string client_id = 3;
+  // Your Tigris API Key is required when grant type is set as `CLIENT_CREDENTIALS`.
   string client_secret = 4;
 }
 
@@ -54,20 +40,20 @@ enum GrantType{
   CLIENT_CREDENTIALS = 1;
 }
 
-// GetAccessToken returns response containing access_token and optionally
-// refresh_token
+// The response of GetAccessToken which contains access_token and optionally refresh_token.
 message GetAccessTokenResponse{
-  // An access token.
+  // An Access Token.
   string access_token = 1;
-  // Refresh token.
+  // The Refresh Token.
   string refresh_token = 2;
-  // Access token expiration timeout in seconds
+  // Access token expiration timeout in seconds.
   int32 expires_in = 3;
 }
 
 service Auth {
-  // Gets an access token.
-  // supports two grant_type: [refresh_token, client_credentials]
+  // Endpoint for receiving access token from Tigris Server. The endpoint requires Grant Type(`grant_type`) which has
+  // two possible values <i>"REFRESH_TOKEN"</i> or <i>"CLIENT_CREDENTIALS"</i> based on which either Refresh token(`refresh_token`)
+  // needs to be set or client credentials(`client_id`, `client_secret`).
   rpc GetAccessToken(GetAccessTokenRequest) returns
       (GetAccessTokenResponse) {
     option (google.api.http) = {
@@ -75,8 +61,8 @@ service Auth {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Gets an access token using refresh token. Supports two grant_type: [refresh_token, client_credentials] - when refresh_token is used only refresh_token as request is required, for the client_credentials [client_id, client_secret] are required"
-      tags: "auth"
+      summary: "Access Token"
+      tags: "Authentication"
     };
   }
 }

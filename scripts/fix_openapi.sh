@@ -127,6 +127,10 @@ yq_del_service_tags() {
 	yq_cmd "del(.paths[] | .put.tags[0])"
 	yq_cmd "del(.paths[] | .delete.tags[0])"
 	yq_cmd "del(.tags[] | select(.name == \"Tigris\"))"
+	yq_cmd "del(.tags[] | select(.name == \"HealthAPI\"))"
+	yq_cmd "del(.tags[] | select(.name == \"Auth\"))"
+	yq_cmd "del(.tags[] | select(.name == \"Management\" and .description != \"*\"))"
+	yq_cmd "del(.tags[] | select(.name == \"Observability\" and .description != \"*\"))"
 }
 
 # By default GRPC gateway returns streaming response and error wrapped in a new

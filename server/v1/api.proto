@@ -42,6 +42,12 @@ option (openapi.v3.document) = {
     }
   }
   tags: [{
+    name: "Authentication"
+    description: "The auth section of API provides open authorization (OAuth 2.0) APIs. Tigris supports pluggable OAuth provider."
+  },{
+    name: "Namespaces"
+    description: "The Namespaces section provide APIs that can be used to manage namespaces. A single namespace can have one or more databases."
+  },{
     name: "Databases"
     description: "The Databases section provide APIs that can be used to manage databases. A single database can have one or more collections."
   },{
@@ -55,7 +61,13 @@ option (openapi.v3.document) = {
     description: "Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability."
   }, {
     name: "Event Streaming"
-    description: "Tigris has built-in event streaming support. This functionality is enabled for the “Messages” collection type. This type of collection exposes endpoints that allows you to both subscribe and publish to a collection which enable building event-driven applications. Ordering is guaranteed on a partition level"
+    description: "Tigris has built-in event streaming support. This functionality is enabled for the `Messages` collection type. This type of collection is referred as Topic and has endpoints that allows you to both subscribe and publish to a topic which enable building event-driven applications. Ordering is guaranteed on a partition level"
+  },{
+    name: "Management"
+    description: "The Management section provide APIs that can be used to manage users, and applications."
+  }, {
+    name: "Observability"
+    description: "The Observability section has APIs that provides full visibility into the health, metrics, and monitoring of the Server."
   }]
   components: {
     security_schemes: {
@@ -430,9 +442,13 @@ message CreateOrUpdateCollectionRequest {
   string db = 1;
   // Collection name to create.
   string collection = 2;
-  // Schema of the documents in this collection. The schema specifications are same as
+  // The schema specifications are same as
   // JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.
-  // <p></p>The following is an schema example:
+  // The schema of the `documents` collection differs from the schema of `messages` collection as `messages` collection does not
+  // have any concept of `primary_key`. The server recognizes type of the collection by the `collection_type` set in
+  // the schema.
+  //<p></p>
+  // Schema example of `documents`:
   // `{
   //  "title": "user",
   //  "description": "Collection of documents with details of users",
@@ -453,8 +469,31 @@ message CreateOrUpdateCollectionRequest {
   //  },
   //  "primary_key": ["id"]
   // }`
+  // <p></p>*Note: The `collection_type` is not set as default is documents.*
+  // <p></p>Schema example of `messages`:
+  // `{
+  //  "title": "user_events",
+  //  "description": "Topic for user events",
+  //  "properties": {
+  //    "event_id": {
+  //      "description": "A id for the event",
+  //      "type": "integer"
+  //    },
+  //    "event_type": {
+  //      "description": "Type of the Event",
+  //      "type": "string",
+  //      "maxLength": 100
+  //    }
+  //    "event_details": {
+  //      "description": "Details about the Event",
+  //      "type": "string"
+  //    }
+  //  },
+  //  "collection_type": "messages"
+  // }`
+  // <p></p> *Note: The `collection_type` is set as "messages".*
   bytes schema = 3;
-  // If set to true then the update schema request to the collection will fail by returning a conflict with HTTP Status
+  // If set to `true` then the update schema request to the collection will fail by returning a conflict with HTTP Status
   // code 409. The default is false.
   bool only_create = 4;
   CollectionOptions options = 5;
@@ -621,6 +660,7 @@ message PublishRequestOptions {
 message PublishRequest {
   string db = 1;
   string collection = 2;
+  // An array of JSON messages to publish.
   repeated bytes messages = 3;
   PublishRequestOptions options = 4;
 }
@@ -772,10 +812,9 @@ service Tigris {
   }
   // Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
   // Schema changes are applied atomically and immediately without any downtime.
-  // This endpoint allows the creation of a collection based on the type. <p></p>
-  // There are two collection types supported by Tigris:
-  //    <li> DOCUMENTS: Support CRUD APIs.
-  //    <li> MESSAGES: Supports Pub/Sub APIs.
+  // Tigris Offers two types of collections: <p></p>
+  //    <li> `DOCUMENTS`: Offers rich CRUD APIs.
+  //    <li> `MESSAGES`: Offers event streaming APIs.
   rpc CreateOrUpdateCollection(CreateOrUpdateCollectionRequest) returns (CreateOrUpdateCollectionResponse) {
     option (google.api.http) = {
       post : "/v1/databases/{db}/collections/{collection}/createOrUpdate"
@@ -881,26 +920,27 @@ service Tigris {
     };
   }
 
-  // Publish API is use to publish messages to the collection.
+  // Endpoint for publishing messages to a topic.
   rpc Publish(PublishRequest) returns (PublishResponse) {
     option (google.api.http) = {
       post : "/v1/databases/{db}/collections/{collection}/messages/publish"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Publish a message to a collection"
+      summary: "Publish Messages to a Topic"
       tags: "Event Streaming"
     };
   }
 
-  // Subscribe is used to subscribe to the collection and receive messages from it.
+  // Endpoint for subscribing to a topic to receive a stream of messages. The `partition` can be set to stream only
+  // from a specific partition.
   rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {
     option (google.api.http) = {
       post : "/v1/databases/{db}/collections/{collection}/messages/subscribe"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Subscribe to a collection for a stream of messages"
+      summary: "Subscribe to a Topic"
       tags: "Event Streaming"
     };
   }
