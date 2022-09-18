@@ -654,11 +654,13 @@ message StreamEvent {
 }
 
 message PublishRequestOptions {
-  int32 partition = 1;
+  optional int32 partition = 1;
 }
 
 message PublishRequest {
+  // Database name where to publish messages.
   string db = 1;
+  // Topic name where to publish messages.
   string collection = 2;
   // An array of JSON messages to publish.
   repeated bytes messages = 3;
@@ -676,7 +678,9 @@ message SubscribeRequestOptions {
 }
 
 message SubscribeRequest {
+  // Database name.
   string db = 1;
+  // Topic name.
   string collection = 2;
   SubscribeRequestOptions options = 3;
   // Filter allows you to subscribe only for events that you need. Filter syntax is similar to `ReadRequest.filter`.

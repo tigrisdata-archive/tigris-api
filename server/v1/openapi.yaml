@@ -472,11 +472,13 @@ paths:
             parameters:
                 - name: db
                   in: path
+                  description: Database name where to publish messages.
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
+                  description: Topic name where to publish messages.
                   required: true
                   schema:
                     type: string
@@ -511,11 +513,13 @@ paths:
             parameters:
                 - name: db
                   in: path
+                  description: Database name.
                   required: true
                   schema:
                     type: string
                 - name: collection
                   in: path
+                  description: Topic name.
                   required: true
                   schema:
                     type: string
@@ -1678,8 +1682,10 @@ components:
             properties:
                 db:
                     type: string
+                    description: Database name where to publish messages.
                 collection:
                     type: string
+                    description: Topic name where to publish messages.
                 messages:
                     type: array
                     items:
@@ -2023,8 +2029,10 @@ components:
             properties:
                 db:
                     type: string
+                    description: Database name.
                 collection:
                     type: string
+                    description: Topic name.
                 options:
                     $ref: '#/components/schemas/SubscribeRequestOptions'
                 filter:
