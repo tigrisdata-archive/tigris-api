@@ -654,7 +654,7 @@ message StreamEvent {
 }
 
 message PublishRequestOptions {
-  int32 partition = 1;
+  optional int32 partition = 1;
 }
 
 message PublishRequest {
