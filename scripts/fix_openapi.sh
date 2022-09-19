@@ -20,6 +20,7 @@ IN_FILE=$1
 
 main() {
 	fix_bytes
+	yq_update_description
 
 	# user_openapi
 	for i in InsertUserMetadataRequest \
@@ -171,6 +172,10 @@ yq_error_response() {
 	)'
 	yq_cmd "del(.components.schemas.GetInfoResponse.properties.error)"
 	yq_cmd "del(.components.schemas.GoogleProtobufAny)"
+}
+
+yq_update_description() {
+  yq -i '.info.description|=load("server/v1/desc.yaml")' "$IN_FILE"
 }
 
 main

@@ -3,13 +3,16 @@
 openapi: 3.0.3
 info:
     title: Tigris API Reference
-    description: |-
-        ## Overview
-        This section is organized around HTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes.
+    description: "# Overview\nThis section is organized around HTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses.The APIs conforms to standard HTTP status codes.\n\n# Errors\nTigris uses conventional HTTP response codes to indicate the success or failure of an API request.The response will  contain an error code or other information that reveals the reason of the error. \nThe error response is in JSON format and is structured like this:\n```\n {\n   \"error\": {\n     \"code\": \"ALREADY_EXISTS\",\n     \"message\": \"row already exists\"\n   }\n }\n\n```\n\n## Status 2xx\n\n  HTTP Code  | Reason\n  ----------------|-------------\n  200 - OK | Everything worked as expected.\n\n\n## Status 4xx\nStatus codes in the `400-499` range indicate errors that have been caused by the requesting application (e.g., a malformed request body has been sent).\nRetrying such requests with the same request body is pointless and _will_ result in the same status code again. Some `4xx` errors can be handled programmatically. Change the request accordingly before retrying. Below you can find the most frequent 4XX errors and how to fix them.\n\n  HTTP Code  | Tigris Code | Reason\n  ----------------|-------------|---------\n  400 - Bad Request | INVALID_ARGUMENT | The request was unacceptable, often due to missing a required parameter. <br>Examples: <li>Missing documents for write request</li><li>Collection or Database name is not following the allowed characters</li>\n  401 - Unauthorized | UNAUTHENTICATED | No valid API key provided. Check that your `api_key` and `api_secret` are correct.\n  403 - Forbidden | PERMISSION_DENIED | The API key doesn't have permissions to perform the request.\n  404 - Not Found | NOT_FOUND | The requested resource doesn't exist. <br>Examples: <li>Database or Collection doesn't exists</li><li>Access Token missing in the request header</li>\n  409 - Conflict | ALREADY_EXISTS | TThe request conflicts with another request (perhaps due to using the same idempotent key). <br>Examples: <li>Trying to insert document again for the primary key that already exists</li><li>Creating a database that already exists</li>\n  429 - Too Many Requests | RESOURCE_EXHAUSTED | Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.\n  \n  \n  \n## Status 5xx\nThe 5xx range indicate an error with Tigris servers (these are rare).\n\n  HTTP Code  | Tigris Code | Reason\n  ----------------|-------------|---------\n  500 - Internal Server Error | UNKNOWN | Something went wrong on Tigris server side.                    \n  501 - Not Implemented       | UNIMPLEMENTED | Not supported by the Tigris server and cannot be handled. \n  502 - Bad Gateway           | BAD_GATEWAY | The API key doesn't have permissions to perform the request.\n  503 - Service Unavailable   | UNAVAILABLE | The server is not ready to handle the request. Common causes are a server that is down for maintenance or that is overloaded.\n  504 - Gateway Timeout       | DEADLINE_EXCEEDED | Tigris server is unable to process the request timely. Common causes are that request is expensive, or server is overloaded.\n  \n# Idempotent Requests\n  \n  Tigris provides idempotency guarantees when an API call is disrupted and either no response is returned or an HTTP \n  Status code `429,500,501,502,503` is returned. These errors ensure that the request is not committed and retrying the same request will have the same effect.\n\n\n# Limitations\n<li>Do not rely on case to distinguish between databases or collections names.</li> <li>Database Name and Collection Name cannot be empty and can only have the characters matches the regex: <code>^[a-zA-Z]+[a-zA-Z0-9_]+$</code>.</li> <li>Duplicate field names are not allowed. </li> <li>The maximum allowed document size is 100KB.</li> <li>The maximum allowed transaction size is 10MB.</li>\n"
     license:
         name: Apache License
         url: https://github.com/tigrisdata/tigris/blob/main/LICENSE
     version: 0.0.1
+servers:
+    - url: https://api.preview.tigrisdata.cloud
+      description: Tigris Cloud
+    - url: http://localhost:8081
+      description: Localhost
 paths:
     /v1/auth/token:
         post:
@@ -2182,7 +2185,7 @@ security:
     - BearerAuth: []
 tags:
     - name: Authentication
-      description: The auth section of API provides open authorization (OAuth 2.0) APIs. Tigris supports pluggable OAuth provider.
+      description: 'The auth section of API provides open authorization (OAuth 2.0) APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.'
     - name: Collections
       description: The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents.
     - name: Databases
