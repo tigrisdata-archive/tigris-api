@@ -1,0 +1,31 @@
+name: lint
+on:
+  push:
+    branches:
+      - "release"
+      - "alpha"
+      - "main"
+  pull_request:
+  workflow_call:
+    secrets:
+      API_DEPLOY_KEY:
+        required: true
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.17.6'
+      - name: Install dependencies
+        run: /bin/bash scripts/install_build_deps.sh
+      - name: Check OpenAPI generated
+        run: |
+          make generate
+          git diff --quiet HEAD || (echo -e "\nRun 'make clean && make generate' and check-in OpenAPI specification" && exit 1)
+      - name: Install Redocly CLI
+        run: npm install @redocly/cli -g
+      - name: Make lint
+        run: make lint

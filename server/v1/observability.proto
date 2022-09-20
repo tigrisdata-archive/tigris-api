@@ -1,0 +1,193 @@
+// Copyright 2022 Tigris Data, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package tigrisdata.observability.v1;
+
+import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
+
+option go_package = "github.com/tigrisdata/tigris/api";
+option java_package = "com.tigrisdata.db.api.v1.grpc";
+
+// Codes returned by the Tigris server in the case of error
+enum Code {
+  OK = 0; // 200
+  CANCELLED = 1; // 499
+  UNKNOWN = 2; // 500
+  INVALID_ARGUMENT = 3; // 400
+  DEADLINE_EXCEEDED = 4; // 504
+  NOT_FOUND = 5; // 404
+  ALREADY_EXISTS = 6; // 409
+  PERMISSION_DENIED = 7; // 403
+  RESOURCE_EXHAUSTED = 8; // 429
+  FAILED_PRECONDITION = 9; // 412
+  ABORTED = 10; // 409
+  OUT_OF_RANGE = 11; // 400
+  UNIMPLEMENTED = 12; // 501
+  INTERNAL = 13; // 500
+  UNAVAILABLE = 14; // 503
+  DATA_LOSS = 15; // 500
+  UNAUTHENTICATED = 16; // 401
+  // Above code are identical to GRPC standard codes: https://cloud.google.com/apis/design/errors
+  // Below Tigris specific extended error codes are defined:
+
+  CONFLICT = 17; // 409
+  BAD_GATEWAY = 18; // 502
+  METHOD_NOT_ALLOWED = 19; // 405
+}
+
+// Contains retry information
+message RetryInfo {
+  // retry delay advice in milliseconds
+  int32 delay = 3;
+}
+
+// ErrorDetails defines error format passed by Tigris HTTP protocol
+message ErrorDetails {
+  string code = 1;
+  string message = 2;
+  RetryInfo retry = 3;
+}
+
+// The Error type defines a logical error model
+message Error {
+  // The status code is a short, machine parsable string,
+  // which uniquely identifies the error type.
+  // Tigris to HTTP code mapping [here](/reference/http-code)
+  Code code = 1;
+  // A developer-facing descriptive error message
+  string message = 2;
+}
+
+// Requests the time series metrics
+message QueryTimeSeriesMetricsRequest {
+  string db = 1;
+  string collection = 2;
+  int64 from = 3;
+  int64 to = 4;
+  string metric_name = 5;
+  TigrisOperation tigris_operation = 6;
+  MetricQuerySpaceAggregation space_aggregation = 7;
+  repeated string space_aggregated_by = 8;
+  MetricQueryFunction function = 9;
+  float quantile = 10;
+  repeated AdditionalFunction additionalFunctions = 11;
+}
+
+// Represents Tigris operation category
+enum TigrisOperation {
+  ALL = 0;
+  READ = 1;
+  WRITE = 2;
+  METADATA = 3;
+}
+
+// Function to apply on metrics query
+enum MetricQueryFunction {
+  RATE = 0;
+  COUNT = 1;
+  NONE = 2;
+}
+
+// Additional function to apply on metrics query
+message AdditionalFunction {optional RollupFunction rollup = 1;}
+
+// Rollup function aggregates the slices of metrics returned by original query
+// and lets you operate on the slices using aggregator and constructs the
+// bigger slice of your choice of interval (specified in seconds).
+message RollupFunction {
+  RollupAggregator aggregator = 1;
+  int64 interval = 2;
+}
+
+// Specifies how the initial query's result buckets should be processed in
+// next stage.
+enum RollupAggregator {
+  ROLLUP_AGGREGATOR_SUM = 0;
+  ROLLUP_AGGREGATOR_COUNT = 1;
+  ROLLUP_AGGREGATOR_MIN = 2;
+  ROLLUP_AGGREGATOR_MAX = 3;
+  ROLLUP_AGGREGATOR_AVG = 4;
+}
+
+// Specifies how the metric should be aggregated for the time slices.
+enum MetricQuerySpaceAggregation {
+  AVG = 0;
+  MIN = 1;
+  MAX = 2;
+  SUM = 3;
+}
+
+// QueryTimeSeriesMetric responds with this type.
+message QueryTimeSeriesMetricsResponse {
+  int64 from = 1;
+  int64 to = 2;
+  string query = 3;
+  repeated MetricSeries series = 4;
+}
+
+// Represents series in timeseries based on input query.
+message MetricSeries {
+  int64 from = 1;
+  int64 to = 2;
+  string metric = 3;
+  string scope = 4;
+  repeated DataPoint dataPoints = 5;
+}
+
+// Represents the data point in timeseries.
+message DataPoint {
+  int64 timestamp = 1;
+  double value = 2;
+}
+
+
+message GetInfoRequest {
+}
+
+message GetInfoResponse {
+  string server_version = 1;
+
+  // NOTE: This is a hack to propagate this object definition to OpenAPI
+  Error error = 2;
+}
+
+service Observability {
+  // Queries time series metrics
+  rpc QueryTimeSeriesMetrics(QueryTimeSeriesMetricsRequest)
+      returns (QueryTimeSeriesMetricsResponse) {
+    option (google.api.http) = {
+      post : "/v1/observability/metrics/timeseries/query"
+      body : "*"
+    };
+    option (openapi.v3.operation) = {
+      summary : "Queries time series metrics"
+      tags : "Observability"
+    };
+  }
+
+  // Provides the information about the server. This information includes returning the server version, etc.
+  rpc GetInfo(GetInfoRequest) returns
+      (GetInfoResponse) {
+    option (google.api.http) = {
+      get : "/v1/observability/info"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Information about the server"
+      tags: "Observability"
+    };
+  }
+}

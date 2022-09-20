@@ -1,0 +1,958 @@
+// Copyright 2022 Tigris Data, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package tigrisdata.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "openapiv3/annotations.proto";
+
+option go_package = "github.com/tigrisdata/tigris/api";
+option java_package = "com.tigrisdata.db.api.v1.grpc";
+
+option (openapi.v3.document) = {
+  info: {
+    title: "Tigris API Reference"
+    version: "0.0.1"
+    description: "\n## Overview\nThis section is organized around HTTP APIs. The APIs accepts JSON requests and returns JSON-encoded responses. The APIs conforms to standard HTTP status codes."
+    license: {
+      name: "Apache License"
+      url: "https://github.com/tigrisdata/tigris/blob/main/LICENSE"
+    }
+  }
+  security: {
+    additional_properties: {
+      name: "BearerAuth"
+      value: {
+        value: []
+      }
+    }
+  }
+  tags: [{
+    name: "Authentication"
+    description: "The auth section of API provides open authorization (OAuth 2.0) APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H \"Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I\"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail."
+  },{
+    name: "Namespaces"
+    description: "The Namespaces section provide APIs that can be used to manage namespaces. A single namespace can have one or more databases."
+  },{
+    name: "Databases"
+    description: "The Databases section provide APIs that can be used to manage databases. A single database can have one or more collections."
+  },{
+    name: "Collections"
+    description: "The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents."
+  },{
+    name: "Documents"
+    description: "The Documents section provide APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key."
+  }, {
+    name: "Transactions"
+    description: "Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability."
+  }, {
+    name: "Event Streaming"
+    description: "Tigris has built-in event streaming support. This functionality is enabled for the `Messages` collection type. This type of collection is referred as Topic and has endpoints that allows you to both subscribe and publish to a topic which enable building event-driven applications. Ordering is guaranteed on a partition level"
+  },{
+    name: "Management"
+    description: "The Management section provide APIs that can be used to manage users, and applications."
+  }, {
+    name: "Observability"
+    description: "The Observability section has APIs that provides full visibility into the health, metrics, and monitoring of the Server."
+  }]
+  components: {
+    security_schemes: {
+      additional_properties: [
+        {
+          name: "BearerAuth";
+          value: {
+            security_scheme: {
+              type: "http";
+              scheme: "bearer";
+            }
+          }
+        }
+      ]
+    }
+  },
+  servers: [{
+    url:"https://api.preview.tigrisdata.cloud",
+    description: "Tigris Cloud",
+  }, {
+    url:"http://localhost:8081",
+    description: "Localhost",
+  }]
+};
+
+// Additional options to modify write requests.
+message WriteOptions {
+}
+
+// A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+// this option to 'ci' that will apply to all the text fields in the filters.
+message Collation {
+  string case = 1;
+}
+
+// Options that can be used to modify the results, for example "limit" to control the number of documents
+// returned by the server.
+message ReadRequestOptions {
+  // Limit the number of documents returned by the read operation.
+  int64 limit = 2;
+  // Number of documents to skip before starting to return resulting documents.
+  int64 skip = 3;
+  // A cursor for use in pagination. The next streams will return documents after this offset.
+  bytes offset = 4;
+  // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+  // this option to 'ci' that will apply to all the text fields in the filters.
+  Collation collation = 5;
+}
+
+// Database requests modifying options.
+message DatabaseOptions {}
+
+// Collection requests modifying options.
+message CollectionOptions {
+}
+
+// Options that can be used to modify the transaction semantics.
+message TransactionOptions {}
+
+// Contains ID which uniquely identifies transaction
+// This context is returned by BeginTransaction request and
+// should be passed in the metadata (headers) of subsequent requests
+// in order to run them in the context of the same transaction.
+message TransactionCtx {
+  // Unique for a single transactional request.
+  string id = 1;
+  // Serves as an internal identifier.
+  string origin = 2;
+}
+
+// Start new transaction in database specified by "db".
+message BeginTransactionRequest {
+  // Database name this transaction belongs to.
+  string db = 1;
+  // The transaction options.
+  TransactionOptions options = 2;
+}
+
+//  Start transaction returns transaction context
+//  which uniquely identifies the transaction
+message BeginTransactionResponse {
+  // Returns a tigris transactional context with details about the transactions.
+  TransactionCtx tx_ctx = 1;
+}
+
+// Commit transaction with the given ID
+message CommitTransactionRequest {
+  // Database name this transaction belongs to.
+  string db = 1;
+}
+message CommitTransactionResponse {
+  // Status of commit transaction operation.
+  string status = 1;
+}
+
+// Rollback transaction with the given ID
+message RollbackTransactionRequest {
+  // Database name this transaction belongs to.
+  string db = 1;
+}
+message RollbackTransactionResponse {
+  // Status of rollback transaction operation.
+  string status = 1;
+}
+
+// additional options for insert requests.
+message InsertRequestOptions {
+  WriteOptions write_options = 1;
+}
+
+// Has metadata related to the documents stored.
+message ResponseMetadata {
+  // Time at which the document was inserted/replaced. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp created_at = 1;
+  // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp updated_at = 2;
+  // Time at which the document was deleted. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp deleted_at = 3;
+}
+
+message InsertRequest {
+  // Database name where to insert documents.
+  string db = 1;
+  // Collection name where to insert documents.
+  string collection = 2;
+  // Array of documents to insert. Each document is a JSON object.
+  repeated bytes documents = 3;
+  InsertRequestOptions options = 4;
+}
+
+message InsertResponse {
+  // Has metadata related to the documents stored.
+  ResponseMetadata metadata = 1;
+  // An enum with value set as "inserted"
+  string status = 2;
+  // an array returns the value of the primary keys.
+  repeated bytes keys = 3;
+}
+
+// Additional options for replace requests.
+message ReplaceRequestOptions {
+  WriteOptions write_options = 1;
+}
+
+message ReplaceRequest {
+  // Database name where to replace documents.
+  string db = 1;
+  // Collection name where to replace documents.
+  string collection = 2;
+  // Array of documents to be replaced. Each document is a JSON object.
+  repeated bytes documents = 3;
+  ReplaceRequestOptions options = 4;
+}
+
+message ReplaceResponse {
+  // Has metadata related to the documents stored.
+  ResponseMetadata metadata = 1;
+  // an enum with value set as "replaced"
+  string status = 2;
+  // an array returns the value of the primary keys.
+  repeated bytes keys = 3;
+}
+
+// Additional options for deleted requests.
+message DeleteRequestOptions {
+  WriteOptions write_options = 1;
+  // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+  // this option to 'ci' that will apply to all the text fields in the filters.
+  Collation collation = 2;
+}
+
+message DeleteRequest {
+  // Database name where to insert documents.
+  string db = 1;
+  // Collection name where to insert documents.
+  string collection = 2;
+  // Delete documents which matching specified filter.
+  // A filter can simply be key, value where key
+  // is the field name and value would be the value for this field. Or a filter can be logical where
+  // two or more fields can be logically joined using $or and $and. A few examples of filter:
+  // <li> To delete a user document where the id has a value 1: ```{"id": 1 }```
+  // <li> To delete all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
+  bytes filter = 3;
+  DeleteRequestOptions options = 4;
+}
+
+message DeleteResponse {
+  // Has metadata related to the documents stored.
+  ResponseMetadata metadata = 1;
+  // an enum with value set as "deleted"
+  string status = 2;
+}
+
+// Additional options for update requests.
+message UpdateRequestOptions {
+  WriteOptions write_options = 1;
+  // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+  // this option to 'ci' that will apply to all the text fields in the filters.
+  Collation collation = 2;
+}
+
+message UpdateRequest {
+  // Database name where to update documents
+  string db = 1;
+  // Collection name where to update documents
+  string collection = 2;
+  // Fields contains set of fields
+  // with the values which need to be updated.
+  // Should be proper JSON object.
+  bytes fields = 3;
+  // Update documents which matching specified filter.
+  // A filter can simply be key, value where key
+  // is the field name and value would be the value for this field. Or a filter can be logical where
+  // two or more fields can be logically joined using $or and $and. A few examples of filter:
+  // <li> To update a user document where the id has a value 1: ```{"id": 1 }```
+  // <li> To update all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
+  bytes filter = 4;
+  UpdateRequestOptions options = 5;
+}
+
+message UpdateResponse {
+  // Has metadata related to the documents stored.
+  ResponseMetadata metadata = 1;
+  // Returns the number of documents modified.
+  int32 modified_count = 2;
+  // an enum with value set as "updated".
+  string status = 3;
+}
+
+message ReadRequest {
+  // Database name to read documents from.
+  string db = 1;
+  // Collection name to read documents from.
+  string collection = 2;
+  // Returns documents matching this filter. A filter can simply be a key, value pair where a key is the field name and the value would be the value for this field.
+  // Tigris also allows complex filtering by passing logical expressions. Logical filters are applied on two or more fields using `$or` and `$and`.
+  // A few examples of filters:
+  // <li> To read a user document where the id has a value 1: ```{"id": 1 }```
+  // <li> To read all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
+  // Filter allows setting collation on an individual field level. To set collation for all the fields see options.
+  // The detailed documentation of the filter is <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
+  bytes filter = 3;
+  // To read specific fields from a document. Default is all.
+  bytes fields = 4;
+  // Options that can be used to modify the results, for example `limit` to control the number of documents
+  // returned by the server.
+  ReadRequestOptions options = 5;
+}
+
+message ReadResponse {
+  // Object containing the collection document.
+  bytes data = 1;
+  // An internal key, used for pagination.
+  bytes resume_token = 2;
+  // Has metadata related to the documents stored.
+  ResponseMetadata metadata = 3;
+}
+
+message SearchRequest {
+  // Database name to read documents from.
+  string db = 1;
+  // Collection name to read documents from.
+  string collection = 2;
+  // Query string for searching across text fields
+  string q = 3;
+  // Array of fields to project search query against
+  repeated string search_fields = 4;
+  // Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
+  bytes filter = 5;
+  // Facet query to aggregate results on given fields. The field name for the facet search can be passed like this `{"brand": { "size": 10 }}`
+  // where the size controls the total facets for this field.
+  bytes facet = 6;
+  // Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`
+  bytes sort = 7;
+  // Array of document field names to include in results. By default, all fields are included.
+  repeated string include_fields = 8;
+  // Array of document field names to exclude from results. `include_fields`, if specified, takes precedence over `exclude_fields`.
+  repeated string exclude_fields = 9;
+  // Optionally can set the number of hits to be returned per page, default is 20.
+  int32 page_size = 10;
+  // Optionally can specify the page to retrieve. If page is set then only hits for this page is returned
+  int32 page = 11;
+  // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+  // this option to 'ci' that will apply to all the text fields in the filters.
+  Collation collation = 12;
+}
+
+// Response struct for search
+message SearchResponse {
+  repeated SearchHit hits = 1;
+  map<string, SearchFacet> facets = 2;
+  SearchMetadata meta = 3;
+}
+
+message SearchHit {
+  // Actual search document
+  bytes data = 1;
+  // Has metadata related to the search hit
+  SearchHitMeta metadata = 2;
+}
+
+// Contains metadata related to the search hit, has information about document created_at/updated_at as well.
+message SearchHitMeta {
+  // Time at which the document was inserted/replaced. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp created_at = 1;
+  // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp updated_at = 2;
+}
+
+message SearchFacet {
+  repeated FacetCount counts = 1;
+  FacetStats stats = 2;
+}
+
+message FacetCount {
+  int64 count = 1;
+  string value = 2;
+}
+
+// Additional stats for faceted field
+message FacetStats {
+  // Average of all values in a field. Only available for numeric fields
+  optional double avg = 1;
+  // Maximum of all values in a field. Only available for numeric fields
+  optional double max = 2;
+  // Minimum of all values in a field. Only available for numeric fields
+  optional double min = 3;
+  // Sum of all values in a field. Only available for numeric fields
+  optional double sum = 4;
+  // Total number of values in a field
+  int64 count = 5;
+}
+
+message SearchMetadata {
+  // Total number of search results across all pages
+  int64 found = 1;
+  // Number representing the total pages of results
+  int32 total_pages = 2;
+  Page page = 3;
+}
+
+// Pagination metadata for SearchResponse
+message Page {
+  // Number representing the current page of results
+  int32 current = 1;
+  // Maximum number of results per page
+  int32 size = 3;
+}
+
+message CreateDatabaseRequest {
+  // Create database with this name.
+  string db = 1;
+  DatabaseOptions options = 2;
+}
+
+message CreateDatabaseResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "created".
+  string status = 2;
+}
+
+message DropDatabaseRequest {
+  // Drop database with this name. **Note**: Deletes all the collections in the database.
+  // Use with caution.
+  string db = 1;
+  DatabaseOptions options = 2;
+}
+
+message DropDatabaseResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "dropped".
+  string status = 2;
+}
+
+message CreateOrUpdateCollectionRequest {
+  // Database name where to create collection.
+  string db = 1;
+  // Collection name to create.
+  string collection = 2;
+  // The schema specifications are same as
+  // JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.
+  // The schema of the `documents` collection differs from the schema of `messages` collection as `messages` collection does not
+  // have any concept of `primary_key`. The server recognizes type of the collection by the `collection_type` set in
+  // the schema.
+  //<p></p>
+  // Schema example of `documents`:
+  // `{
+  //  "title": "user",
+  //  "description": "Collection of documents with details of users",
+  //  "properties": {
+  //    "id": {
+  //      "description": "A unique identifier for the user",
+  //      "type": "integer"
+  //    },
+  //    "name": {
+  //      "description": "Name of the user",
+  //      "type": "string",
+  //      "maxLength": 100
+  //    },
+  //    "balance": {
+  //      "description": "User account balance",
+  //      "type": "number"
+  //    }
+  //  },
+  //  "primary_key": ["id"]
+  // }`
+  // <p></p>*Note: The `collection_type` is not set as default is documents.*
+  // <p></p>Schema example of `messages`:
+  // `{
+  //  "title": "user_events",
+  //  "description": "Topic for user events",
+  //  "properties": {
+  //    "event_id": {
+  //      "description": "A id for the event",
+  //      "type": "integer"
+  //    },
+  //    "event_type": {
+  //      "description": "Type of the Event",
+  //      "type": "string",
+  //      "maxLength": 100
+  //    }
+  //    "event_details": {
+  //      "description": "Details about the Event",
+  //      "type": "string"
+  //    }
+  //  },
+  //  "collection_type": "messages"
+  // }`
+  // <p></p> *Note: The `collection_type` is set as "messages".*
+  bytes schema = 3;
+  // If set to `true` then the update schema request to the collection will fail by returning a conflict with HTTP Status
+  // code 409. The default is false.
+  bool only_create = 4;
+  CollectionOptions options = 5;
+}
+
+message CreateOrUpdateCollectionResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "created" or "updated"
+  string status = 2;
+}
+
+message DropCollectionRequest {
+  // Database name of the collection.
+  string db = 1;
+  // Collection name to drop.
+  string collection = 2;
+  CollectionOptions options = 3;
+}
+
+message DropCollectionResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "dropped".
+  string status = 2;
+}
+
+message DatabaseInfo {
+  // Database name.
+  string db = 1;
+
+  // Metadata about the database.
+  DatabaseMetadata metadata = 2;
+}
+
+message CollectionInfo {
+  // Collection name.
+  string collection = 1;
+
+  // Metadata about the collection.
+  CollectionMetadata metadata = 2;
+}
+
+message ListDatabasesRequest {
+}
+
+message ListDatabasesResponse {
+  // List of the databases.
+  repeated DatabaseInfo databases = 1;
+}
+
+message ListCollectionsRequest {
+  // List collection in this database.
+  string db = 1;
+  CollectionOptions options = 2;
+}
+
+message ListCollectionsResponse {
+  // Name of the database.
+  string db = 1;
+
+  // List of the collections info in the database.
+  repeated CollectionInfo collections = 2;
+}
+
+message DescribeDatabaseRequest {
+  // Name of the database.
+  string db = 1;
+}
+
+message DescribeCollectionRequest {
+  // Name of the database.
+  string db = 1;
+
+  // Name of the collection.
+  string collection = 2;
+
+  // Collection options.
+  CollectionOptions options = 3;
+}
+
+// A detailed description of the database and all the associated collections.
+// Description of the collection includes schema details as well.
+message DescribeDatabaseResponse {
+  // Name of the database.
+  string db = 1;
+
+  // Metadata about the database.
+  DatabaseMetadata metadata = 2;
+
+  // A detailed description about all the collections.
+  // The description returns collection metadata and the schema.
+  repeated CollectionDescription collections = 3;
+
+  // Sum of all the collections sizes present in this database
+  int64 size = 4;
+}
+
+// A detailed description of the collection.
+// The description returns collection metadata and the schema.
+message DescribeCollectionResponse {
+  // Name of the collection.
+  string collection = 1;
+
+  // Metadata about the collection.
+  CollectionMetadata metadata = 2;
+
+  // Schema of this collection.
+  bytes schema = 3;
+  // The size of this collection in bytes.
+  int64 size = 4;
+}
+
+message DatabaseDescription {
+}
+
+message CollectionDescription {
+  // Name of the collection.
+  string collection = 1;
+
+  // Metadata about the collection.
+  CollectionMetadata metadata = 2;
+
+  // Collections schema
+  bytes schema = 3;
+  // Collection size in bytes
+  int64 size = 4;
+}
+
+message DatabaseMetadata {
+}
+
+message CollectionMetadata {
+}
+
+message EventsRequestOptions {
+}
+
+message EventsRequest {
+  string db = 1;
+  string collection = 2;
+  EventsRequestOptions options = 3;
+}
+
+message EventsResponse {
+  StreamEvent event = 1;
+}
+
+message StreamEvent {
+  bytes tx_id = 1;
+  string collection = 2;
+  string op = 3;
+  bytes key = 4;
+  bytes lkey = 5;
+  bytes rkey = 6;
+  bytes data = 7;
+  bool last = 8;
+}
+
+message PublishRequestOptions {
+  optional int32 partition = 1;
+}
+
+message PublishRequest {
+  // Database name where to publish messages.
+  string db = 1;
+  // Topic name where to publish messages.
+  string collection = 2;
+  // An array of JSON messages to publish.
+  repeated bytes messages = 3;
+  PublishRequestOptions options = 4;
+}
+
+message PublishResponse {
+  ResponseMetadata metadata = 1;
+  string status = 2;
+  repeated bytes keys = 3;
+}
+
+message SubscribeRequestOptions {
+  repeated int32 partitions = 1;
+}
+
+message SubscribeRequest {
+  // Database name.
+  string db = 1;
+  // Topic name.
+  string collection = 2;
+  SubscribeRequestOptions options = 3;
+  // Filter allows you to subscribe only for events that you need. Filter syntax is similar to `ReadRequest.filter`.
+  bytes filter = 4;
+}
+
+message SubscribeResponse {
+  bytes message = 1;
+}
+
+service Tigris {
+  // Starts a new transaction and returns a transactional object. All reads/writes performed
+  // within a transaction will run with serializable isolation.
+  rpc BeginTransaction(BeginTransactionRequest) returns (BeginTransactionResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/transactions/begin"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Begin a transaction"
+      tags: "Transactions"
+    };
+  }
+  // Atomically commit all the changes performed in the context of the transaction. Commit provides all
+  // or nothing semantics by ensuring no partial updates are in the database due to a transaction failure.
+  rpc CommitTransaction(CommitTransactionRequest) returns (CommitTransactionResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/transactions/commit"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Commit a Transaction"
+      tags: "Transactions"
+    };
+  }
+  // Rollback transaction discards all the changes
+  // performed in the transaction
+  rpc RollbackTransaction(RollbackTransactionRequest) returns (RollbackTransactionResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/transactions/rollback"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Rollback a transaction"
+      tags: "Transactions"
+    };
+  }
+
+  // Inserts new documents in the collection and returns an AlreadyExists error if any of the documents
+  // in the request already exists. Insert provides idempotency by returning an error if the document
+  // already exists. To replace documents, use REPLACE API instead of INSERT.
+  rpc Insert(InsertRequest) returns (InsertResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/collections/{collection}/documents/insert"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Insert Documents"
+      tags: "Documents"
+    };
+  }
+  // Inserts the documents or replaces the existing documents in the collections.
+  rpc Replace(ReplaceRequest) returns (ReplaceResponse) {
+    option (google.api.http) = {
+      put : "/v1/databases/{db}/collections/{collection}/documents/replace"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Insert or Replace Documents"
+      tags: "Documents"
+    };
+  }
+  // Delete a range of documents in the collection using the condition provided in the filter.
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
+    option (google.api.http) = {
+      delete : "/v1/databases/{db}/collections/{collection}/documents/delete"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Delete Documents"
+      tags: "Documents"
+    };
+  }
+  // Update a range of documents in the collection using the condition provided in the filter.
+  rpc Update(UpdateRequest) returns (UpdateResponse) {
+    option (google.api.http) = {
+      put : "/v1/databases/{db}/collections/{collection}/documents/update"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Update Documents"
+      tags: "Documents"
+    };
+  }
+  // Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
+  // index any fields and automatically index all the fields which means you can filter by any field in the document.
+  // An empty filter will trigger reading all the documents inside this collection. The API supports pagination that
+  // can be used by passing `Limit/Skip` parameters. The `skip` parameter skips the number of documents from the start and
+  // the `limit` parameter is used to specify the number of documents to read. You can find more detailed documentation
+  // of the Read API <a href="https://docs.tigrisdata.com/overview/query" title="here">here</a>.
+  rpc Read(ReadRequest) returns (stream ReadResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/collections/{collection}/documents/read"
+      body : "*"
+      additional_bindings {
+        post : "/v1/databases/{db}/collections/{collection}/messages/read"
+        body : "*"
+      }
+    };
+    option(openapi.v3.operation) = {
+      summary: "Read Documents"
+      tags: "Documents"
+    };
+  }
+
+  // Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
+  // a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
+  // You can also perform a faceted search by passing the fields in the facet parameter.
+  // You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
+  rpc Search(SearchRequest) returns (stream SearchResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/collections/{collection}/documents/search"
+      body : "*"
+      additional_bindings {
+        post : "/v1/databases/{db}/collections/{collection}/messages/search"
+        body : "*"
+      }
+    };
+    option(openapi.v3.operation) = {
+      summary: "Search Documents"
+      tags: "Documents"
+    };
+  }
+  // Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
+  // Schema changes are applied atomically and immediately without any downtime.
+  // Tigris Offers two types of collections: <p></p>
+  //    <li> `DOCUMENTS`: Offers rich CRUD APIs.
+  //    <li> `MESSAGES`: Offers event streaming APIs.
+  rpc CreateOrUpdateCollection(CreateOrUpdateCollectionRequest) returns (CreateOrUpdateCollectionResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/collections/{collection}/createOrUpdate"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Create or update a collection"
+      tags: "Collections"
+    };
+  }
+  // Drop the collection inside this database. This API deletes all of the documents inside this collection and any metadata associated with it.
+  rpc DropCollection(DropCollectionRequest) returns (DropCollectionResponse) {
+    option (google.api.http) = {
+      delete : "/v1/databases/{db}/collections/{collection}/drop"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Drop Collection"
+      tags: "Collections"
+    };
+  }
+  // List returns all the databases.
+  rpc ListDatabases(ListDatabasesRequest) returns (ListDatabasesResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/list"
+    };
+    option(openapi.v3.operation) = {
+      summary: "List Databases"
+      tags: "Databases"
+    };
+  }
+  // List all the collections present in the database passed in the request.
+  rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/collections/list"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "List Collections"
+      tags: "Databases"
+    };
+  }
+  // Creates a new database. Returns an AlreadyExists error with a status code 409 if the database already exists.
+  rpc CreateDatabase(CreateDatabaseRequest) returns (CreateDatabaseResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/create"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Create Database"
+      tags: "Databases"
+    };
+  }
+
+  // Drop database deletes all the collections in this database along with all of the documents, and associated metadata for these collections.
+  rpc DropDatabase(DropDatabaseRequest) returns (DropDatabaseResponse) {
+    option (google.api.http) = {
+      delete : "/v1/databases/{db}/drop"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Drop Database"
+      tags: "Databases"
+    };
+  }
+
+  // This API returns information related to the database along with all the collections inside the database.
+  // This can be used to retrieve the size of the database or to retrieve schemas and the size of all the collections present in this database.
+  rpc DescribeDatabase(DescribeDatabaseRequest) returns (DescribeDatabaseResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/describe"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Describe Database"
+      tags: "Databases"
+    };
+  }
+
+  // Returns the information related to the collection. This can be used to retrieve the schema or size of the collection.
+  rpc DescribeCollection(DescribeCollectionRequest) returns (DescribeCollectionResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/collections/{collection}/describe"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Describe Collection"
+      tags: "Collections"
+    };
+  }
+
+  // Stream real-time events for mutations made to the collections in the database. Each stream will have a transaction
+  // identifier attached to it and will have a boolean flag “last” set to the last event of the transaction which will be useful
+  // if a transaction performed more than one operation in the collection.
+  rpc Events(EventsRequest) returns (stream EventsResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/collections/{collection}/events"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Change Events"
+      tags: "Collections"
+    };
+  }
+
+  // Endpoint for publishing messages to a topic.
+  rpc Publish(PublishRequest) returns (PublishResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/collections/{collection}/messages/publish"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Publish Messages to a Topic"
+      tags: "Event Streaming"
+    };
+  }
+
+  // Endpoint for subscribing to a topic to receive a stream of messages. The `partition` can be set to stream only
+  // from a specific partition.
+  rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/collections/{collection}/messages/subscribe"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Subscribe to a Topic"
+      tags: "Event Streaming"
+    };
+  }
+}
