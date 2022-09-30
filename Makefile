@@ -46,7 +46,6 @@ lint: generate client
 	! which redocly || redocly lint ${PROTO_DIR}/openapi.yaml \
 		--extends=recommended \
 		--skip-rule=operation-4xx-response \
-		--skip-rule=no-empty-servers \
 		--skip-rule=tag-description
 
 clean:

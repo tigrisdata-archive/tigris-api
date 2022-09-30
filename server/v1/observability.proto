@@ -154,6 +154,33 @@ message DataPoint {
   double value = 2;
 }
 
+// Request current namespace quota limits
+message QuotaLimitsRequest {
+}
+
+// Contains current quota limits
+message QuotaLimitsResponse {
+  // Number of allowed read units per second
+  int64 ReadUnits = 1;
+  // Number of allowed write units per second
+  int64 WriteUnits = 2;
+  // Maximum number of bytes allowed to store
+  int64 StorageSize = 3;
+}
+
+// Request current namespace quota usage
+message QuotaUsageRequest {
+}
+
+// Contains current quota usage
+message QuotaUsageResponse {
+  // Number of read units used per second
+  int64 ReadUnits = 1;
+  // Number of write units used per second
+  int64 WriteUnits = 2;
+  // Number of bytes stored
+  int64 StorageSize = 3;
+}
 
 message GetInfoRequest {
 }
@@ -175,6 +202,32 @@ service Observability {
     };
     option (openapi.v3.operation) = {
       summary : "Queries time series metrics"
+      tags : "Observability"
+    };
+  }
+
+  // Returns current namespace quota limits
+  rpc QuotaLimits(QuotaLimitsRequest)
+      returns (QuotaLimitsResponse) {
+    option (google.api.http) = {
+      post : "/v1/observability/quota/limits"
+      body : "*"
+    };
+    option (openapi.v3.operation) = {
+      summary : "Queries current namespace quota limits"
+      tags : "Observability"
+    };
+  }
+
+  // Returns current namespace quota limits
+  rpc QuotaUsage(QuotaUsageRequest)
+      returns (QuotaUsageResponse) {
+    option (google.api.http) = {
+      post : "/v1/observability/quota/usage"
+      body : "*"
+    };
+    option (openapi.v3.operation) = {
+      summary : "Queries current namespace quota usage"
       tags : "Observability"
     };
   }

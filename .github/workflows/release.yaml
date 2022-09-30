@@ -9,8 +9,6 @@ on:
 jobs:
   lint:
     uses: ./.github/workflows/lint.yaml
-    secrets:
-      API_DEPLOY_KEY: ${{ secrets.API_DEPLOY_KEY }}
 
   release:
     runs-on: ubuntu-latest
