@@ -105,8 +105,8 @@ paths:
                 Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
                  Schema changes are applied atomically and immediately without any downtime.
                  Tigris Offers two types of collections: <p></p>
-                    <li> `DOCUMENTS`: Offers rich CRUD APIs.
-                    <li> `MESSAGES`: Offers event streaming APIs.
+                    <li> `documents`: Offers rich CRUD APIs.
+                    <li> `topic`: Offers event streaming APIs.
             operationId: Tigris_CreateOrUpdateCollection
             parameters:
                 - name: db
@@ -266,7 +266,7 @@ paths:
                 - Documents
             summary: Read Documents
             description: |-
-                Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
+                Reads a range of documents from the collection, or events from a collection in case of event streaming. Tigris does not require you to
                  index any fields and automatically index all the fields which means you can filter by any field in the document.
                  An empty filter will trigger reading all the documents inside this collection. The API supports pagination that
                  can be used by passing `Limit/Skip` parameters. The `skip` parameter skips the number of documents from the start and
@@ -350,7 +350,7 @@ paths:
                 - Documents
             summary: Search Documents
             description: |-
-                Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
+                Searches a collection for the documents matching the query, or events in case of event streaming. A search can be
                  a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
                  You can also perform a faceted search by passing the fields in the facet parameter.
                  You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
@@ -465,12 +465,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/messages/publish:
+    /v1/databases/{db}/collections/{collection}/topics/publish:
         post:
             tags:
                 - Event Streaming
-            summary: Publish Messages to a Topic
-            description: Endpoint for publishing messages to a topic.
+            summary: Publish Events to a Topic
+            description: Endpoint for publishing events to a topic.
             operationId: Tigris_Publish
             parameters:
                 - name: db
@@ -504,13 +504,13 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/messages/subscribe:
+    /v1/databases/{db}/collections/{collection}/topics/subscribe:
         post:
             tags:
                 - Event Streaming
             summary: Subscribe to a Topic
             description: |-
-                Endpoint for subscribing to a topic to receive a stream of messages. The `partition` can be set to stream only
+                Endpoint for subscribing to a topic to receive a stream of events. The `partition` can be set to stream only
                  from a specific partition.
             operationId: Tigris_Subscribe
             parameters:
@@ -1689,11 +1689,11 @@ components:
                 collection:
                     type: string
                     description: Topic name where to publish messages.
-                messages:
+                events:
                     type: array
                     items:
                         type: object
-                    description: An array of JSON messages to publish.
+                    description: An array of JSON events to publish.
                 options:
                     $ref: '#/components/schemas/PublishRequestOptions'
         PublishRequestOptions:
@@ -2052,7 +2052,7 @@ components:
         SubscribeResponse:
             type: object
             properties:
-                message:
+                events:
                     type: string
                     format: byte
         TransactionCtx:

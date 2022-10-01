@@ -669,8 +669,8 @@ message PublishRequest {
   string db = 1;
   // Topic name where to publish messages.
   string collection = 2;
-  // An array of JSON messages to publish.
-  repeated bytes messages = 3;
+  // An array of JSON events to publish.
+  repeated bytes events = 3;
   PublishRequestOptions options = 4;
 }
 
@@ -695,7 +695,7 @@ message SubscribeRequest {
 }
 
 message SubscribeResponse {
-  bytes message = 1;
+  bytes events = 1;
 }
 
 service Tigris {
@@ -782,7 +782,7 @@ service Tigris {
       tags: "Documents"
     };
   }
-  // Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
+  // Reads a range of documents from the collection, or events from a collection in case of event streaming. Tigris does not require you to
   // index any fields and automatically index all the fields which means you can filter by any field in the document.
   // An empty filter will trigger reading all the documents inside this collection. The API supports pagination that
   // can be used by passing `Limit/Skip` parameters. The `skip` parameter skips the number of documents from the start and
@@ -793,7 +793,7 @@ service Tigris {
       post : "/v1/databases/{db}/collections/{collection}/documents/read"
       body : "*"
       additional_bindings {
-        post : "/v1/databases/{db}/collections/{collection}/messages/read"
+        post : "/v1/databases/{db}/collections/{collection}/topics/read"
         body : "*"
       }
     };
@@ -803,7 +803,7 @@ service Tigris {
     };
   }
 
-  // Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
+  // Searches a collection for the documents matching the query, or events in case of event streaming. A search can be
   // a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
   // You can also perform a faceted search by passing the fields in the facet parameter.
   // You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
@@ -812,7 +812,7 @@ service Tigris {
       post : "/v1/databases/{db}/collections/{collection}/documents/search"
       body : "*"
       additional_bindings {
-        post : "/v1/databases/{db}/collections/{collection}/messages/search"
+        post : "/v1/databases/{db}/collections/{collection}/topics/search"
         body : "*"
       }
     };
@@ -824,8 +824,8 @@ service Tigris {
   // Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
   // Schema changes are applied atomically and immediately without any downtime.
   // Tigris Offers two types of collections: <p></p>
-  //    <li> `DOCUMENTS`: Offers rich CRUD APIs.
-  //    <li> `MESSAGES`: Offers event streaming APIs.
+  //    <li> `documents`: Offers rich CRUD APIs.
+  //    <li> `topic`: Offers event streaming APIs.
   rpc CreateOrUpdateCollection(CreateOrUpdateCollectionRequest) returns (CreateOrUpdateCollectionResponse) {
     option (google.api.http) = {
       post : "/v1/databases/{db}/collections/{collection}/createOrUpdate"
@@ -931,23 +931,23 @@ service Tigris {
     };
   }
 
-  // Endpoint for publishing messages to a topic.
+  // Endpoint for publishing events to a topic.
   rpc Publish(PublishRequest) returns (PublishResponse) {
     option (google.api.http) = {
-      post : "/v1/databases/{db}/collections/{collection}/messages/publish"
+      post : "/v1/databases/{db}/collections/{collection}/topics/publish"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Publish Messages to a Topic"
+      summary: "Publish Events to a Topic"
       tags: "Event Streaming"
     };
   }
 
-  // Endpoint for subscribing to a topic to receive a stream of messages. The `partition` can be set to stream only
+  // Endpoint for subscribing to a topic to receive a stream of events. The `partition` can be set to stream only
   // from a specific partition.
   rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse) {
     option (google.api.http) = {
-      post : "/v1/databases/{db}/collections/{collection}/messages/subscribe"
+      post : "/v1/databases/{db}/collections/{collection}/topics/subscribe"
       body : "*"
     };
     option(openapi.v3.operation) = {
