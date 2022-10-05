@@ -3,13 +3,10 @@ on:
   push:
     branches:
       - "release"
-      - "alpha"
+      - "beta"
       - "main"
   pull_request:
   workflow_call:
-    secrets:
-      API_DEPLOY_KEY:
-        required: true
 jobs:
   lint:
     runs-on: ubuntu-latest

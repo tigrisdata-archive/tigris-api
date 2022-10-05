@@ -1097,6 +1097,58 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/observability/quota/limits:
+        post:
+            tags:
+                - Observability
+            summary: Queries current namespace quota limits
+            description: Returns current namespace quota limits
+            operationId: Observability_QuotaLimits
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/QuotaLimitsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/QuotaLimitsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/observability/quota/usage:
+        post:
+            tags:
+                - Observability
+            summary: Queries current namespace quota usage
+            description: Returns current namespace quota limits
+            operationId: Observability_QuotaUsage
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/QuotaUsageRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/QuotaUsageResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
         AdditionalFunction:
@@ -1244,7 +1296,7 @@ components:
             properties:
                 schema:
                     type: object
-                    description: 'The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>. The schema of the `documents` collection differs from the schema of `messages` collection as `messages` collection does not have any concept of `primary_key`. The server recognizes type of the collection by the `collection_type` set in the schema.<p></p> Schema example of `documents`: `{  "title": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "integer"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 100    },    "balance": {      "description": "User account balance",      "type": "number"    }  },  "primary_key": ["id"] }` <p></p>*Note: The `collection_type` is not set as default is documents.* <p></p>Schema example of `messages`: `{  "title": "user_events",  "description": "Topic for user events",  "properties": {    "event_id": {      "description": "A id for the event",      "type": "integer"    },    "event_type": {      "description": "Type of the Event",      "type": "string",      "maxLength": 100    }    "event_details": {      "description": "Details about the Event",      "type": "string"    }  },  "collection_type": "messages" }` <p></p> *Note: The `collection_type` is set as "messages".*'
+                    description: 'The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>. The schema of the `documents` collection differs from the schema of `topic` collection as `topic` collection does not have any concept of `primary_key`. The server recognizes type of the collection by the `collection_type` set in the schema.<p></p> Schema example of `documents`: `{  "title": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "integer"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 100    },    "balance": {      "description": "User account balance",      "type": "number"    }  },  "primary_key": ["id"] }` <p></p>*Note: The `collection_type` is not set as default is documents.* <p></p>Schema example of `topic`: `{  "title": "user_events",  "description": "Topic for user events",  "properties": {    "event_id": {      "description": "A id for the event",      "type": "integer"    },    "event_type": {      "description": "Type of the Event",      "type": "string",      "maxLength": 100    }    "event_details": {      "description": "Details about the Event",      "type": "string"    }  },  "collection_type": "topic" }` <p></p> *Note: The `collection_type` is set as "topic".*'
                 only_create:
                     type: boolean
                     description: If set to `true` then the update schema request to the collection will fail by returning a conflict with HTTP Status code 409. The default is false.
@@ -1780,6 +1832,46 @@ components:
                     items:
                         $ref: '#/components/schemas/MetricSeries'
             description: QueryTimeSeriesMetric responds with this type.
+        QuotaLimitsRequest:
+            type: object
+            properties: {}
+            description: Request current namespace quota limits
+        QuotaLimitsResponse:
+            type: object
+            properties:
+                ReadUnits:
+                    type: integer
+                    description: Number of allowed read units per second
+                    format: int64
+                WriteUnits:
+                    type: integer
+                    description: Number of allowed write units per second
+                    format: int64
+                StorageSize:
+                    type: integer
+                    description: Maximum number of bytes allowed to store
+                    format: int64
+            description: Contains current quota limits
+        QuotaUsageRequest:
+            type: object
+            properties: {}
+            description: Request current namespace quota usage
+        QuotaUsageResponse:
+            type: object
+            properties:
+                ReadUnits:
+                    type: integer
+                    description: Number of read units used per second
+                    format: int64
+                WriteUnits:
+                    type: integer
+                    description: Number of write units used per second
+                    format: int64
+                StorageSize:
+                    type: integer
+                    description: Number of bytes stored
+                    format: int64
+            description: Contains current quota usage
         ReadRequest:
             type: object
             properties:
