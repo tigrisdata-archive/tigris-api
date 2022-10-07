@@ -20,8 +20,8 @@ jobs:
         run: /bin/bash scripts/install_build_deps.sh
       - name: Check OpenAPI generated
         run: |
-          make generate
-          git diff --quiet HEAD || (echo -e "\nRun 'make clean && make generate' and check-in OpenAPI specification" && exit 1)
+          touch server/v1/api.proto && make generate
+          git diff --quiet HEAD server/v1/openapi.yaml || (echo -e "\nRun 'touch server/v1/api.proto && make generate' and check-in OpenAPI specification" && exit 1)
       - name: Install Redocly CLI
         run: npm install @redocly/cli -g
       - name: Make lint

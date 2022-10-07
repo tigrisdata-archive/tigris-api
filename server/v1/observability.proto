@@ -180,6 +180,15 @@ message QuotaUsageResponse {
   int64 WriteUnits = 2;
   // Number of bytes stored
   int64 StorageSize = 3;
+  // Number of read units throttled per second.
+  // Units which was rejected with "resource exhausted error".
+  int64 ReadUnitsThrottled = 4;
+  // Number of write units throttled per second.
+  // Units which was rejected with "resource exhausted error".
+  int64 WriteUnitsThrottled = 5;
+  // Number of bytes throttled.
+  // Number of bytes which were attempted to write in excess of quota and were rejected.
+  int64 StorageSizeThrottled = 6;
 }
 
 message GetInfoRequest {
