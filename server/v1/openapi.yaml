@@ -1871,6 +1871,18 @@ components:
                     type: integer
                     description: Number of bytes stored
                     format: int64
+                ReadUnitsThrottled:
+                    type: integer
+                    description: Number of read units throttled per second. Units which was rejected with "resource exhausted error".
+                    format: int64
+                WriteUnitsThrottled:
+                    type: integer
+                    description: Number of write units throttled per second. Units which was rejected with "resource exhausted error".
+                    format: int64
+                StorageSizeThrottled:
+                    type: integer
+                    description: Number of bytes throttled. Number of bytes which were attempted to write in excess of quota and were rejected.
+                    format: int64
             description: Contains current quota usage
         ReadRequest:
             type: object
