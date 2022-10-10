@@ -237,6 +237,8 @@ message DeleteRequestOptions {
   // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
   // this option to 'ci' that will apply to all the text fields in the filters.
   Collation collation = 2;
+  // Limit the number of documents to be deleted
+  int64 limit = 3;
 }
 
 message DeleteRequest {
@@ -267,6 +269,8 @@ message UpdateRequestOptions {
   // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
   // this option to 'ci' that will apply to all the text fields in the filters.
   Collation collation = 2;
+  // Limit the number of documents to be updated
+  int64 limit = 3;
 }
 
 message UpdateRequest {
