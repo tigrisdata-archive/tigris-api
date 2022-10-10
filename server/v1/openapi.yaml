@@ -1365,6 +1365,10 @@ components:
                     $ref: '#/components/schemas/WriteOptions'
                 collation:
                     $ref: '#/components/schemas/Collation'
+                limit:
+                    type: integer
+                    description: Limit the number of documents to be deleted
+                    format: int64
             description: Additional options for deleted requests.
         DeleteResponse:
             type: object
@@ -2210,6 +2214,10 @@ components:
                     $ref: '#/components/schemas/WriteOptions'
                 collation:
                     $ref: '#/components/schemas/Collation'
+                limit:
+                    type: integer
+                    description: Limit the number of documents to be updated
+                    format: int64
             description: Additional options for update requests.
         UpdateResponse:
             type: object
