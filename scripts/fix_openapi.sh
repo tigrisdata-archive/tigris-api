@@ -37,7 +37,7 @@ main() {
 	# so fixing it here
 	yq_cmd '.paths."/v1/health".get.security=[]'
 
-	yq_del_namespace_name CreateNamespaceRequest
+	yq_del_namespace_display_name CreateNamespaceRequest
 
 	# Fix the types of filter and document fields to be object on HTTP wire.
 	# The original format in proto file is "bytes", which allows to skip
@@ -99,9 +99,9 @@ yq_cmd() {
 	yq -I 4 -i "$1" "$IN_FILE"
 }
 
-# Delete name attribute from body
-yq_del_namespace_name() {
-	yq_cmd "del(.components.schemas.$1.properties.name)"
+# Delete display_name attribute from body
+yq_del_namespace_display_name() {
+	yq_cmd "del(.components.schemas.$1.properties.display_name)"
 }
 
 # Change type of documents, filters, fields, schema to be JSON object

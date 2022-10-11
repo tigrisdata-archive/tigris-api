@@ -922,7 +922,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/management/namespaces/{name}/create:
+    /v1/management/namespaces/{display_name}/create:
         post:
             tags:
                 - Namespaces
@@ -930,9 +930,9 @@ paths:
             description: Creates a new namespace, if it does not exist
             operationId: Management_CreateNamespace
             parameters:
-                - name: name
+                - name: display_name
                   in: path
-                  description: A namespace name.
+                  description: The display name for namespace.
                   required: true
                   schema:
                     type: string
@@ -1280,7 +1280,7 @@ components:
             properties:
                 id:
                     type: integer
-                    description: A unique namespace id.
+                    description: The unique id
                     format: int32
         CreateNamespaceResponse:
             type: object
@@ -1719,11 +1719,14 @@ components:
             properties:
                 id:
                     type: integer
-                    description: A unique namespace id.
+                    description: The unique namespace id.
                     format: int32
                 name:
                     type: string
-                    description: A namespace name.
+                    description: The namespace name.
+                display_name:
+                    type: string
+                    description: The namespace display name.
         Page:
             type: object
             properties:
