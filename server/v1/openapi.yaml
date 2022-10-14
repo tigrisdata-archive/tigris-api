@@ -1291,6 +1291,8 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created".
+                namespace:
+                    $ref: '#/components/schemas/NamespaceInfo'
         CreateOrUpdateCollectionRequest:
             type: object
             properties:

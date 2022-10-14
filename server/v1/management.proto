@@ -29,11 +29,13 @@ message CreateNamespaceRequest {
   string display_name = 2;
 }
 
-message CreateNamespaceResponse{
+message CreateNamespaceResponse {
   // A detailed response message.
   string message = 1;
   // An enum with value set as "created".
   string status = 2;
+  // The created namespace
+  NamespaceInfo namespace = 3;
 }
 
 message NamespaceInfo{
