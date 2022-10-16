@@ -1278,7 +1278,7 @@ components:
                 id:
                     type: string
                     description: 'Optional: unique string id'
-                display_name:
+                name:
                     type: string
                     description: 'Required: The display name for namespace.'
         CreateNamespaceResponse:
@@ -1718,14 +1718,14 @@ components:
         NamespaceInfo:
             type: object
             properties:
-                id:
+                code:
                     type: integer
-                    description: The unique namespace id.
+                    description: The unique namespace code.
                     format: int32
-                name:
+                id:
                     type: string
-                    description: The namespace name.
-                display_name:
+                    description: The namespace unique id.
+                name:
                     type: string
                     description: The namespace display name.
         Page:
