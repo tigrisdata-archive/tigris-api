@@ -28,7 +28,7 @@ message CreateNamespaceRequest {
   // Optional: unique string id
   string id = 2;
   // Required: The display name for namespace.
-  string display_name = 3;
+  string name = 3;
 }
 
 message CreateNamespaceResponse {
@@ -41,12 +41,12 @@ message CreateNamespaceResponse {
 }
 
 message NamespaceInfo {
-  // The unique namespace id.
-  int32 id = 1;
-  // The namespace name.
-  string name = 2;
+  // The unique namespace code.
+  int32 code = 1;
+  // The namespace unique id.
+  string id = 2;
   // The namespace display name.
-  string display_name = 3;
+  string name = 3;
 }
 
 message ListNamespacesRequest {
