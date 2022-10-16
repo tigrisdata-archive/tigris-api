@@ -23,10 +23,12 @@ option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
 message CreateNamespaceRequest {
-  // The unique id
-  int32 id = 1;
-  // The display name for namespace.
-  string display_name = 2;
+  // Optional: unique id
+  uint32 code = 1;
+  // Optional: unique string id
+  string id = 2;
+  // Required: The display name for namespace.
+  string display_name = 3;
 }
 
 message CreateNamespaceResponse {
@@ -38,7 +40,7 @@ message CreateNamespaceResponse {
   NamespaceInfo namespace = 3;
 }
 
-message NamespaceInfo{
+message NamespaceInfo {
   // The unique namespace id.
   int32 id = 1;
   // The namespace name.
@@ -184,7 +186,7 @@ service Management {
   rpc CreateNamespace(CreateNamespaceRequest) returns
       (CreateNamespaceResponse) {
     option (google.api.http) = {
-      post : "/v1/management/namespaces/{display_name}/create"
+      post : "/v1/management/namespaces/create"
       body : "*"
     };
     option(openapi.v3.operation) = {

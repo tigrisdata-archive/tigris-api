@@ -902,6 +902,32 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/management/namespaces/create:
+        post:
+            tags:
+                - Namespaces
+            summary: Creates a Namespace
+            description: Creates a new namespace, if it does not exist
+            operationId: Management_CreateNamespace
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateNamespaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateNamespaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/management/namespaces/list:
         post:
             tags:
@@ -916,39 +942,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListNamespacesResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/management/namespaces/{display_name}/create:
-        post:
-            tags:
-                - Namespaces
-            summary: Creates a Namespace
-            description: Creates a new namespace, if it does not exist
-            operationId: Management_CreateNamespace
-            parameters:
-                - name: display_name
-                  in: path
-                  description: The display name for namespace.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateNamespaceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateNamespaceResponse'
                 default:
                     description: Default error response
                     content:
@@ -1278,10 +1271,16 @@ components:
         CreateNamespaceRequest:
             type: object
             properties:
-                id:
+                code:
                     type: integer
-                    description: The unique id
-                    format: int32
+                    description: 'Optional: unique id'
+                    format: uint32
+                id:
+                    type: string
+                    description: 'Optional: unique string id'
+                display_name:
+                    type: string
+                    description: 'Required: The display name for namespace.'
         CreateNamespaceResponse:
             type: object
             properties:
