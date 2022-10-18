@@ -902,6 +902,32 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/management/namespaces/create:
+        post:
+            tags:
+                - Namespaces
+            summary: Creates a Namespace
+            description: Creates a new namespace, if it does not exist
+            operationId: Management_CreateNamespace
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateNamespaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateNamespaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/management/namespaces/list:
         post:
             tags:
@@ -916,39 +942,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListNamespacesResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/management/namespaces/{name}/create:
-        post:
-            tags:
-                - Namespaces
-            summary: Creates a Namespace
-            description: Creates a new namespace, if it does not exist
-            operationId: Management_CreateNamespace
-            parameters:
-                - name: name
-                  in: path
-                  description: A namespace name.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateNamespaceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateNamespaceResponse'
                 default:
                     description: Default error response
                     content:
@@ -1278,10 +1271,16 @@ components:
         CreateNamespaceRequest:
             type: object
             properties:
-                id:
+                code:
                     type: integer
-                    description: A unique namespace id.
-                    format: int32
+                    description: 'Optional: unique id'
+                    format: uint32
+                id:
+                    type: string
+                    description: 'Optional: unique string id'
+                name:
+                    type: string
+                    description: 'Required: The display name for namespace.'
         CreateNamespaceResponse:
             type: object
             properties:
@@ -1291,6 +1290,8 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created".
+                namespace:
+                    $ref: '#/components/schemas/NamespaceInfo'
         CreateOrUpdateCollectionRequest:
             type: object
             properties:
@@ -1717,13 +1718,16 @@ components:
         NamespaceInfo:
             type: object
             properties:
-                id:
+                code:
                     type: integer
-                    description: A unique namespace id.
+                    description: The unique namespace code.
                     format: int32
+                id:
+                    type: string
+                    description: The namespace unique id.
                 name:
                     type: string
-                    description: A namespace name.
+                    description: The namespace display name.
         Page:
             type: object
             properties:
