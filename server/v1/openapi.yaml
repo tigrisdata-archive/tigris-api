@@ -928,6 +928,26 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/management/namespaces/describe:
+        post:
+            tags:
+                - Namespaces
+            summary: Describe the details of all namespaces
+            description: Get details for all namespaces
+            operationId: Management_DescribeNamespaces
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DescribeNamespacesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/management/namespaces/list:
         post:
             tags:
@@ -1430,6 +1450,16 @@ components:
                     description: Sum of all the collections sizes present in this database
                     format: int64
             description: A detailed description of the database and all the associated collections. Description of the collection includes schema details as well.
+        DescribeNamespacesData:
+            type: object
+            properties:
+                details:
+                    type: string
+        DescribeNamespacesResponse:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/DescribeNamespacesData'
         DropCollectionRequest:
             type: object
             properties:
