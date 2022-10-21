@@ -83,6 +83,7 @@ main() {
 	# Do not expose "events" endpint in openapi
 	# TODO: Remove it once events endpoint is fixed
 	yq_cmd 'del(.paths."/v1/databases/{db}/collections/{collection}/events")'
+	yq_fix_access_token_request
 }
 
 fix_bytes() {
@@ -171,4 +172,10 @@ yq_update_description() {
   yq -i '.info.description|=load("server/v1/desc.yaml")' "$IN_FILE"
 }
 
+## openapi extension for proto doesn't support x-www-form-urlencoded
+# content-type - this is to manually stich the openapi yaml file for
+# get-access-token request
+yq_fix_access_token_request() {
+  yq_cmd ".paths./v1/auth/token.post.requestBody.content.x-www-form-urlencoded = .paths./v1/auth/token.post.requestBody.content.application/json | del(.paths./v1/auth/token.post.requestBody.content.application/json)"
+}
 main
