@@ -26,7 +26,7 @@ paths:
             operationId: Auth_GetAccessToken
             requestBody:
                 content:
-                    application/json:
+                    x-www-form-urlencoded:
                         schema:
                             $ref: '#/components/schemas/GetAccessTokenRequest'
                 required: true
