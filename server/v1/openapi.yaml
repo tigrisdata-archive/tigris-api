@@ -1933,6 +1933,10 @@ components:
                     description: To read specific fields from a document. Default is all.
                 options:
                     $ref: '#/components/schemas/ReadRequestOptions'
+                sort:
+                    type: string
+                    description: 'Array of fields and corresponding sort orders to order the results. Default is ascending. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary"}]`'
+                    format: byte
         ReadRequestOptions:
             type: object
             properties:

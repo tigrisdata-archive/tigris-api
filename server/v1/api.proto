@@ -319,6 +319,8 @@ message ReadRequest {
   // Options that can be used to modify the results, for example `limit` to control the number of documents
   // returned by the server.
   ReadRequestOptions options = 5;
+  // Array of fields and corresponding sort orders to order the results. Default is ascending. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary"}]`
+  bytes sort = 6;
 }
 
 message ReadResponse {
