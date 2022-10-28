@@ -319,6 +319,8 @@ message ReadRequest {
   // Options that can be used to modify the results, for example `limit` to control the number of documents
   // returned by the server.
   ReadRequestOptions options = 5;
+  // Array of fields and corresponding sort orders to order the results. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary": "$asc"}]`
+  bytes sort = 6;
 }
 
 message ReadResponse {
@@ -573,6 +575,11 @@ message ListCollectionsResponse {
 message DescribeDatabaseRequest {
   // Name of the database.
   string db = 1;
+
+  // Return schema in the requested format.
+  // Format can be JSON, Go, TypeScript, Java.
+  // Default is JSON.
+  string schema_format = 2;
 }
 
 message DescribeCollectionRequest {
@@ -582,8 +589,13 @@ message DescribeCollectionRequest {
   // Name of the collection.
   string collection = 2;
 
+  // Return schema in the requested format.
+  // Format can be JSON, Go, TypeScript, Java.
+  // Default is JSON.
+  string schema_format = 3;
+
   // Collection options.
-  CollectionOptions options = 3;
+  CollectionOptions options = 4;
 }
 
 // A detailed description of the database and all the associated collections.

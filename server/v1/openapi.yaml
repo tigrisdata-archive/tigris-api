@@ -26,7 +26,7 @@ paths:
             operationId: Auth_GetAccessToken
             requestBody:
                 content:
-                    application/json:
+                    x-www-form-urlencoded:
                         schema:
                             $ref: '#/components/schemas/GetAccessTokenRequest'
                 required: true
@@ -928,6 +928,26 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/management/namespaces/describe:
+        post:
+            tags:
+                - Namespaces
+            summary: Describe the details of all namespaces
+            description: Get details for all namespaces
+            operationId: Management_DescribeNamespaces
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DescribeNamespacesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/management/namespaces/list:
         post:
             tags:
@@ -1388,6 +1408,9 @@ components:
                 collection:
                     type: string
                     description: Name of the collection.
+                schema_format:
+                    type: string
+                    description: Return schema in the requested format. Format can be JSON, Go, TypeScript, Java. Default is JSON.
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
         DescribeCollectionResponse:
@@ -1412,6 +1435,9 @@ components:
                 db:
                     type: string
                     description: Name of the database.
+                schema_format:
+                    type: string
+                    description: Return schema in the requested format. Format can be JSON, Go, TypeScript, Java. Default is JSON.
         DescribeDatabaseResponse:
             type: object
             properties:
@@ -1430,6 +1456,16 @@ components:
                     description: Sum of all the collections sizes present in this database
                     format: int64
             description: A detailed description of the database and all the associated collections. Description of the collection includes schema details as well.
+        DescribeNamespacesData:
+            type: object
+            properties:
+                details:
+                    type: string
+        DescribeNamespacesResponse:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/DescribeNamespacesData'
         DropCollectionRequest:
             type: object
             properties:
@@ -1903,6 +1939,10 @@ components:
                     description: To read specific fields from a document. Default is all.
                 options:
                     $ref: '#/components/schemas/ReadRequestOptions'
+                sort:
+                    type: string
+                    description: 'Array of fields and corresponding sort orders to order the results. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary": "$asc"}]`'
+                    format: byte
         ReadRequestOptions:
             type: object
             properties:

@@ -49,6 +49,10 @@ message NamespaceInfo {
   string name = 3;
 }
 
+message DescribeNamespacesData {
+  string details = 1;
+}
+
 message ListNamespacesRequest {
 }
 
@@ -56,6 +60,12 @@ message ListNamespacesResponse {
   repeated NamespaceInfo namespaces = 1;
 }
 
+message DescribeNamespacesRequest {
+}
+
+message DescribeNamespacesResponse {
+  DescribeNamespacesData data = 1;
+}
 
 // Request creation of user application
 message CreateApplicationRequest {
@@ -191,6 +201,18 @@ service Management {
     };
     option(openapi.v3.operation) = {
       summary: "Creates a Namespace"
+      tags: "Namespaces"
+    };
+  }
+
+  // Get details for all namespaces
+  rpc DescribeNamespaces(DescribeNamespacesRequest) returns
+      (DescribeNamespacesResponse) {
+    option (google.api.http) = {
+      post : "/v1/management/namespaces/describe"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Describe the details of all namespaces"
       tags: "Namespaces"
     };
   }
