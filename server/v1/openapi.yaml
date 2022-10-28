@@ -1408,6 +1408,9 @@ components:
                 collection:
                     type: string
                     description: Name of the collection.
+                schema_format:
+                    type: string
+                    description: Return schema in the requested format. Format can be JSON, Go, TypeScript, Java. Default is JSON.
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
         DescribeCollectionResponse:
@@ -1432,6 +1435,9 @@ components:
                 db:
                     type: string
                     description: Name of the database.
+                schema_format:
+                    type: string
+                    description: Return schema in the requested format. Format can be JSON, Go, TypeScript, Java. Default is JSON.
         DescribeDatabaseResponse:
             type: object
             properties:
