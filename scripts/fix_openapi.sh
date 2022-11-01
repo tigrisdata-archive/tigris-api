@@ -28,8 +28,13 @@ main() {
 		UpdateUserMetadataRequest \
 		UpdateUserMetadataResponse \
 		GetUserMetadataRequest \
-		GetUserMetadataResponse; do
-
+		GetNamespaceMetadataResponse \
+		InsertNamespaceMetadataRequest \
+		InsertNamespaceMetadataResponse \
+		UpdateNamespaceMetadataRequest \
+		UpdateNamespaceMetadataResponse \
+		GetNamespaceMetadataRequest \
+		GetNamespaceMetadataResponse; do
 		yq_fix_object $i value
 	done
 

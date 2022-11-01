@@ -902,6 +902,102 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/management/namespace/metadata/{metadataKey}/get:
+        post:
+            tags:
+                - Management
+            summary: Reads the Namespace Metadata
+            description: GetNamespaceMetadata inserts the user metadata object
+            operationId: Management_GetNamespaceMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetNamespaceMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetNamespaceMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/namespace/metadata/{metadataKey}/insert:
+        post:
+            tags:
+                - Management
+            summary: Inserts Namespace Metadata
+            description: InsertNamespaceMetadata inserts the namespace metadata object
+            operationId: Management_InsertNamespaceMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/InsertNamespaceMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InsertNamespaceMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/namespace/metadata/{metadataKey}/update:
+        post:
+            tags:
+                - Management
+            summary: Updates Namespace Metadata
+            description: UpdateNamespaceMetadata updates the user metadata object
+            operationId: Management_UpdateNamespaceMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateNamespaceMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateNamespaceMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/management/namespaces/create:
         post:
             tags:
@@ -973,7 +1069,7 @@ paths:
             tags:
                 - Management
             summary: Reads the User Metadata
-            description: insertUserMetadata inserts the user metadata object
+            description: GetUserMetadata inserts the user metadata object
             operationId: Management_GetUserMetadata
             parameters:
                 - name: metadataKey
@@ -1613,6 +1709,25 @@ components:
             properties:
                 server_version:
                     type: string
+        GetNamespaceMetadataRequest:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                value:
+                    type: object
+            description: Request namespace metadata
+        GetNamespaceMetadataResponse:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                namespaceId:
+                    type: integer
+                    format: uint32
+                value:
+                    type: object
+            description: Namespace metadata response
         GetUserMetadataRequest:
             type: object
             properties:
@@ -1632,13 +1747,33 @@ components:
                     type: integer
                     format: uint32
                 value:
-                    type: object
+                    type: string
+                    format: byte
             description: User metadata response
         HealthCheckResponse:
             type: object
             properties:
                 response:
                     type: string
+        InsertNamespaceMetadataRequest:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                value:
+                    type: object
+            description: Request insertion of namespace metadata
+        InsertNamespaceMetadataResponse:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                namespaceId:
+                    type: integer
+                    format: uint32
+                value:
+                    type: object
+            description: Insertion of namespace metadata response
         InsertRequest:
             type: object
             properties:
@@ -2240,6 +2375,25 @@ components:
                 updated_application:
                     $ref: '#/components/schemas/Application'
             description: CreateApplication returns created application
+        UpdateNamespaceMetadataRequest:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                value:
+                    type: object
+            description: Request update of namespace metadata
+        UpdateNamespaceMetadataResponse:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                namespaceId:
+                    type: integer
+                    format: uint32
+                value:
+                    type: object
+            description: Update of namespace metadata response
         UpdateRequest:
             type: object
             properties:

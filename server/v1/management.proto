@@ -191,6 +191,45 @@ message UpdateUserMetadataResponse {
   bytes value = 4;
 }
 
+
+// Request namespace metadata
+message GetNamespaceMetadataRequest {
+  string metadataKey = 1;
+}
+
+// Namespace metadata response
+message GetNamespaceMetadataResponse {
+  string metadataKey = 1;
+  uint32 namespaceId = 2;
+  bytes value = 3;
+}
+
+// Request insertion of namespace metadata
+message InsertNamespaceMetadataRequest {
+  string metadataKey = 1;
+  bytes value = 2;
+}
+
+// Insertion of namespace metadata response
+message InsertNamespaceMetadataResponse {
+  string metadataKey = 1;
+  uint32 namespaceId = 2;
+  bytes value = 3;
+}
+
+// Request update of namespace metadata
+message UpdateNamespaceMetadataRequest {
+  string metadataKey = 1;
+  bytes value = 2;
+}
+
+// Update of namespace metadata response
+message UpdateNamespaceMetadataResponse {
+  string metadataKey = 1;
+  uint32 namespaceId = 2;
+  bytes value = 3;
+}
+
 service Management {
   // Creates a new namespace, if it does not exist
   rpc CreateNamespace(CreateNamespaceRequest) returns
@@ -308,7 +347,7 @@ service Management {
     };
   }
 
-  // insertUserMetadata inserts the user metadata object
+  // GetUserMetadata inserts the user metadata object
   rpc GetUserMetadata(GetUserMetadataRequest) returns
       (GetUserMetadataResponse) {
     option (google.api.http) = {
@@ -330,6 +369,45 @@ service Management {
     };
     option(openapi.v3.operation) = {
       summary: "Updates User Metadata"
+      tags: "Management"
+    };
+  }
+
+  // InsertNamespaceMetadata inserts the namespace metadata object
+  rpc InsertNamespaceMetadata(InsertNamespaceMetadataRequest) returns
+      (InsertNamespaceMetadataResponse) {
+    option (google.api.http) = {
+      post : "/v1/management/namespace/metadata/{metadataKey}/insert"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Inserts Namespace Metadata"
+      tags: "Management"
+    };
+  }
+
+  // GetNamespaceMetadata inserts the user metadata object
+  rpc GetNamespaceMetadata(GetNamespaceMetadataRequest) returns
+      (GetNamespaceMetadataResponse) {
+    option (google.api.http) = {
+      post : "/v1/management/namespace/metadata/{metadataKey}/get"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Reads the Namespace Metadata"
+      tags: "Management"
+    };
+  }
+
+  // UpdateNamespaceMetadata updates the user metadata object
+  rpc UpdateNamespaceMetadata(UpdateNamespaceMetadataRequest) returns
+      (UpdateNamespaceMetadataResponse) {
+    option (google.api.http) = {
+      post : "/v1/management/namespace/metadata/{metadataKey}/update"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Updates Namespace Metadata"
       tags: "Management"
     };
   }
