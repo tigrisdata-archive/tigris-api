@@ -1295,6 +1295,11 @@ components:
                 updated_by:
                     type: string
                     description: Updated by
+                projects:
+                    type: array
+                    items:
+                        type: string
+                    description: Project(s) it belongs to (for backward compatibility - multiple projects)
             description: An user application
         BeginTransactionRequest:
             type: object
@@ -1363,6 +1368,9 @@ components:
                 description:
                     type: string
                     description: A human readable app description
+                project:
+                    type: string
+                    description: Project name
             description: Request creation of user application
         CreateApplicationResponse:
             type: object
@@ -1827,7 +1835,10 @@ components:
             description: Insertion of user metadata response
         ListApplicationsRequest:
             type: object
-            properties: {}
+            properties:
+                project:
+                    type: string
+                    description: Project name filter
             description: Request listing of all the application those are visible to requesting actor
         ListApplicationsResponse:
             type: object
