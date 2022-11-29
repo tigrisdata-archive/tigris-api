@@ -73,9 +73,10 @@ main() {
 		CreateOrUpdateCollectionRequest DropCollectionRequest \
 		CreateDatabaseRequest DropDatabaseRequest \
 		ListDatabasesRequest ListCollectionsRequest SearchRequest \
+		CreateBranchRequest DeleteBranchRequest ResetBranchRequest \
 		BeginTransactionRequest CommitTransactionRequest RollbackTransactionRequest; do
 
-		yq_del_db_coll $i
+		yq_del_db_coll_project_branch $i
 	done
 
 	yq_streaming_response ReadResponse "collections/{collection}/documents/read"
@@ -116,9 +117,11 @@ yq_fix_timestamp() {
 }
 
 # Delete db and collection fields from request body
-yq_del_db_coll() {
+yq_del_db_coll_project_branch() {
 	yq_cmd "del(.components.schemas.$1.properties.db)"
 	yq_cmd "del(.components.schemas.$1.properties.collection)"
+	yq_cmd "del(.components.schemas.$1.properties.project)"
+	yq_cmd "del(.components.schemas.$1.properties.branch)"
 }
 
 yq_del_service_tags() {

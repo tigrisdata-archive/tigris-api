@@ -120,6 +120,9 @@ message ReadRequestOptions {
 // Database requests modifying options.
 message DatabaseOptions {}
 
+// Branch requests modifying options
+message BranchOptions {}
+
 // Collection requests modifying options.
 message CollectionOptions {
 }
@@ -450,6 +453,51 @@ message DropDatabaseResponse {
   string status = 2;
 }
 
+message CreateBranchRequest {
+  // Project name.
+  string project = 1;
+  // Create a branch with this name.
+  string branch = 2;
+  BranchOptions options = 3;
+}
+
+message CreateBranchResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "created".
+  Status status = 2;
+}
+
+message DeleteBranchRequest {
+  // Project name.
+  string project = 1;
+  // Create a branch with this name.
+  string branch = 2;
+  BranchOptions options = 3;
+}
+
+message DeleteBranchResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "deleted".
+  Status status = 2;
+}
+
+message ResetBranchRequest {
+  // Project name.
+  string project = 1;
+  // Create a branch with this name.
+  string branch = 2;
+  BranchOptions options = 3;
+}
+
+message ResetBranchResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "success".
+  Status status = 2;
+}
+
 message CreateOrUpdateCollectionRequest {
   // Database name where to create collection.
   string db = 1;
@@ -714,6 +762,12 @@ message SubscribeResponse {
   bytes message = 1;
 }
 
+// Status codes returned by CRUD operations
+enum Status {
+  CREATED = 0;
+  DELETED = 1;
+}
+
 service Tigris {
   // Starts a new transaction and returns a transactional object. All reads/writes performed
   // within a transaction will run with serializable isolation.
@@ -759,6 +813,10 @@ service Tigris {
     option (google.api.http) = {
       post : "/v1/databases/{db}/collections/{collection}/documents/insert"
       body : "*"
+      additional_bindings {
+        post : "/v1/projects/{project}/branch/{branch}/collections/{collection}/documents/insert"
+        body : "*"
+      }
     };
     option(openapi.v3.operation) = {
       summary: "Insert Documents"
@@ -930,6 +988,39 @@ service Tigris {
     option(openapi.v3.operation) = {
       summary: "Describe Collection"
       tags: "Collections"
+    };
+  }
+  // Creates a new project branch. Returns an AlreadyExists error with a status code 409 if a branch already exists
+  rpc CreateBranch(CreateBranchRequest) returns (CreateDatabaseResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/branch/{branch}/create"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Create a project branch"
+      tags: "Branches"
+    };
+  }
+  // Delete branch deletes all the collections in this project branch along with all of the documents, and associated metadata for these collections.
+  rpc DeleteBranch(DeleteBranchRequest) returns (DeleteBranchResponse) {
+    option (google.api.http) = {
+      delete : "/v1/projects/{project}/branch/{branch}/delete"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Delete a project branch"
+      tags: "Branches"
+    };
+  }
+  // Reset branch
+  rpc ResetBranch(ResetBranchRequest) returns (ResetBranchResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/branch/{branch}/reset"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Reset a project branch"
+      tags: "Branches"
     };
   }
 
