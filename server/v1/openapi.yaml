@@ -646,39 +646,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/reset:
-        post:
-            tags:
-                - Databases
-            summary: Reset Database branch
-            description: Reset a database branch
-            operationId: Tigris_ResetDatabase
-            parameters:
-                - name: db
-                  in: path
-                  description: 'Reset a database branch schema. Use with caution as it can change schema and data. **Note**: Throws HTTP status code 400 if "main" branch is being reset'
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ResetDatabaseRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ResetDatabaseResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /v1/databases/{db}/transactions/begin:
         post:
             tags:
@@ -2224,27 +2191,6 @@ components:
                         type: string
                         format: byte
                     description: an array returns the value of the primary keys.
-        ResetDatabaseRequest:
-            type: object
-            properties:
-                db:
-                    type: string
-                    description: 'Reset a database branch schema. Use with caution as it can change schema and data. **Note**: Throws HTTP status code 400 if "main" branch is being reset'
-                branch:
-                    type: string
-                    description: Database branch name to perform operation on
-                deleteData:
-                    type: boolean
-                    description: Discard any data in the branch
-        ResetDatabaseResponse:
-            type: object
-            properties:
-                message:
-                    type: string
-                    description: A detailed response message.
-                status:
-                    type: string
-                    description: An enum with value set as "done".
         ResponseMetadata:
             type: object
             properties:

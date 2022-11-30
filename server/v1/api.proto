@@ -471,23 +471,6 @@ message DropDatabaseResponse {
   string status = 2;
 }
 
-message ResetDatabaseRequest {
-  // Reset a database branch schema. Use with caution as it can change schema and data.
-  // **Note**: Throws HTTP status code 400 if "main" branch is being reset
-  string db = 1;
-  // Database branch name to perform operation on
-  string branch = 2;
-  // Discard any data in the branch
-  bool deleteData = 3;
-}
-
-message ResetDatabaseResponse {
-  // A detailed response message.
-  string message = 1;
-  // An enum with value set as "done".
-  string status = 2;
-}
-
 message CreateOrUpdateCollectionRequest {
   // Database name where to create collection.
   string db = 1;
@@ -960,18 +943,6 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Drop Database"
-      tags: "Databases"
-    };
-  }
-
-  // Reset a database branch
-  rpc ResetDatabase(ResetDatabaseRequest) returns (ResetDatabaseResponse) {
-    option (google.api.http) = {
-      post : "/v1/databases/{db}/reset"
-      body : "*"
-    };
-    option(openapi.v3.operation) = {
-      summary: "Reset Database branch"
       tags: "Databases"
     };
   }
