@@ -646,6 +646,39 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/databases/{db}/reset:
+        post:
+            tags:
+                - Databases
+            summary: Reset Database branch
+            description: Reset a database branch
+            operationId: Tigris_ResetDatabase
+            parameters:
+                - name: db
+                  in: path
+                  description: 'Reset a database branch schema and optionally data to specified a state **Note**: Throws HTTP status code 400 if "main" branch is being reset Use with caution as it can change schema and data.'
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ResetDatabaseRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ResetDatabaseResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/databases/{db}/transactions/begin:
         post:
             tags:
@@ -1258,123 +1291,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/branch/{branch}/create:
-        post:
-            tags:
-                - Branches
-            summary: Create a project branch
-            description: Creates a new project branch. Returns an AlreadyExists error with a status code 409 if a branch already exists
-            operationId: Tigris_CreateBranch
-            parameters:
-                - name: project
-                  in: path
-                  description: Project name.
-                  required: true
-                  schema:
-                    type: string
-                - name: branch
-                  in: path
-                  description: Create a branch with this name.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateBranchRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateDatabaseResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/branch/{branch}/delete:
-        delete:
-            tags:
-                - Branches
-            summary: Delete a project branch
-            description: Delete branch deletes all the collections in this project branch along with all of the documents, and associated metadata for these collections.
-            operationId: Tigris_DeleteBranch
-            parameters:
-                - name: project
-                  in: path
-                  description: Project name.
-                  required: true
-                  schema:
-                    type: string
-                - name: branch
-                  in: path
-                  description: Create a branch with this name.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DeleteBranchRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DeleteBranchResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/branch/{branch}/reset:
-        post:
-            tags:
-                - Branches
-            summary: Reset a project branch
-            description: Reset branch
-            operationId: Tigris_ResetBranch
-            parameters:
-                - name: project
-                  in: path
-                  description: Project name.
-                  required: true
-                  schema:
-                    type: string
-                - name: branch
-                  in: path
-                  description: Create a branch with this name.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ResetBranchRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ResetBranchResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
 components:
     schemas:
         AdditionalFunction:
@@ -1423,6 +1339,8 @@ components:
             properties:
                 options:
                     $ref: '#/components/schemas/TransactionOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
             description: Start new transaction in database specified by "db".
         BeginTransactionResponse:
             type: object
@@ -1430,10 +1348,6 @@ components:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
             description: Start transaction returns transaction context  which uniquely identifies the transaction
-        BranchOptions:
-            type: object
-            properties: {}
-            description: Branch requests modifying options
         Collation:
             type: object
             properties:
@@ -1472,7 +1386,9 @@ components:
             description: Collection requests modifying options.
         CommitTransactionRequest:
             type: object
-            properties: {}
+            properties:
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
             description: Commit transaction with the given ID
         CommitTransactionResponse:
             type: object
@@ -1499,11 +1415,6 @@ components:
                 created_application:
                     $ref: '#/components/schemas/Application'
             description: CreateApplication returns created application
-        CreateBranchRequest:
-            type: object
-            properties:
-                options:
-                    $ref: '#/components/schemas/BranchOptions'
         CreateDatabaseRequest:
             type: object
             properties:
@@ -1553,6 +1464,8 @@ components:
                     description: If set to `true` then the update schema request to the collection will fail by returning a conflict with HTTP Status code 409. The default is false.
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         CreateOrUpdateCollectionResponse:
             type: object
             properties:
@@ -1585,7 +1498,10 @@ components:
             properties: {}
         DatabaseOptions:
             type: object
-            properties: {}
+            properties:
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation
             description: Database requests modifying options.
         DeleteApplicationResponse:
             type: object
@@ -1601,24 +1517,6 @@ components:
                     type: string
                     description: application id
             description: Request deletion of an application
-        DeleteBranchRequest:
-            type: object
-            properties:
-                options:
-                    $ref: '#/components/schemas/BranchOptions'
-        DeleteBranchResponse:
-            type: object
-            properties:
-                message:
-                    type: string
-                    description: A detailed response message.
-                status:
-                    enum:
-                        - CREATED
-                        - DELETED
-                    type: string
-                    description: An enum with value set as "deleted".
-                    format: enum
         DeleteRequest:
             type: object
             properties:
@@ -1627,6 +1525,8 @@ components:
                     description: 'Delete documents which matching specified filter. A filter can simply be key, value where key is the field name and value would be the value for this field. Or a filter can be logical where two or more fields can be logically joined using $or and $and. A few examples of filter: <li> To delete a user document where the id has a value 1: ```{"id": 1 }``` <li> To delete all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`'
                 options:
                     $ref: '#/components/schemas/DeleteRequestOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         DeleteRequestOptions:
             type: object
             properties:
@@ -1661,6 +1561,8 @@ components:
                     description: Return schema in the requested format. Format can be JSON, Go, TypeScript, Java. Default is JSON.
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         DescribeCollectionResponse:
             type: object
             properties:
@@ -1686,6 +1588,8 @@ components:
                 schema_format:
                     type: string
                     description: Return schema in the requested format. Format can be JSON, Go, TypeScript, Java. Default is JSON.
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         DescribeDatabaseResponse:
             type: object
             properties:
@@ -1703,6 +1607,11 @@ components:
                     type: integer
                     description: Sum of all the collections sizes present in this database
                     format: int64
+                branches:
+                    type: array
+                    items:
+                        type: string
+                    description: List of all the branches in this database
             description: A detailed description of the database and all the associated collections. Description of the collection includes schema details as well.
         DescribeNamespacesData:
             type: object
@@ -1719,6 +1628,8 @@ components:
             properties:
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         DropCollectionResponse:
             type: object
             properties:
@@ -1783,6 +1694,8 @@ components:
                     type: string
                 options:
                     $ref: '#/components/schemas/EventsRequestOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         EventsRequestOptions:
             type: object
             properties: {}
@@ -1936,6 +1849,8 @@ components:
                     description: Array of documents to insert. Each document is a JSON object.
                 options:
                     $ref: '#/components/schemas/InsertRequestOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         InsertRequestOptions:
             type: object
             properties:
@@ -1997,6 +1912,8 @@ components:
             properties:
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         ListCollectionsResponse:
             type: object
             properties:
@@ -2082,6 +1999,8 @@ components:
                     description: An array of JSON messages to publish.
                 options:
                     $ref: '#/components/schemas/PublishRequestOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         PublishRequestOptions:
             type: object
             properties:
@@ -2233,6 +2152,8 @@ components:
                     type: string
                     description: 'Array of fields and corresponding sort orders to order the results. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary": "$asc"}]`'
                     format: byte
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         ReadRequestOptions:
             type: object
             properties:
@@ -2273,6 +2194,8 @@ components:
                     description: Array of documents to be replaced. Each document is a JSON object.
                 options:
                     $ref: '#/components/schemas/ReplaceRequestOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         ReplaceRequestOptions:
             type: object
             properties:
@@ -2293,24 +2216,31 @@ components:
                         type: string
                         format: byte
                     description: an array returns the value of the primary keys.
-        ResetBranchRequest:
+        ResetDatabaseOptions:
             type: object
             properties:
+                hard:
+                    type: boolean
+                    description: Reset the schema and discard any data
+        ResetDatabaseRequest:
+            type: object
+            properties:
+                db:
+                    type: string
+                    description: 'Reset a database branch schema and optionally data to specified a state **Note**: Throws HTTP status code 400 if "main" branch is being reset Use with caution as it can change schema and data.'
                 options:
-                    $ref: '#/components/schemas/BranchOptions'
-        ResetBranchResponse:
+                    $ref: '#/components/schemas/ResetDatabaseOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
+        ResetDatabaseResponse:
             type: object
             properties:
                 message:
                     type: string
                     description: A detailed response message.
                 status:
-                    enum:
-                        - CREATED
-                        - DELETED
                     type: string
-                    description: An enum with value set as "success".
-                    format: enum
+                    description: An enum with value set as "done".
         ResponseMetadata:
             type: object
             properties:
@@ -2329,7 +2259,9 @@ components:
             description: Has metadata related to the documents stored.
         RollbackTransactionRequest:
             type: object
-            properties: {}
+            properties:
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
             description: Rollback transaction with the given ID
         RollbackTransactionResponse:
             type: object
@@ -2448,6 +2380,8 @@ components:
                     format: int32
                 collation:
                     $ref: '#/components/schemas/Collation'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
                 fields:
                     type: object
         SearchResponse:
@@ -2501,6 +2435,8 @@ components:
                 filter:
                     type: object
                     description: Filter allows you to subscribe only for events that you need. Filter syntax is similar to `ReadRequest.filter`.
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         SubscribeRequestOptions:
             type: object
             properties:
@@ -2578,6 +2514,8 @@ components:
                     description: 'Update documents which matching specified filter. A filter can simply be key, value where key is the field name and value would be the value for this field. Or a filter can be logical where two or more fields can be logically joined using $or and $and. A few examples of filter: <li> To update a user document where the id has a value 1: ```{"id": 1 }``` <li> To update all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`'
                 options:
                     $ref: '#/components/schemas/UpdateRequestOptions'
+                dbOptions:
+                    $ref: '#/components/schemas/DatabaseOptions'
         UpdateRequestOptions:
             type: object
             properties:

@@ -118,10 +118,10 @@ message ReadRequestOptions {
 }
 
 // Database requests modifying options.
-message DatabaseOptions {}
-
-// Branch requests modifying options
-message BranchOptions {}
+message DatabaseOptions {
+  // Optionally specify a database branch name to perform operation
+  optional string branch = 1;
+}
 
 // Collection requests modifying options.
 message CollectionOptions {
@@ -147,6 +147,8 @@ message BeginTransactionRequest {
   string db = 1;
   // The transaction options.
   TransactionOptions options = 2;
+  // Database options
+  DatabaseOptions dbOptions = 15;
 }
 
 //  Start transaction returns transaction context
@@ -160,6 +162,8 @@ message BeginTransactionResponse {
 message CommitTransactionRequest {
   // Database name this transaction belongs to.
   string db = 1;
+  // Database options
+  DatabaseOptions dbOptions = 2;
 }
 message CommitTransactionResponse {
   // Status of commit transaction operation.
@@ -170,6 +174,8 @@ message CommitTransactionResponse {
 message RollbackTransactionRequest {
   // Database name this transaction belongs to.
   string db = 1;
+  // Database options
+  DatabaseOptions dbOptions = 2;
 }
 message RollbackTransactionResponse {
   // Status of rollback transaction operation.
@@ -199,6 +205,8 @@ message InsertRequest {
   // Array of documents to insert. Each document is a JSON object.
   repeated bytes documents = 3;
   InsertRequestOptions options = 4;
+  // Database options
+  DatabaseOptions dbOptions = 5;
 }
 
 message InsertResponse {
@@ -223,6 +231,8 @@ message ReplaceRequest {
   // Array of documents to be replaced. Each document is a JSON object.
   repeated bytes documents = 3;
   ReplaceRequestOptions options = 4;
+  // Database options
+  DatabaseOptions dbOptions = 5;
 }
 
 message ReplaceResponse {
@@ -257,6 +267,8 @@ message DeleteRequest {
   // <li> To delete all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
   bytes filter = 3;
   DeleteRequestOptions options = 4;
+  // Database options
+  DatabaseOptions dbOptions = 5;
 }
 
 message DeleteResponse {
@@ -293,6 +305,8 @@ message UpdateRequest {
   // <li> To update all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
   bytes filter = 4;
   UpdateRequestOptions options = 5;
+  // Database options
+  DatabaseOptions dbOptions = 6;
 }
 
 message UpdateResponse {
@@ -324,6 +338,8 @@ message ReadRequest {
   ReadRequestOptions options = 5;
   // Array of fields and corresponding sort orders to order the results. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary": "$asc"}]`
   bytes sort = 6;
+  // Database options
+  DatabaseOptions dbOptions = 7;
 }
 
 message ReadResponse {
@@ -362,6 +378,8 @@ message SearchRequest {
   // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
   // this option to 'ci' that will apply to all the text fields in the filters.
   Collation collation = 12;
+  // Database options
+  DatabaseOptions dbOptions = 13;
 }
 
 // Response struct for search
@@ -453,49 +471,25 @@ message DropDatabaseResponse {
   string status = 2;
 }
 
-message CreateBranchRequest {
-  // Project name.
-  string project = 1;
-  // Create a branch with this name.
-  string branch = 2;
-  BranchOptions options = 3;
+message ResetDatabaseOptions {
+  // Reset the schema and discard any data
+  bool hard = 1;
 }
 
-message CreateBranchResponse {
+message ResetDatabaseRequest {
+  // Reset a database branch schema and optionally data to specified a state
+  // **Note**: Throws HTTP status code 400 if "main" branch is being reset
+  // Use with caution as it can change schema and data.
+  string db = 1;
+  ResetDatabaseOptions options = 2;
+  DatabaseOptions dbOptions = 3;
+}
+
+message ResetDatabaseResponse {
   // A detailed response message.
   string message = 1;
-  // An enum with value set as "created".
-  Status status = 2;
-}
-
-message DeleteBranchRequest {
-  // Project name.
-  string project = 1;
-  // Create a branch with this name.
-  string branch = 2;
-  BranchOptions options = 3;
-}
-
-message DeleteBranchResponse {
-  // A detailed response message.
-  string message = 1;
-  // An enum with value set as "deleted".
-  Status status = 2;
-}
-
-message ResetBranchRequest {
-  // Project name.
-  string project = 1;
-  // Create a branch with this name.
-  string branch = 2;
-  BranchOptions options = 3;
-}
-
-message ResetBranchResponse {
-  // A detailed response message.
-  string message = 1;
-  // An enum with value set as "success".
-  Status status = 2;
+  // An enum with value set as "done".
+  string status = 2;
 }
 
 message CreateOrUpdateCollectionRequest {
@@ -558,6 +552,8 @@ message CreateOrUpdateCollectionRequest {
   // code 409. The default is false.
   bool only_create = 4;
   CollectionOptions options = 5;
+  // Database options
+  DatabaseOptions dbOptions = 6;
 }
 
 message CreateOrUpdateCollectionResponse {
@@ -573,6 +569,8 @@ message DropCollectionRequest {
   // Collection name to drop.
   string collection = 2;
   CollectionOptions options = 3;
+  // Database options
+  DatabaseOptions dbOptions = 4;
 }
 
 message DropCollectionResponse {
@@ -610,6 +608,8 @@ message ListCollectionsRequest {
   // List collection in this database.
   string db = 1;
   CollectionOptions options = 2;
+  // Database options
+  DatabaseOptions dbOptions = 3;
 }
 
 message ListCollectionsResponse {
@@ -628,6 +628,8 @@ message DescribeDatabaseRequest {
   // Format can be JSON, Go, TypeScript, Java.
   // Default is JSON.
   string schema_format = 2;
+  // Database options
+  DatabaseOptions dbOptions = 3;
 }
 
 message DescribeCollectionRequest {
@@ -644,6 +646,8 @@ message DescribeCollectionRequest {
 
   // Collection options.
   CollectionOptions options = 4;
+  // Database options
+  DatabaseOptions dbOptions = 5;
 }
 
 // A detailed description of the database and all the associated collections.
@@ -661,6 +665,8 @@ message DescribeDatabaseResponse {
 
   // Sum of all the collections sizes present in this database
   int64 size = 4;
+  // List of all the branches in this database
+  repeated string branches = 5;
 }
 
 // A detailed description of the collection.
@@ -707,6 +713,8 @@ message EventsRequest {
   string db = 1;
   string collection = 2;
   EventsRequestOptions options = 3;
+  // Database options
+  DatabaseOptions dbOptions = 4;
 }
 
 message EventsResponse {
@@ -736,6 +744,8 @@ message PublishRequest {
   // An array of JSON messages to publish.
   repeated bytes messages = 3;
   PublishRequestOptions options = 4;
+  // Database options
+  DatabaseOptions dbOptions = 5;
 }
 
 message PublishResponse {
@@ -756,16 +766,12 @@ message SubscribeRequest {
   SubscribeRequestOptions options = 3;
   // Filter allows you to subscribe only for events that you need. Filter syntax is similar to `ReadRequest.filter`.
   bytes filter = 4;
+  // Database options
+  DatabaseOptions dbOptions = 5;
 }
 
 message SubscribeResponse {
   bytes message = 1;
-}
-
-// Status codes returned by CRUD operations
-enum Status {
-  CREATED = 0;
-  DELETED = 1;
 }
 
 service Tigris {
@@ -813,10 +819,6 @@ service Tigris {
     option (google.api.http) = {
       post : "/v1/databases/{db}/collections/{collection}/documents/insert"
       body : "*"
-      additional_bindings {
-        post : "/v1/projects/{project}/branch/{branch}/collections/{collection}/documents/insert"
-        body : "*"
-      }
     };
     option(openapi.v3.operation) = {
       summary: "Insert Documents"
@@ -966,6 +968,18 @@ service Tigris {
     };
   }
 
+  // Reset a database branch
+  rpc ResetDatabase(ResetDatabaseRequest) returns (ResetDatabaseResponse) {
+    option (google.api.http) = {
+      post : "/v1/databases/{db}/reset"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Reset Database branch"
+      tags: "Databases"
+    };
+  }
+
   // This API returns information related to the database along with all the collections inside the database.
   // This can be used to retrieve the size of the database or to retrieve schemas and the size of all the collections present in this database.
   rpc DescribeDatabase(DescribeDatabaseRequest) returns (DescribeDatabaseResponse) {
@@ -988,39 +1002,6 @@ service Tigris {
     option(openapi.v3.operation) = {
       summary: "Describe Collection"
       tags: "Collections"
-    };
-  }
-  // Creates a new project branch. Returns an AlreadyExists error with a status code 409 if a branch already exists
-  rpc CreateBranch(CreateBranchRequest) returns (CreateDatabaseResponse) {
-    option (google.api.http) = {
-      post : "/v1/projects/{project}/branch/{branch}/create"
-      body : "*"
-    };
-    option(openapi.v3.operation) = {
-      summary: "Create a project branch"
-      tags: "Branches"
-    };
-  }
-  // Delete branch deletes all the collections in this project branch along with all of the documents, and associated metadata for these collections.
-  rpc DeleteBranch(DeleteBranchRequest) returns (DeleteBranchResponse) {
-    option (google.api.http) = {
-      delete : "/v1/projects/{project}/branch/{branch}/delete"
-      body : "*"
-    };
-    option(openapi.v3.operation) = {
-      summary: "Delete a project branch"
-      tags: "Branches"
-    };
-  }
-  // Reset branch
-  rpc ResetBranch(ResetBranchRequest) returns (ResetBranchResponse) {
-    option (google.api.http) = {
-      post : "/v1/projects/{project}/branch/{branch}/reset"
-      body : "*"
-    };
-    option(openapi.v3.operation) = {
-      summary: "Reset a project branch"
-      tags: "Branches"
     };
   }
 
