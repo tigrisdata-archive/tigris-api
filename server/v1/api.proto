@@ -445,8 +445,9 @@ message Page {
 message CreateDatabaseRequest {
   // Create database with this name.
   string db = 1;
+  DatabaseOptions options = 2;
   // Optionally specify a database branch name to perform operation on
-  string branch = 2;
+  string branch = 3;
 }
 
 message CreateDatabaseResponse {

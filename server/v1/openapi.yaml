@@ -1387,6 +1387,8 @@ components:
         CreateDatabaseRequest:
             type: object
             properties:
+                options:
+                    $ref: '#/components/schemas/DatabaseOptions'
                 branch:
                     type: string
                     description: Optionally specify a database branch name to perform operation on
@@ -1467,6 +1469,10 @@ components:
         DatabaseMetadata:
             type: object
             properties: {}
+        DatabaseOptions:
+            type: object
+            properties: {}
+            description: Database requests modifying options.
         DeleteApplicationResponse:
             type: object
             properties:
