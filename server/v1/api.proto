@@ -118,7 +118,8 @@ message ReadRequestOptions {
 }
 
 // Database requests modifying options.
-message DatabaseOptions {}
+message DatabaseOptions {
+}
 
 // Collection requests modifying options.
 message CollectionOptions {
@@ -144,6 +145,8 @@ message BeginTransactionRequest {
   string db = 1;
   // The transaction options.
   TransactionOptions options = 2;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 3;
 }
 
 //  Start transaction returns transaction context
@@ -157,6 +160,8 @@ message BeginTransactionResponse {
 message CommitTransactionRequest {
   // Database name this transaction belongs to.
   string db = 1;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 2;
 }
 message CommitTransactionResponse {
   // Status of commit transaction operation.
@@ -167,6 +172,8 @@ message CommitTransactionResponse {
 message RollbackTransactionRequest {
   // Database name this transaction belongs to.
   string db = 1;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 2;
 }
 message RollbackTransactionResponse {
   // Status of rollback transaction operation.
@@ -196,6 +203,8 @@ message InsertRequest {
   // Array of documents to insert. Each document is a JSON object.
   repeated bytes documents = 3;
   InsertRequestOptions options = 4;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 5;
 }
 
 message InsertResponse {
@@ -220,6 +229,8 @@ message ReplaceRequest {
   // Array of documents to be replaced. Each document is a JSON object.
   repeated bytes documents = 3;
   ReplaceRequestOptions options = 4;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 5;
 }
 
 message ReplaceResponse {
@@ -254,6 +265,8 @@ message DeleteRequest {
   // <li> To delete all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
   bytes filter = 3;
   DeleteRequestOptions options = 4;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 5;
 }
 
 message DeleteResponse {
@@ -290,6 +303,8 @@ message UpdateRequest {
   // <li> To update all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
   bytes filter = 4;
   UpdateRequestOptions options = 5;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 6;
 }
 
 message UpdateResponse {
@@ -321,6 +336,8 @@ message ReadRequest {
   ReadRequestOptions options = 5;
   // Array of fields and corresponding sort orders to order the results. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary": "$asc"}]`
   bytes sort = 6;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 7;
 }
 
 message ReadResponse {
@@ -359,6 +376,8 @@ message SearchRequest {
   // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
   // this option to 'ci' that will apply to all the text fields in the filters.
   Collation collation = 12;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 13;
 }
 
 // Response struct for search
@@ -426,7 +445,8 @@ message Page {
 message CreateDatabaseRequest {
   // Create database with this name.
   string db = 1;
-  DatabaseOptions options = 2;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 2;
 }
 
 message CreateDatabaseResponse {
@@ -440,7 +460,8 @@ message DropDatabaseRequest {
   // Drop database with this name. **Note**: Deletes all the collections in the database.
   // Use with caution.
   string db = 1;
-  DatabaseOptions options = 2;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 3;
 }
 
 message DropDatabaseResponse {
@@ -510,6 +531,8 @@ message CreateOrUpdateCollectionRequest {
   // code 409. The default is false.
   bool only_create = 4;
   CollectionOptions options = 5;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 6;
 }
 
 message CreateOrUpdateCollectionResponse {
@@ -525,6 +548,8 @@ message DropCollectionRequest {
   // Collection name to drop.
   string collection = 2;
   CollectionOptions options = 3;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 4;
 }
 
 message DropCollectionResponse {
@@ -562,6 +587,8 @@ message ListCollectionsRequest {
   // List collection in this database.
   string db = 1;
   CollectionOptions options = 2;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 3;
 }
 
 message ListCollectionsResponse {
@@ -580,6 +607,8 @@ message DescribeDatabaseRequest {
   // Format can be JSON, Go, TypeScript, Java.
   // Default is JSON.
   string schema_format = 2;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 3;
 }
 
 message DescribeCollectionRequest {
@@ -596,6 +625,8 @@ message DescribeCollectionRequest {
 
   // Collection options.
   CollectionOptions options = 4;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 5;
 }
 
 // A detailed description of the database and all the associated collections.
@@ -613,6 +644,8 @@ message DescribeDatabaseResponse {
 
   // Sum of all the collections sizes present in this database
   int64 size = 4;
+  // List of all the branches in this database
+  repeated string branches = 5;
 }
 
 // A detailed description of the collection.
@@ -659,6 +692,8 @@ message EventsRequest {
   string db = 1;
   string collection = 2;
   EventsRequestOptions options = 3;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 4;
 }
 
 message EventsResponse {
@@ -688,6 +723,8 @@ message PublishRequest {
   // An array of JSON messages to publish.
   repeated bytes messages = 3;
   PublishRequestOptions options = 4;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 5;
 }
 
 message PublishResponse {
@@ -708,6 +745,8 @@ message SubscribeRequest {
   SubscribeRequestOptions options = 3;
   // Filter allows you to subscribe only for events that you need. Filter syntax is similar to `ReadRequest.filter`.
   bytes filter = 4;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 5;
 }
 
 message SubscribeResponse {
