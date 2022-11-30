@@ -656,7 +656,7 @@ paths:
             parameters:
                 - name: db
                   in: path
-                  description: 'Reset a database branch schema and optionally data to specified a state **Note**: Throws HTTP status code 400 if "main" branch is being reset Use with caution as it can change schema and data.'
+                  description: 'Reset a database branch schema. Use with caution as it can change schema and data. **Note**: Throws HTTP status code 400 if "main" branch is being reset'
                   required: true
                   schema:
                     type: string
@@ -1339,8 +1339,9 @@ components:
             properties:
                 options:
                     $ref: '#/components/schemas/TransactionOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
             description: Start new transaction in database specified by "db".
         BeginTransactionResponse:
             type: object
@@ -1387,8 +1388,9 @@ components:
         CommitTransactionRequest:
             type: object
             properties:
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
             description: Commit transaction with the given ID
         CommitTransactionResponse:
             type: object
@@ -1418,8 +1420,9 @@ components:
         CreateDatabaseRequest:
             type: object
             properties:
-                options:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         CreateDatabaseResponse:
             type: object
             properties:
@@ -1464,8 +1467,9 @@ components:
                     description: If set to `true` then the update schema request to the collection will fail by returning a conflict with HTTP Status code 409. The default is false.
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         CreateOrUpdateCollectionResponse:
             type: object
             properties:
@@ -1496,13 +1500,6 @@ components:
         DatabaseMetadata:
             type: object
             properties: {}
-        DatabaseOptions:
-            type: object
-            properties:
-                branch:
-                    type: string
-                    description: Optionally specify a database branch name to perform operation
-            description: Database requests modifying options.
         DeleteApplicationResponse:
             type: object
             properties:
@@ -1525,8 +1522,9 @@ components:
                     description: 'Delete documents which matching specified filter. A filter can simply be key, value where key is the field name and value would be the value for this field. Or a filter can be logical where two or more fields can be logically joined using $or and $and. A few examples of filter: <li> To delete a user document where the id has a value 1: ```{"id": 1 }``` <li> To delete all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`'
                 options:
                     $ref: '#/components/schemas/DeleteRequestOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         DeleteRequestOptions:
             type: object
             properties:
@@ -1561,8 +1559,9 @@ components:
                     description: Return schema in the requested format. Format can be JSON, Go, TypeScript, Java. Default is JSON.
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         DescribeCollectionResponse:
             type: object
             properties:
@@ -1588,8 +1587,9 @@ components:
                 schema_format:
                     type: string
                     description: Return schema in the requested format. Format can be JSON, Go, TypeScript, Java. Default is JSON.
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         DescribeDatabaseResponse:
             type: object
             properties:
@@ -1628,8 +1628,9 @@ components:
             properties:
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         DropCollectionResponse:
             type: object
             properties:
@@ -1642,8 +1643,9 @@ components:
         DropDatabaseRequest:
             type: object
             properties:
-                options:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         DropDatabaseResponse:
             type: object
             properties:
@@ -1694,8 +1696,9 @@ components:
                     type: string
                 options:
                     $ref: '#/components/schemas/EventsRequestOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         EventsRequestOptions:
             type: object
             properties: {}
@@ -1849,8 +1852,9 @@ components:
                     description: Array of documents to insert. Each document is a JSON object.
                 options:
                     $ref: '#/components/schemas/InsertRequestOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         InsertRequestOptions:
             type: object
             properties:
@@ -1912,8 +1916,9 @@ components:
             properties:
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         ListCollectionsResponse:
             type: object
             properties:
@@ -1999,8 +2004,9 @@ components:
                     description: An array of JSON messages to publish.
                 options:
                     $ref: '#/components/schemas/PublishRequestOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         PublishRequestOptions:
             type: object
             properties:
@@ -2152,8 +2158,9 @@ components:
                     type: string
                     description: 'Array of fields and corresponding sort orders to order the results. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary": "$asc"}]`'
                     format: byte
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         ReadRequestOptions:
             type: object
             properties:
@@ -2194,8 +2201,9 @@ components:
                     description: Array of documents to be replaced. Each document is a JSON object.
                 options:
                     $ref: '#/components/schemas/ReplaceRequestOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         ReplaceRequestOptions:
             type: object
             properties:
@@ -2216,22 +2224,18 @@ components:
                         type: string
                         format: byte
                     description: an array returns the value of the primary keys.
-        ResetDatabaseOptions:
-            type: object
-            properties:
-                hard:
-                    type: boolean
-                    description: Reset the schema and discard any data
         ResetDatabaseRequest:
             type: object
             properties:
                 db:
                     type: string
-                    description: 'Reset a database branch schema and optionally data to specified a state **Note**: Throws HTTP status code 400 if "main" branch is being reset Use with caution as it can change schema and data.'
-                options:
-                    $ref: '#/components/schemas/ResetDatabaseOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                    description: 'Reset a database branch schema. Use with caution as it can change schema and data. **Note**: Throws HTTP status code 400 if "main" branch is being reset'
+                branch:
+                    type: string
+                    description: Database branch name to perform operation on
+                deleteData:
+                    type: boolean
+                    description: Discard any data in the branch
         ResetDatabaseResponse:
             type: object
             properties:
@@ -2260,8 +2264,9 @@ components:
         RollbackTransactionRequest:
             type: object
             properties:
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
             description: Rollback transaction with the given ID
         RollbackTransactionResponse:
             type: object
@@ -2380,8 +2385,9 @@ components:
                     format: int32
                 collation:
                     $ref: '#/components/schemas/Collation'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
                 fields:
                     type: object
         SearchResponse:
@@ -2435,8 +2441,9 @@ components:
                 filter:
                     type: object
                     description: Filter allows you to subscribe only for events that you need. Filter syntax is similar to `ReadRequest.filter`.
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         SubscribeRequestOptions:
             type: object
             properties:
@@ -2514,8 +2521,9 @@ components:
                     description: 'Update documents which matching specified filter. A filter can simply be key, value where key is the field name and value would be the value for this field. Or a filter can be logical where two or more fields can be logically joined using $or and $and. A few examples of filter: <li> To update a user document where the id has a value 1: ```{"id": 1 }``` <li> To update all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`'
                 options:
                     $ref: '#/components/schemas/UpdateRequestOptions'
-                dbOptions:
-                    $ref: '#/components/schemas/DatabaseOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
         UpdateRequestOptions:
             type: object
             properties:
