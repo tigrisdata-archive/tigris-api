@@ -43,714 +43,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/databases/list:
-        post:
-            tags:
-                - Databases
-            summary: List Databases
-            description: List returns all the databases.
-            operationId: Tigris_ListDatabases
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListDatabasesResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/list:
-        post:
-            tags:
-                - Databases
-            summary: List Collections
-            description: List all the collections present in the database passed in the request.
-            operationId: Tigris_ListCollections
-            parameters:
-                - name: db
-                  in: path
-                  description: List collection in this database.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ListCollectionsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListCollectionsResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/createOrUpdate:
-        post:
-            tags:
-                - Collections
-            summary: Create or update a collection
-            description: |-
-                Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
-                 Schema changes are applied atomically and immediately without any downtime.
-                 Tigris Offers two types of collections: <p></p>
-                    <li> `DOCUMENTS`: Offers rich CRUD APIs.
-                    <li> `MESSAGES`: Offers event streaming APIs.
-            operationId: Tigris_CreateOrUpdateCollection
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name where to create collection.
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  description: Collection name to create.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateOrUpdateCollectionRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateOrUpdateCollectionResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/describe:
-        post:
-            tags:
-                - Collections
-            summary: Describe Collection
-            description: Returns the information related to the collection. This can be used to retrieve the schema or size of the collection.
-            operationId: Tigris_DescribeCollection
-            parameters:
-                - name: db
-                  in: path
-                  description: Name of the database.
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  description: Name of the collection.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DescribeCollectionRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DescribeCollectionResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/documents/delete:
-        delete:
-            tags:
-                - Documents
-            summary: Delete Documents
-            description: Delete a range of documents in the collection using the condition provided in the filter.
-            operationId: Tigris_Delete
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name where to insert documents.
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  description: Collection name where to insert documents.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DeleteRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DeleteResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/documents/insert:
-        post:
-            tags:
-                - Documents
-            summary: Insert Documents
-            description: |-
-                Inserts new documents in the collection and returns an AlreadyExists error if any of the documents
-                 in the request already exists. Insert provides idempotency by returning an error if the document
-                 already exists. To replace documents, use REPLACE API instead of INSERT.
-            operationId: Tigris_Insert
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name where to insert documents.
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  description: Collection name where to insert documents.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/InsertRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/InsertResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/documents/read:
-        post:
-            tags:
-                - Documents
-            summary: Read Documents
-            description: |-
-                Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
-                 index any fields and automatically index all the fields which means you can filter by any field in the document.
-                 An empty filter will trigger reading all the documents inside this collection. The API supports pagination that
-                 can be used by passing `Limit/Skip` parameters. The `skip` parameter skips the number of documents from the start and
-                 the `limit` parameter is used to specify the number of documents to read. You can find more detailed documentation
-                 of the Read API <a href="https://docs.tigrisdata.com/overview/query" title="here">here</a>.
-            operationId: Tigris_Read
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name to read documents from.
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  description: Collection name to read documents from.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ReadRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/StreamingReadResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/documents/replace:
-        put:
-            tags:
-                - Documents
-            summary: Insert or Replace Documents
-            description: Inserts the documents or replaces the existing documents in the collections.
-            operationId: Tigris_Replace
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name where to replace documents.
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  description: Collection name where to replace documents.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ReplaceRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ReplaceResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/documents/search:
-        post:
-            tags:
-                - Documents
-            summary: Search Documents
-            description: |-
-                Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
-                 a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
-                 You can also perform a faceted search by passing the fields in the facet parameter.
-                 You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
-            operationId: Tigris_Search
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name to read documents from.
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  description: Collection name to read documents from.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/SearchRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/StreamingSearchResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/documents/update:
-        put:
-            tags:
-                - Documents
-            summary: Update Documents
-            description: Update a range of documents in the collection using the condition provided in the filter.
-            operationId: Tigris_Update
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name where to update documents
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  description: Collection name where to update documents
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UpdateRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UpdateResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/drop:
-        delete:
-            tags:
-                - Collections
-            summary: Drop Collection
-            description: Drop the collection inside this database. This API deletes all of the documents inside this collection and any metadata associated with it.
-            operationId: Tigris_DropCollection
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name of the collection.
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  description: Collection name to drop.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DropCollectionRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DropCollectionResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/messages/publish:
-        post:
-            tags:
-                - Event Streaming
-            summary: Publish Messages to a Topic
-            description: Endpoint for publishing messages to a topic.
-            operationId: Tigris_Publish
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name where to publish messages.
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  description: Topic name where to publish messages.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/PublishRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/PublishResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/collections/{collection}/messages/subscribe:
-        post:
-            tags:
-                - Event Streaming
-            summary: Subscribe to a Topic
-            description: |-
-                Endpoint for subscribing to a topic to receive a stream of messages. The `partition` can be set to stream only
-                 from a specific partition.
-            operationId: Tigris_Subscribe
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name.
-                  required: true
-                  schema:
-                    type: string
-                - name: collection
-                  in: path
-                  description: Topic name.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/SubscribeRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/StreamingSubscribeResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/create:
-        post:
-            tags:
-                - Databases
-            summary: Create Database
-            description: Creates a new database. Returns an AlreadyExists error with a status code 409 if the database already exists.
-            operationId: Tigris_CreateDatabase
-            parameters:
-                - name: db
-                  in: path
-                  description: Create database with this name.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateDatabaseRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateDatabaseResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/describe:
-        post:
-            tags:
-                - Databases
-            summary: Describe Database
-            description: |-
-                This API returns information related to the database along with all the collections inside the database.
-                 This can be used to retrieve the size of the database or to retrieve schemas and the size of all the collections present in this database.
-            operationId: Tigris_DescribeDatabase
-            parameters:
-                - name: db
-                  in: path
-                  description: Name of the database.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DescribeDatabaseRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DescribeDatabaseResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/drop:
-        delete:
-            tags:
-                - Databases
-            summary: Drop Database
-            description: Drop database deletes all the collections in this database along with all of the documents, and associated metadata for these collections.
-            operationId: Tigris_DropDatabase
-            parameters:
-                - name: db
-                  in: path
-                  description: 'Drop database with this name. **Note**: Deletes all the collections in the database. Use with caution.'
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DropDatabaseRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DropDatabaseResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/transactions/begin:
-        post:
-            tags:
-                - Transactions
-            summary: Begin a transaction
-            description: |-
-                Starts a new transaction and returns a transactional object. All reads/writes performed
-                 within a transaction will run with serializable isolation.
-            operationId: Tigris_BeginTransaction
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name this transaction belongs to.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/BeginTransactionRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/BeginTransactionResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/transactions/commit:
-        post:
-            tags:
-                - Transactions
-            summary: Commit a Transaction
-            description: |-
-                Atomically commit all the changes performed in the context of the transaction. Commit provides all
-                 or nothing semantics by ensuring no partial updates are in the database due to a transaction failure.
-            operationId: Tigris_CommitTransaction
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name this transaction belongs to.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CommitTransactionRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CommitTransactionResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/databases/{db}/transactions/rollback:
-        post:
-            tags:
-                - Transactions
-            summary: Rollback a transaction
-            description: |-
-                Rollback transaction discards all the changes
-                 performed in the transaction
-            operationId: Tigris_RollbackTransaction
-            parameters:
-                - name: db
-                  in: path
-                  description: Database name this transaction belongs to.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/RollbackTransactionRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/RollbackTransactionResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /v1/health:
         get:
             tags:
@@ -902,6 +194,102 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/management/namespace/metadata/{metadataKey}/get:
+        post:
+            tags:
+                - Management
+            summary: Reads the Namespace Metadata
+            description: GetNamespaceMetadata inserts the user metadata object
+            operationId: Management_GetNamespaceMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetNamespaceMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetNamespaceMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/namespace/metadata/{metadataKey}/insert:
+        post:
+            tags:
+                - Management
+            summary: Inserts Namespace Metadata
+            description: InsertNamespaceMetadata inserts the namespace metadata object
+            operationId: Management_InsertNamespaceMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/InsertNamespaceMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InsertNamespaceMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/management/namespace/metadata/{metadataKey}/update:
+        post:
+            tags:
+                - Management
+            summary: Updates Namespace Metadata
+            description: UpdateNamespaceMetadata updates the user metadata object
+            operationId: Management_UpdateNamespaceMetadata
+            parameters:
+                - name: metadataKey
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateNamespaceMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateNamespaceMetadataResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/management/namespaces/create:
         post:
             tags:
@@ -973,7 +361,7 @@ paths:
             tags:
                 - Management
             summary: Reads the User Metadata
-            description: insertUserMetadata inserts the user metadata object
+            description: GetUserMetadata inserts the user metadata object
             operationId: Management_GetUserMetadata
             parameters:
                 - name: metadataKey
@@ -1162,6 +550,634 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/list:
+        post:
+            tags:
+                - Projects
+            summary: List Projects
+            description: List returns all the projects.
+            operationId: Tigris_ListProjects
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListProjectsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/collections/list:
+        post:
+            tags:
+                - Projects
+            summary: List Collections
+            description: List all the collections present in the project passed in the request.
+            operationId: Tigris_ListCollections
+            parameters:
+                - name: project
+                  in: path
+                  description: List collection in this project.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListCollectionsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListCollectionsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/collections/{collection}/createOrUpdate:
+        post:
+            tags:
+                - Collections
+            summary: Create or update a collection
+            description: |-
+                Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
+                 Schema changes are applied atomically and immediately without any downtime.
+                 Tigris Offers two types of collections: <p></p>
+                    <li> `DOCUMENTS`: Offers rich CRUD APIs.
+                    <li> `MESSAGES`: Offers event streaming APIs.
+            operationId: Tigris_CreateOrUpdateCollection
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name where to create collection.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name to create.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateOrUpdateCollectionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateOrUpdateCollectionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/collections/{collection}/describe:
+        post:
+            tags:
+                - Collections
+            summary: Describe Collection
+            description: Returns the information related to the collection. This can be used to retrieve the schema or size of the collection.
+            operationId: Tigris_DescribeCollection
+            parameters:
+                - name: project
+                  in: path
+                  description: Name of the project.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Name of the collection.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DescribeCollectionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DescribeCollectionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/collections/{collection}/documents/delete:
+        delete:
+            tags:
+                - Documents
+            summary: Delete Documents
+            description: Delete a range of documents in the collection using the condition provided in the filter.
+            operationId: Tigris_Delete
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name where to insert documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name where to insert documents.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/collections/{collection}/documents/insert:
+        post:
+            tags:
+                - Documents
+            summary: Insert Documents
+            description: |-
+                Inserts new documents in the collection and returns an AlreadyExists error if any of the documents
+                 in the request already exists. Insert provides idempotency by returning an error if the document
+                 already exists. To replace documents, use REPLACE API instead of INSERT.
+            operationId: Tigris_Insert
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name where to insert documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name where to insert documents.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/InsertRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InsertResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/collections/{collection}/documents/read:
+        post:
+            tags:
+                - Documents
+            summary: Read Documents
+            description: |-
+                Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
+                 index any fields and automatically index all the fields which means you can filter by any field in the document.
+                 An empty filter will trigger reading all the documents inside this collection. The API supports pagination that
+                 can be used by passing `Limit/Skip` parameters. The `skip` parameter skips the number of documents from the start and
+                 the `limit` parameter is used to specify the number of documents to read. You can find more detailed documentation
+                 of the Read API <a href="https://docs.tigrisdata.com/overview/query" title="here">here</a>.
+            operationId: Tigris_Read
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name to read documents from.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name to read documents from.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReadRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StreamingReadResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/collections/{collection}/documents/replace:
+        put:
+            tags:
+                - Documents
+            summary: Insert or Replace Documents
+            description: Inserts the documents or replaces the existing documents in the collections.
+            operationId: Tigris_Replace
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name where to replace documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name where to replace documents.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReplaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ReplaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/collections/{collection}/documents/search:
+        post:
+            tags:
+                - Documents
+            summary: Search Documents.
+            description: |-
+                Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
+                 a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
+                 You can also perform a faceted search by passing the fields in the facet parameter.
+                 You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
+            operationId: Tigris_Search
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name to read documents from.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name to read documents from.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SearchRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StreamingSearchResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/collections/{collection}/documents/update:
+        put:
+            tags:
+                - Documents
+            summary: Update Documents
+            description: Update a range of documents in the collection using the condition provided in the filter.
+            operationId: Tigris_Update
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name where to update documents
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name where to update documents
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/collections/{collection}/drop:
+        delete:
+            tags:
+                - Collections
+            summary: Drop Collection
+            description: Drop the collection inside this project. This API deletes all of the documents inside this collection and any metadata associated with it.
+            operationId: Tigris_DropCollection
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name of the collection.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name to drop.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DropCollectionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DropCollectionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/create:
+        post:
+            tags:
+                - Projects
+            summary: Create Project
+            description: Creates a new project. Returns an AlreadyExists error with a status code 409 if the project already exists.
+            operationId: Tigris_CreateProject
+            parameters:
+                - name: project
+                  in: path
+                  description: Create project with this name.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateProjectRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateProjectResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/describe:
+        post:
+            tags:
+                - Projects
+            summary: Describe Project
+            description: |-
+                This API returns information related to the project along with all the collections inside the project.
+                 This can be used to retrieve the size of the project or to retrieve schemas and the size of all the collections present in this project.
+            operationId: Tigris_DescribeProject
+            parameters:
+                - name: project
+                  in: path
+                  description: Name of the project.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DescribeProjectRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DescribeProjectResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/drop:
+        delete:
+            tags:
+                - Projects
+            summary: Delete Project
+            description: Delete Project deletes all the collections in this project along with all of the documents, and associated metadata for these collections.
+            operationId: Tigris_DeleteProject
+            parameters:
+                - name: project
+                  in: path
+                  description: 'Delete Project with this name. **Note**: Deletes all the collections in the project. Use with caution.'
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteProjectRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteProjectResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/transactions/begin:
+        post:
+            tags:
+                - Transactions
+            summary: Begin a transaction
+            description: |-
+                Starts a new transaction and returns a transactional object. All reads/writes performed
+                 within a transaction will run with serializable isolation.
+            operationId: Tigris_BeginTransaction
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name this transaction belongs to.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BeginTransactionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BeginTransactionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/transactions/commit:
+        post:
+            tags:
+                - Transactions
+            summary: Commit a Transaction
+            description: |-
+                Atomically commit all the changes performed in the context of the transaction. Commit provides all
+                 or nothing semantics by ensuring no partial updates are in the project due to a transaction failure.
+            operationId: Tigris_CommitTransaction
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name this transaction belongs to.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CommitTransactionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CommitTransactionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/transactions/rollback:
+        post:
+            tags:
+                - Transactions
+            summary: Rollback a transaction
+            description: |-
+                Rollback transaction discards all the changes
+                 performed in the transaction
+            operationId: Tigris_RollbackTransaction
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name this transaction belongs to.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RollbackTransactionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RollbackTransactionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
         AdditionalFunction:
@@ -1199,13 +1215,21 @@ components:
                 updated_by:
                     type: string
                     description: Updated by
+                projects:
+                    type: array
+                    items:
+                        type: string
+                    description: Project(s) it belongs to (for backward compatibility - multiple projects)
             description: An user application
         BeginTransactionRequest:
             type: object
             properties:
                 options:
                     $ref: '#/components/schemas/TransactionOptions'
-            description: Start new transaction in database specified by "db".
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
+            description: Start new transaction in project specified by "project".
         BeginTransactionResponse:
             type: object
             properties:
@@ -1250,7 +1274,10 @@ components:
             description: Collection requests modifying options.
         CommitTransactionRequest:
             type: object
-            properties: {}
+            properties:
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
             description: Commit transaction with the given ID
         CommitTransactionResponse:
             type: object
@@ -1267,6 +1294,9 @@ components:
                 description:
                     type: string
                     description: A human readable app description
+                project:
+                    type: string
+                    description: Project name
             description: Request creation of user application
         CreateApplicationResponse:
             type: object
@@ -1274,20 +1304,6 @@ components:
                 created_application:
                     $ref: '#/components/schemas/Application'
             description: CreateApplication returns created application
-        CreateDatabaseRequest:
-            type: object
-            properties:
-                options:
-                    $ref: '#/components/schemas/DatabaseOptions'
-        CreateDatabaseResponse:
-            type: object
-            properties:
-                message:
-                    type: string
-                    description: A detailed response message.
-                status:
-                    type: string
-                    description: An enum with value set as "created".
         CreateNamespaceRequest:
             type: object
             properties:
@@ -1323,6 +1339,9 @@ components:
                     description: If set to `true` then the update schema request to the collection will fail by returning a conflict with HTTP Status code 409. The default is false.
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
         CreateOrUpdateCollectionResponse:
             type: object
             properties:
@@ -1332,6 +1351,23 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created" or "updated"
+        CreateProjectRequest:
+            type: object
+            properties:
+                options:
+                    $ref: '#/components/schemas/ProjectOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
+        CreateProjectResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "created".
         DataPoint:
             type: object
             properties:
@@ -1342,21 +1378,6 @@ components:
                     type: number
                     format: double
             description: Represents the data point in timeseries.
-        DatabaseInfo:
-            type: object
-            properties:
-                db:
-                    type: string
-                    description: Database name.
-                metadata:
-                    $ref: '#/components/schemas/DatabaseMetadata'
-        DatabaseMetadata:
-            type: object
-            properties: {}
-        DatabaseOptions:
-            type: object
-            properties: {}
-            description: Database requests modifying options.
         DeleteApplicationResponse:
             type: object
             properties:
@@ -1371,6 +1392,21 @@ components:
                     type: string
                     description: application id
             description: Request deletion of an application
+        DeleteProjectRequest:
+            type: object
+            properties:
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
+        DeleteProjectResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "dropped".
         DeleteRequest:
             type: object
             properties:
@@ -1379,6 +1415,9 @@ components:
                     description: 'Delete documents which matching specified filter. A filter can simply be key, value where key is the field name and value would be the value for this field. Or a filter can be logical where two or more fields can be logically joined using $or and $and. A few examples of filter: <li> To delete a user document where the id has a value 1: ```{"id": 1 }``` <li> To delete all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`'
                 options:
                     $ref: '#/components/schemas/DeleteRequestOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
         DeleteRequestOptions:
             type: object
             properties:
@@ -1402,9 +1441,9 @@ components:
         DescribeCollectionRequest:
             type: object
             properties:
-                db:
+                project:
                     type: string
-                    description: Name of the database.
+                    description: Name of the project.
                 collection:
                     type: string
                     description: Name of the collection.
@@ -1413,6 +1452,9 @@ components:
                     description: Return schema in the requested format. Format can be JSON, Go, TypeScript, Java. Default is JSON.
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
         DescribeCollectionResponse:
             type: object
             properties:
@@ -1429,33 +1471,6 @@ components:
                     description: The size of this collection in bytes.
                     format: int64
             description: A detailed description of the collection. The description returns collection metadata and the schema.
-        DescribeDatabaseRequest:
-            type: object
-            properties:
-                db:
-                    type: string
-                    description: Name of the database.
-                schema_format:
-                    type: string
-                    description: Return schema in the requested format. Format can be JSON, Go, TypeScript, Java. Default is JSON.
-        DescribeDatabaseResponse:
-            type: object
-            properties:
-                db:
-                    type: string
-                    description: Name of the database.
-                metadata:
-                    $ref: '#/components/schemas/DatabaseMetadata'
-                collections:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/CollectionDescription'
-                    description: A detailed description about all the collections. The description returns collection metadata and the schema.
-                size:
-                    type: integer
-                    description: Sum of all the collections sizes present in this database
-                    format: int64
-            description: A detailed description of the database and all the associated collections. Description of the collection includes schema details as well.
         DescribeNamespacesData:
             type: object
             properties:
@@ -1466,26 +1481,50 @@ components:
             properties:
                 data:
                     $ref: '#/components/schemas/DescribeNamespacesData'
+        DescribeProjectRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Name of the project.
+                schema_format:
+                    type: string
+                    description: Return schema in the requested format. Format can be JSON, Go, TypeScript, Java. Default is JSON.
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
+        DescribeProjectResponse:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Name of the project.
+                metadata:
+                    $ref: '#/components/schemas/ProjectMetadata'
+                collections:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CollectionDescription'
+                    description: A detailed description about all the collections. The description returns collection metadata and the schema.
+                size:
+                    type: integer
+                    description: Sum of all the collections sizes present in this project
+                    format: int64
+                branches:
+                    type: array
+                    items:
+                        type: string
+                    description: List of all the branches in this project
+            description: A detailed description of the project and all the associated collections. Description of the collection includes schema details as well.
         DropCollectionRequest:
             type: object
             properties:
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
         DropCollectionResponse:
-            type: object
-            properties:
-                message:
-                    type: string
-                    description: A detailed response message.
-                status:
-                    type: string
-                    description: An enum with value set as "dropped".
-        DropDatabaseRequest:
-            type: object
-            properties:
-                options:
-                    $ref: '#/components/schemas/DatabaseOptions'
-        DropDatabaseResponse:
             type: object
             properties:
                 message:
@@ -1526,23 +1565,6 @@ components:
                     type: string
                     description: A developer-facing descriptive error message
             description: The Error type defines a logical error model
-        EventsRequest:
-            type: object
-            properties:
-                db:
-                    type: string
-                collection:
-                    type: string
-                options:
-                    $ref: '#/components/schemas/EventsRequestOptions'
-        EventsRequestOptions:
-            type: object
-            properties: {}
-        EventsResponse:
-            type: object
-            properties:
-                event:
-                    $ref: '#/components/schemas/StreamEvent'
         FacetCount:
             type: object
             properties:
@@ -1613,6 +1635,25 @@ components:
             properties:
                 server_version:
                     type: string
+        GetNamespaceMetadataRequest:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                value:
+                    type: object
+            description: Request namespace metadata
+        GetNamespaceMetadataResponse:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                namespaceId:
+                    type: integer
+                    format: uint32
+                value:
+                    type: object
+            description: Namespace metadata response
         GetUserMetadataRequest:
             type: object
             properties:
@@ -1632,13 +1673,33 @@ components:
                     type: integer
                     format: uint32
                 value:
-                    type: object
+                    type: string
+                    format: byte
             description: User metadata response
         HealthCheckResponse:
             type: object
             properties:
                 response:
                     type: string
+        InsertNamespaceMetadataRequest:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                value:
+                    type: object
+            description: Request insertion of namespace metadata
+        InsertNamespaceMetadataResponse:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                namespaceId:
+                    type: integer
+                    format: uint32
+                value:
+                    type: object
+            description: Insertion of namespace metadata response
         InsertRequest:
             type: object
             properties:
@@ -1649,6 +1710,9 @@ components:
                     description: Array of documents to insert. Each document is a JSON object.
                 options:
                     $ref: '#/components/schemas/InsertRequestOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
         InsertRequestOptions:
             type: object
             properties:
@@ -1692,7 +1756,10 @@ components:
             description: Insertion of user metadata response
         ListApplicationsRequest:
             type: object
-            properties: {}
+            properties:
+                project:
+                    type: string
+                    description: Project name filter
             description: Request listing of all the application those are visible to requesting actor
         ListApplicationsResponse:
             type: object
@@ -1707,25 +1774,20 @@ components:
             properties:
                 options:
                     $ref: '#/components/schemas/CollectionOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
         ListCollectionsResponse:
             type: object
             properties:
-                db:
+                project:
                     type: string
-                    description: Name of the database.
+                    description: Name of the project.
                 collections:
                     type: array
                     items:
                         $ref: '#/components/schemas/CollectionInfo'
-                    description: List of the collections info in the database.
-        ListDatabasesResponse:
-            type: object
-            properties:
-                databases:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/DatabaseInfo'
-                    description: List of the databases.
+                    description: List of the collections info in the project.
         ListNamespacesResponse:
             type: object
             properties:
@@ -1733,6 +1795,14 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/NamespaceInfo'
+        ListProjectsResponse:
+            type: object
+            properties:
+                projects:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ProjectInfo'
+                    description: List of the projects.
         MetricSeries:
             type: object
             properties:
@@ -1776,40 +1846,21 @@ components:
                     description: Maximum number of results per page
                     format: int32
             description: Pagination metadata for SearchResponse
-        PublishRequest:
+        ProjectInfo:
             type: object
             properties:
-                db:
+                project:
                     type: string
-                    description: Database name where to publish messages.
-                collection:
-                    type: string
-                    description: Topic name where to publish messages.
-                messages:
-                    type: array
-                    items:
-                        type: object
-                    description: An array of JSON messages to publish.
-                options:
-                    $ref: '#/components/schemas/PublishRequestOptions'
-        PublishRequestOptions:
-            type: object
-            properties:
-                partition:
-                    type: integer
-                    format: int32
-        PublishResponse:
-            type: object
-            properties:
+                    description: Project name.
                 metadata:
-                    $ref: '#/components/schemas/ResponseMetadata'
-                status:
-                    type: string
-                keys:
-                    type: array
-                    items:
-                        type: string
-                        format: byte
+                    $ref: '#/components/schemas/ProjectMetadata'
+        ProjectMetadata:
+            type: object
+            properties: {}
+        ProjectOptions:
+            type: object
+            properties: {}
+            description: Project requests modifying options.
         QueryTimeSeriesMetricsRequest:
             type: object
             properties:
@@ -1943,6 +1994,9 @@ components:
                     type: string
                     description: 'Array of fields and corresponding sort orders to order the results. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary": "$asc"}]`'
                     format: byte
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
         ReadRequestOptions:
             type: object
             properties:
@@ -1983,6 +2037,9 @@ components:
                     description: Array of documents to be replaced. Each document is a JSON object.
                 options:
                     $ref: '#/components/schemas/ReplaceRequestOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
         ReplaceRequestOptions:
             type: object
             properties:
@@ -2021,7 +2078,10 @@ components:
             description: Has metadata related to the documents stored.
         RollbackTransactionRequest:
             type: object
-            properties: {}
+            properties:
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
             description: Rollback transaction with the given ID
         RollbackTransactionResponse:
             type: object
@@ -2140,6 +2200,9 @@ components:
                     format: int32
                 collation:
                     $ref: '#/components/schemas/Collation'
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
                 fields:
                     type: object
         SearchResponse:
@@ -2156,57 +2219,6 @@ components:
                 meta:
                     $ref: '#/components/schemas/SearchMetadata'
             description: Response struct for search
-        StreamEvent:
-            type: object
-            properties:
-                tx_id:
-                    type: string
-                    format: byte
-                collection:
-                    type: string
-                op:
-                    type: string
-                key:
-                    type: string
-                    format: byte
-                lkey:
-                    type: string
-                    format: byte
-                rkey:
-                    type: string
-                    format: byte
-                data:
-                    type: object
-                last:
-                    type: boolean
-        SubscribeRequest:
-            type: object
-            properties:
-                db:
-                    type: string
-                    description: Database name.
-                collection:
-                    type: string
-                    description: Topic name.
-                options:
-                    $ref: '#/components/schemas/SubscribeRequestOptions'
-                filter:
-                    type: object
-                    description: Filter allows you to subscribe only for events that you need. Filter syntax is similar to `ReadRequest.filter`.
-        SubscribeRequestOptions:
-            type: object
-            properties:
-                partitions:
-                    type: array
-                    items:
-                        type: integer
-                        format: int32
-        SubscribeResponse:
-            type: object
-            properties:
-                message:
-                    type: string
-                    format: byte
         TransactionCtx:
             type: object
             properties:
@@ -2240,6 +2252,25 @@ components:
                 updated_application:
                     $ref: '#/components/schemas/Application'
             description: CreateApplication returns created application
+        UpdateNamespaceMetadataRequest:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                value:
+                    type: object
+            description: Request update of namespace metadata
+        UpdateNamespaceMetadataResponse:
+            type: object
+            properties:
+                metadataKey:
+                    type: string
+                namespaceId:
+                    type: integer
+                    format: uint32
+                value:
+                    type: object
+            description: Update of namespace metadata response
         UpdateRequest:
             type: object
             properties:
@@ -2251,6 +2282,9 @@ components:
                     description: 'Update documents which matching specified filter. A filter can simply be key, value where key is the field name and value would be the value for this field. Or a filter can be logical where two or more fields can be logically joined using $or and $and. A few examples of filter: <li> To update a user document where the id has a value 1: ```{"id": 1 }``` <li> To update all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`'
                 options:
                     $ref: '#/components/schemas/UpdateRequestOptions'
+                branch:
+                    type: string
+                    description: Optionally specify a project branch name to perform operation on
         UpdateRequestOptions:
             type: object
             properties:
@@ -2314,20 +2348,6 @@ components:
                     $ref: '#/components/schemas/SearchResponse'
                 error:
                     $ref: '#/components/schemas/Error'
-        StreamingEventsResponse:
-            type: object
-            properties:
-                result:
-                    $ref: '#/components/schemas/EventsResponse'
-                error:
-                    $ref: '#/components/schemas/Error'
-        StreamingSubscribeResponse:
-            type: object
-            properties:
-                result:
-                    $ref: '#/components/schemas/SubscribeResponse'
-                error:
-                    $ref: '#/components/schemas/Error'
         Status:
             type: object
             properties:
@@ -2344,8 +2364,6 @@ tags:
       description: 'The auth section of API provides open authorization (OAuth 2.0) APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.'
     - name: Collections
       description: The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents.
-    - name: Databases
-      description: The Databases section provide APIs that can be used to manage databases. A single database can have one or more collections.
     - name: Documents
       description: The Documents section provide APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
     - name: Event Streaming
@@ -2353,8 +2371,10 @@ tags:
     - name: Management
       description: The Management section provide APIs that can be used to manage users, and applications.
     - name: Namespaces
-      description: The Namespaces section provide APIs that can be used to manage namespaces. A single namespace can have one or more databases.
+      description: The Namespaces section provide APIs that can be used to manage namespaces. A single namespace can have one or more projects.
     - name: Observability
       description: The Observability section has APIs that provides full visibility into the health, metrics, and monitoring of the Server.
+    - name: Projects
+      description: The Projects section provide APIs that can be used to manage Tigris projects. A single project can have one or more collections.
     - name: Transactions
       description: Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability.
