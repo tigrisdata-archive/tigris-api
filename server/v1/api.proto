@@ -462,7 +462,7 @@ message DeleteProjectRequest {
   // Use with caution.
   string project = 1;
   // Optionally specify a project branch name to perform operation on
-  string branch = 3;
+  string branch = 2;
 }
 
 message DeleteProjectResponse {
