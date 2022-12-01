@@ -45,7 +45,7 @@ main() {
 	# Fix the types of filter and document fields to be object on HTTP wire.
 	# The original format in proto file is "bytes", which allows to skip
 	# unmarshalling in GRPC, we also implement custom unmarshalling for HTTP
-	for i in DeleteRequest UpdateRequest ReadRequest SearchRequest SubscribeRequest; do
+	for i in DeleteRequest UpdateRequest ReadRequest SearchRequest; do
 		yq_fix_object $i filter
 	done
 
@@ -59,8 +59,6 @@ main() {
 	yq_fix_object SearchRequest sort
 	yq_fix_object SearchHit data
 	yq_fix_object CreateOrUpdateCollectionRequest schema
-	yq_fix_object StreamEvent data
-	yq_fix_object PublishRequest messages.items
 	yq_fix_timestamp ResponseMetadata created_at
 	yq_fix_timestamp ResponseMetadata updated_at
 
@@ -71,23 +69,18 @@ main() {
 
 	for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
 		CreateOrUpdateCollectionRequest DropCollectionRequest \
-		CreateDatabaseRequest DropDatabaseRequest \
-		ListDatabasesRequest ListCollectionsRequest SearchRequest \
+		CreateProjectRequest DeleteProjectRequest \
+		ListProjectsRequest ListCollectionsRequest SearchRequest \
 		BeginTransactionRequest CommitTransactionRequest RollbackTransactionRequest; do
 
-		yq_del_db_coll $i
+		yq_del_project_coll $i
 	done
 
 	yq_streaming_response ReadResponse "collections/{collection}/documents/read"
 	yq_streaming_response SearchResponse "collections/{collection}/documents/search"
-	yq_streaming_response EventsResponse "collections/{collection}/events"
-	yq_streaming_response SubscribeResponse "collections/{collection}/messages/subscribe"
 
 	yq_error_response
 
-	# Do not expose "events" endpint in openapi
-	# TODO: Remove it once events endpoint is fixed
-	yq_cmd 'del(.paths."/v1/databases/{db}/collections/{collection}/events")'
 	yq_fix_access_token_request
 }
 
@@ -115,9 +108,9 @@ yq_fix_timestamp() {
 	yq_cmd ".components.schemas.$1.properties.$2.format=\"date-time\""
 }
 
-# Delete db and collection fields from request body
-yq_del_db_coll() {
-	yq_cmd "del(.components.schemas.$1.properties.db)"
+# Delete project and collection fields from request body
+yq_del_project_coll() {
+	yq_cmd "del(.components.schemas.$1.properties.project)"
 	yq_cmd "del(.components.schemas.$1.properties.collection)"
 }
 
@@ -152,7 +145,7 @@ yq_streaming_response() {
 	.properties.error.$ref="#/components/schemas/Error"
 	)'
 
-	yq_cmd '.paths."/v1/databases/{db}/'"$2"'".post.responses.200.content."application/json".schema.$ref="#/components/schemas/Streaming'"$1"'"'
+	yq_cmd '.paths."/v1/projects/{project}/'"$2"'".post.responses.200.content."application/json".schema.$ref="#/components/schemas/Streaming'"$1"'"'
 }
 
 # Rewrite default response Status to look like:
