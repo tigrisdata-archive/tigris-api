@@ -145,7 +145,7 @@ yq_streaming_response() {
 	.properties.error.$ref="#/components/schemas/Error"
 	)'
 
-	yq_cmd '.paths."/v1/projects/{project}/'"$2"'".post.responses.200.content."application/json".schema.$ref="#/components/schemas/Streaming'"$1"'"'
+	yq_cmd '.paths."/v1/projects/{project}/database/'"$2"'".post.responses.200.content."application/json".schema.$ref="#/components/schemas/Streaming'"$1"'"'
 }
 
 # Rewrite default response Status to look like:
