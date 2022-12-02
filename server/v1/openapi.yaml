@@ -1005,6 +1005,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{name}/database/branch/{name}/create:
+        post:
+            tags:
+                - Databases
+    /v1/projects/{name}/database/branch/{name}/delete:
+        delete:
+            tags:
+                - Databases
+    /v1/projects/{name}/database/branch/{name}/describe:
+        post:
+            tags:
+                - Databases
+    /v1/projects/{name}/database/describe:
+        post:
+            tags:
+                - Databases
+        description:
+            This can accept optional parameters like - schema format etc. While DescribeProject would list Database.Collections[], Channels[], Functions[] etc.
     /v1/projects/{project}/describe:
         post:
             tags:
@@ -1356,9 +1374,6 @@ components:
             properties:
                 options:
                     $ref: '#/components/schemas/ProjectOptions'
-                branch:
-                    type: string
-                    description: Optionally specify a project branch name to perform operation on
         CreateProjectResponse:
             type: object
             properties:
