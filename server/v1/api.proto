@@ -49,7 +49,10 @@ option (openapi.v3.document) = {
     description: "The Namespaces section provide APIs that can be used to manage namespaces. A single namespace can have one or more projects."
   },{
     name: "Projects"
-    description: "The Projects section provide APIs that can be used to manage Tigris projects. A single project can have one or more collections."
+    description: "The Projects section provide APIs that can be used to manage Tigris projects. A single project has one database"
+  },{
+    name: "Databases"
+    description: "The Databases section provide APIs that can be used to manage Tigris Databases. A single Database can have one or more collections."
   },{
     name: "Collections"
     description: "The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents."
@@ -117,8 +120,8 @@ message ReadRequestOptions {
   Collation collation = 5;
 }
 
-// Project requests modifying options.
-message ProjectOptions {
+// Database requests modifying options.
+message DatabaseOptions {
 }
 
 // Collection requests modifying options.
@@ -141,7 +144,7 @@ message TransactionCtx {
 
 // Start new transaction in project specified by "project".
 message BeginTransactionRequest {
-  // Project name this transaction belongs to.
+  // Project name whose DB this transaction belongs to.
   string project = 1;
   // The transaction options.
   TransactionOptions options = 2;
@@ -158,9 +161,9 @@ message BeginTransactionResponse {
 
 // Commit transaction with the given ID
 message CommitTransactionRequest {
-  // Project name this transaction belongs to.
+  // Project name whose DB this transaction belongs to.
   string project = 1;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 2;
 }
 message CommitTransactionResponse {
@@ -170,9 +173,9 @@ message CommitTransactionResponse {
 
 // Rollback transaction with the given ID
 message RollbackTransactionRequest {
-  // Project name this transaction belongs to.
+  // Project name whose DB this transaction belongs to.
   string project = 1;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 2;
 }
 message RollbackTransactionResponse {
@@ -196,14 +199,14 @@ message ResponseMetadata {
 }
 
 message InsertRequest {
-  // Project name where to insert documents.
+  // Project name whose db is under target to insert documents.
   string project = 1;
   // Collection name where to insert documents.
   string collection = 2;
   // Array of documents to insert. Each document is a JSON object.
   repeated bytes documents = 3;
   InsertRequestOptions options = 4;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 5;
 }
 
@@ -222,14 +225,14 @@ message ReplaceRequestOptions {
 }
 
 message ReplaceRequest {
-  // Project name where to replace documents.
+  // Project name whose db is under target to replace documents.
   string project = 1;
   // Collection name where to replace documents.
   string collection = 2;
   // Array of documents to be replaced. Each document is a JSON object.
   repeated bytes documents = 3;
   ReplaceRequestOptions options = 4;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 5;
 }
 
@@ -253,7 +256,7 @@ message DeleteRequestOptions {
 }
 
 message DeleteRequest {
-  // Project name where to insert documents.
+  // Project name whose db is under target to delete documents.
   string project = 1;
   // Collection name where to insert documents.
   string collection = 2;
@@ -265,7 +268,7 @@ message DeleteRequest {
   // <li> To delete all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
   bytes filter = 3;
   DeleteRequestOptions options = 4;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 5;
 }
 
@@ -287,7 +290,7 @@ message UpdateRequestOptions {
 }
 
 message UpdateRequest {
-  // Project name where to update documents
+  // Project name whose db is under target  to update documents
   string project = 1;
   // Collection name where to update documents
   string collection = 2;
@@ -303,7 +306,7 @@ message UpdateRequest {
   // <li> To update all the user documents where the key "id" has a value 1 or 2 or 3: `{"$or": [{"id": 1}, {"id": 2}, {"id": 3}]}`
   bytes filter = 4;
   UpdateRequestOptions options = 5;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 6;
 }
 
@@ -317,7 +320,7 @@ message UpdateResponse {
 }
 
 message ReadRequest {
-  // Project name to read documents from.
+  // Project name whose db is under target to read documents from.
   string project = 1;
   // Collection name to read documents from.
   string collection = 2;
@@ -336,7 +339,7 @@ message ReadRequest {
   ReadRequestOptions options = 5;
   // Array of fields and corresponding sort orders to order the results. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary": "$asc"}]`
   bytes sort = 6;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 7;
 }
 
@@ -350,9 +353,9 @@ message ReadResponse {
 }
 
 message SearchRequest {
-  // Project name to read documents from.
+  // Project name whose db is under target to search documents from.
   string project = 1;
-  // Collection name to read documents from.
+  // Collection name to search documents from.
   string collection = 2;
   // Query string for searching across text fields
   string q = 3;
@@ -376,7 +379,7 @@ message SearchRequest {
   // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
   // this option to 'ci' that will apply to all the text fields in the filters.
   Collation collation = 12;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 13;
 }
 
@@ -445,9 +448,6 @@ message Page {
 message CreateProjectRequest {
   // Create project with this name.
   string project = 1;
-  ProjectOptions options = 2;
-  // Optionally specify a project branch name to perform operation on
-  string branch = 3;
 }
 
 message CreateProjectResponse {
@@ -458,11 +458,9 @@ message CreateProjectResponse {
 }
 
 message DeleteProjectRequest {
-  // Delete Project with this name. **Note**: Deletes all the collections in the project.
-  // Use with caution.
+  // Delete Project with this name. **Note**: Deletes all resources under
+  // this project. Use with caution.
   string project = 1;
-  // Optionally specify a project branch name to perform operation on
-  string branch = 2;
 }
 
 message DeleteProjectResponse {
@@ -473,7 +471,7 @@ message DeleteProjectResponse {
 }
 
 message CreateOrUpdateCollectionRequest {
-  // Project name where to create collection.
+  // Project name whose db is under target to create or update collection.
   string project = 1;
   // Collection name to create.
   string collection = 2;
@@ -532,7 +530,7 @@ message CreateOrUpdateCollectionRequest {
   // code 409. The default is false.
   bool only_create = 4;
   CollectionOptions options = 5;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 6;
 }
 
@@ -544,9 +542,9 @@ message CreateOrUpdateCollectionResponse {
 }
 
 message DropCollectionRequest {
-  // Project name of the collection.
+  // Project name whose db is under target to delete collection.
   string project = 1;
-  // Collection name to drop.
+  // Collection name to delete.
   string collection = 2;
   CollectionOptions options = 3;
   // Optionally specify a project branch name to perform operation on
@@ -564,7 +562,7 @@ message ProjectInfo {
   // Project name.
   string project = 1;
 
-  // Metadata about the project.
+  // Metadata about the database.
   ProjectMetadata metadata = 2;
 }
 
@@ -585,35 +583,32 @@ message ListProjectsResponse {
 }
 
 message ListCollectionsRequest {
-  // List collection in this project.
+  // Project name whose db is under target to list collections.
   string project = 1;
   CollectionOptions options = 2;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 3;
 }
 
 message ListCollectionsResponse {
-  // Name of the project.
-  string project = 1;
-
-  // List of the collections info in the project.
+  // List of the collections info in the database.
   repeated CollectionInfo collections = 2;
 }
 
-message DescribeProjectRequest {
-  // Name of the project.
+message DescribeDatabaseRequest {
+  // Project name whose db is under target to get description.
   string project = 1;
 
   // Return schema in the requested format.
   // Format can be JSON, Go, TypeScript, Java.
   // Default is JSON.
   string schema_format = 2;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 3;
 }
 
 message DescribeCollectionRequest {
-  // Name of the project.
+  // Project name whose db is under target to get description of its collection.
   string project = 1;
 
   // Name of the collection.
@@ -626,27 +621,24 @@ message DescribeCollectionRequest {
 
   // Collection options.
   CollectionOptions options = 4;
-  // Optionally specify a project branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on
   string branch = 5;
 }
 
-// A detailed description of the project and all the associated collections.
+// A detailed description of the database and all the associated collections.
 // Description of the collection includes schema details as well.
-message DescribeProjectResponse {
-  // Name of the project.
-  string project = 1;
-
-  // Metadata about the project.
-  ProjectMetadata metadata = 2;
+message DescribeDatabaseResponse {
+  // Metadata about the database.
+  ProjectMetadata metadata = 1;
 
   // A detailed description about all the collections.
   // The description returns collection metadata and the schema.
-  repeated CollectionDescription collections = 3;
+  repeated CollectionDescription collections = 2;
 
-  // Sum of all the collections sizes present in this project
-  int64 size = 4;
-  // List of all the branches in this project
-  repeated string branches = 5;
+  // Sum of all the collections sizes present in this database
+  int64 size = 3;
+  // List of all the branches in this database
+  repeated string branches = 4;
 }
 
 // A detailed description of the collection.
@@ -691,7 +683,7 @@ service Tigris {
   // within a transaction will run with serializable isolation.
   rpc BeginTransaction(BeginTransactionRequest) returns (BeginTransactionResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/transactions/begin"
+      post : "/v1/projects/{project}/database/transactions/begin"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -703,7 +695,7 @@ service Tigris {
   // or nothing semantics by ensuring no partial updates are in the project due to a transaction failure.
   rpc CommitTransaction(CommitTransactionRequest) returns (CommitTransactionResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/transactions/commit"
+      post : "/v1/projects/{project}/database/transactions/commit"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -715,7 +707,7 @@ service Tigris {
   // performed in the transaction
   rpc RollbackTransaction(RollbackTransactionRequest) returns (RollbackTransactionResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/transactions/rollback"
+      post : "/v1/projects/{project}/database/transactions/rollback"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -729,7 +721,7 @@ service Tigris {
   // already exists. To replace documents, use REPLACE API instead of INSERT.
   rpc Insert(InsertRequest) returns (InsertResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/collections/{collection}/documents/insert"
+      post : "/v1/projects/{project}/database/collections/{collection}/documents/insert"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -740,7 +732,7 @@ service Tigris {
   // Inserts the documents or replaces the existing documents in the collections.
   rpc Replace(ReplaceRequest) returns (ReplaceResponse) {
     option (google.api.http) = {
-      put : "/v1/projects/{project}/collections/{collection}/documents/replace"
+      put : "/v1/projects/{project}/database/collections/{collection}/documents/replace"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -751,7 +743,7 @@ service Tigris {
   // Delete a range of documents in the collection using the condition provided in the filter.
   rpc Delete(DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
-      delete : "/v1/projects/{project}/collections/{collection}/documents/delete"
+      delete : "/v1/projects/{project}/database/collections/{collection}/documents/delete"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -762,11 +754,11 @@ service Tigris {
   // Update a range of documents in the collection using the condition provided in the filter.
   rpc Update(UpdateRequest) returns (UpdateResponse) {
     option (google.api.http) = {
-      put : "/v1/projects/{project}/collections/{collection}/documents/update"
+      put : "/v1/projects/{project}/database/collections/{collection}/documents/update"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Update Documents"
+      summary: "Update Documents."
       tags: "Documents"
     };
   }
@@ -778,12 +770,8 @@ service Tigris {
   // of the Read API <a href="https://docs.tigrisdata.com/overview/query" title="here">here</a>.
   rpc Read(ReadRequest) returns (stream ReadResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/collections/{collection}/documents/read"
+      post : "/v1/projects/{project}/database/collections/{collection}/documents/read"
       body : "*"
-      additional_bindings {
-        post : "/v1/projects/{project}/collections/{collection}/messages/read"
-        body : "*"
-      }
     };
     option(openapi.v3.operation) = {
       summary: "Read Documents"
@@ -797,12 +785,8 @@ service Tigris {
   // You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
   rpc Search(SearchRequest) returns (stream SearchResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/collections/{collection}/documents/search"
+      post : "/v1/projects/{project}/database/collections/{collection}/documents/search"
       body : "*"
-      additional_bindings {
-        post : "/v1/projects/{project}/collections/{collection}/messages/search"
-        body : "*"
-      }
     };
     option(openapi.v3.operation) = {
       summary: "Search Documents."
@@ -816,7 +800,7 @@ service Tigris {
   //    <li> `MESSAGES`: Offers event streaming APIs.
   rpc CreateOrUpdateCollection(CreateOrUpdateCollectionRequest) returns (CreateOrUpdateCollectionResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/collections/{collection}/createOrUpdate"
+      post : "/v1/projects/{project}/database/collections/{collection}/createOrUpdate"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -824,14 +808,16 @@ service Tigris {
       tags: "Collections"
     };
   }
-  // Drop the collection inside this project. This API deletes all of the documents inside this collection and any metadata associated with it.
-  rpc DropCollection(DropCollectionRequest) returns (DropCollectionResponse) {
+  // Drops the collection inside this project. This API deletes all of the
+  // documents inside this collection and any metadata associated with it.
+  rpc DropCollection(DropCollectionRequest) returns
+      (DropCollectionResponse) {
     option (google.api.http) = {
-      delete : "/v1/projects/{project}/collections/{collection}/drop"
+      delete : "/v1/projects/{project}/database/collections/{collection}/drop"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Drop Collection"
+      summary: "Drops Collection"
       tags: "Collections"
     };
   }
@@ -848,7 +834,7 @@ service Tigris {
   // List all the collections present in the project passed in the request.
   rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/collections/list"
+      post : "/v1/projects/{project}/database/collections/list"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -871,32 +857,33 @@ service Tigris {
   // Delete Project deletes all the collections in this project along with all of the documents, and associated metadata for these collections.
   rpc DeleteProject(DeleteProjectRequest) returns (DeleteProjectResponse) {
     option (google.api.http) = {
-      delete : "/v1/projects/{project}/drop"
+      delete : "/v1/projects/{project}/delete"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Delete Project"
+      summary: "Delete Project and all resources under project"
       tags: "Projects"
     };
   }
 
   // This API returns information related to the project along with all the collections inside the project.
   // This can be used to retrieve the size of the project or to retrieve schemas and the size of all the collections present in this project.
-  rpc DescribeProject(DescribeProjectRequest) returns (DescribeProjectResponse) {
+  rpc DescribeDatabase(DescribeDatabaseRequest) returns
+      (DescribeDatabaseResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/describe"
+      post : "/v1/projects/{project}/database/describe"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Describe Project"
-      tags: "Projects"
+      summary: "Describe database"
+      tags: "Databases"
     };
   }
 
   // Returns the information related to the collection. This can be used to retrieve the schema or size of the collection.
   rpc DescribeCollection(DescribeCollectionRequest) returns (DescribeCollectionResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/collections/{collection}/describe"
+      post : "/v1/projects/{project}/database/collections/{collection}/describe"
       body : "*"
     };
     option(openapi.v3.operation) = {

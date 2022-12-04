@@ -74,7 +74,7 @@ message CreateApplicationRequest {
   // A human readable app description
   string description = 2;
   // Project name
-  optional string project = 3;
+   string project = 3;
 }
 
 // CreateApplication returns created application
@@ -117,14 +117,14 @@ message Application {
   int64 updated_at = 7;
   // Updated by
   string updated_by = 8;
-  // Project(s) it belongs to (for backward compatibility - multiple projects)
-  repeated string projects = 9;
+  // Project it belongs to
+  string project = 9;
 }
 
 // Request listing of all the application those are visible to requesting actor
 message ListApplicationsRequest {
   // Project name filter
-  optional string project = 1;
+  string project = 1;
 }
 
 // ListApplication returns one or more visible application to user
