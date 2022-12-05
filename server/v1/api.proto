@@ -458,8 +458,8 @@ message CreateProjectResponse {
 }
 
 message DeleteProjectRequest {
-  // Delete Project with this name. **Note**: Deletes all resources under
-  // this project. Use with caution.
+  // Delete Project with this name.
+  // <p></p>**Note**: Deletes all resources under this project. Use with caution.
   string project = 1;
 }
 
@@ -467,6 +467,36 @@ message DeleteProjectResponse {
   // A detailed response message.
   string message = 1;
   // An enum with value set as "dropped".
+  string status = 2;
+}
+
+message CreateBranchRequest {
+  // Create a database branch in this project
+  string project = 1;
+  // Name of the database branch to be created.
+  // <p></p>**Note**: `main` is a reserved branch name for primary database and is automatically created with CreateProject
+  string branch = 2;
+}
+
+message CreateBranchResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "created".
+  string status = 2;
+}
+
+message DeleteBranchRequest {
+  // Delete a database branch in this project
+  string project = 1;
+  // Name of the database branch to delete.
+  // <p></p>**Note**: `main` branch cannot be deleted, use DeleteProject instead
+  string branch = 2;
+}
+
+message DeleteBranchResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "deleted".
   string status = 2;
 }
 
@@ -867,7 +897,7 @@ service Tigris {
   }
 
   // This API returns information related to the project along with all the collections inside the project.
-  // This can be used to retrieve the size of the project or to retrieve schemas and the size of all the collections present in this project.
+  // This can be used to retrieve the size of the project or to retrieve schemas, branches and the size of all the collections present in this project.
   rpc DescribeDatabase(DescribeDatabaseRequest) returns
       (DescribeDatabaseResponse) {
     option (google.api.http) = {
@@ -876,6 +906,31 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Describe database"
+      tags: "Databases"
+    };
+  }
+
+  // Creates a new database branch, if not already existing.
+  rpc CreateBranch(CreateBranchRequest) returns (CreateBranchResponse) {
+    option(google.api.http) = {
+      post : "/v1/projects/{project}/database/branches/{branch}/create"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Create a database branch"
+      tags: "Databases"
+    };
+  }
+
+  // Deletes a database branch, if exists.
+  // Throws 400 Bad Request if "main" branch is being deleted
+  rpc DeleteBranch(DeleteBranchRequest) returns (DeleteBranchResponse) {
+    option(google.api.http) = {
+      delete : "/v1/projects/{project}/database/branches/{branch}/delete"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Delete a database branch"
       tags: "Databases"
     };
   }

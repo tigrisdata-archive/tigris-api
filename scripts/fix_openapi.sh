@@ -76,6 +76,11 @@ main() {
 		yq_del_project_coll $i
 	done
 
+	for i in CreateBranchRequest DeleteBranchRequest; do
+
+		yq_del_project_branch $i
+	done
+
 	yq_streaming_response ReadResponse "collections/{collection}/documents/read"
 	yq_streaming_response SearchResponse "collections/{collection}/documents/search"
 
@@ -112,6 +117,12 @@ yq_fix_timestamp() {
 yq_del_project_coll() {
 	yq_cmd "del(.components.schemas.$1.properties.project)"
 	yq_cmd "del(.components.schemas.$1.properties.collection)"
+}
+
+# Delete project and branch fields from request body
+yq_del_project_branch() {
+	yq_cmd "del(.components.schemas.$1.properties.project)"
+	yq_cmd "del(.components.schemas.$1.properties.branch)"
 }
 
 yq_del_service_tags() {
