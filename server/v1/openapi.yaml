@@ -603,6 +603,86 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/branches/{branch}/create:
+        post:
+            tags:
+                - Databases
+            summary: Create a database branch
+            description: Creates a new database branch, if not already existing.
+            operationId: Tigris_CreateBranch
+            parameters:
+                - name: project
+                  in: path
+                  description: Create a database branch in this project
+                  required: true
+                  schema:
+                    type: string
+                - name: branch
+                  in: path
+                  description: 'Name of the database branch to be created. <p></p>**Note**: `main` is a reserved branch name for primary database and is automatically created with CreateProject'
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateBranchRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateBranchResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/branches/{branch}/delete:
+        delete:
+            tags:
+                - Databases
+            summary: Delete a database branch
+            description: |-
+                Deletes a database branch, if exists.
+                 Throws 400 Bad Request if "main" branch is being deleted
+            operationId: Tigris_DeleteBranch
+            parameters:
+                - name: project
+                  in: path
+                  description: Delete a database branch in this project
+                  required: true
+                  schema:
+                    type: string
+                - name: branch
+                  in: path
+                  description: 'Name of the database branch to delete. <p></p>**Note**: `main` branch cannot be deleted, use DeleteProject instead'
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteBranchRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteBranchResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/database/collections/list:
         post:
             tags:
@@ -1014,7 +1094,7 @@ paths:
             summary: Describe database
             description: |-
                 This API returns information related to the project along with all the collections inside the project.
-                 This can be used to retrieve the size of the project or to retrieve schemas and the size of all the collections present in this project.
+                 This can be used to retrieve the size of the project or to retrieve schemas, branches and the size of all the collections present in this project.
             operationId: Tigris_DescribeDatabase
             parameters:
                 - name: project
@@ -1157,7 +1237,7 @@ paths:
             parameters:
                 - name: project
                   in: path
-                  description: 'Delete Project with this name. **Note**: Deletes all resources under this project. Use with caution.'
+                  description: 'Delete Project with this name. <p></p>**Note**: Deletes all resources under this project. Use with caution.'
                   required: true
                   schema:
                     type: string
@@ -1304,6 +1384,18 @@ components:
                 created_application:
                     $ref: '#/components/schemas/Application'
             description: CreateApplication returns created application
+        CreateBranchRequest:
+            type: object
+            properties: {}
+        CreateBranchResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "created".
         CreateNamespaceRequest:
             type: object
             properties:
@@ -1387,6 +1479,18 @@ components:
                     type: string
                     description: application id
             description: Request deletion of an application
+        DeleteBranchRequest:
+            type: object
+            properties: {}
+        DeleteBranchResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "deleted".
         DeleteProjectRequest:
             type: object
             properties: {}
