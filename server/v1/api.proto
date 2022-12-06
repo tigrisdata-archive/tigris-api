@@ -592,7 +592,7 @@ message ProjectInfo {
   // Project name.
   string project = 1;
 
-  // Metadata about the database.
+  // Metadata about the Project.
   ProjectMetadata metadata = 2;
 }
 
@@ -659,7 +659,7 @@ message DescribeCollectionRequest {
 // Description of the collection includes schema details as well.
 message DescribeDatabaseResponse {
   // Metadata about the database.
-  ProjectMetadata metadata = 1;
+  DatabaseMetadata metadata = 1;
 
   // A detailed description about all the collections.
   // The description returns collection metadata and the schema.
@@ -701,8 +701,10 @@ message CollectionDescription {
   // Collection size in bytes
   int64 size = 4;
 }
-
 message ProjectMetadata {
+}
+
+message DatabaseMetadata {
 }
 
 message CollectionMetadata {
