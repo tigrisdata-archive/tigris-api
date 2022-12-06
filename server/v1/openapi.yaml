@@ -1465,6 +1465,9 @@ components:
                     type: number
                     format: double
             description: Represents the data point in timeseries.
+        DatabaseMetadata:
+            type: object
+            properties: {}
         DeleteApplicationResponse:
             type: object
             properties:
@@ -1583,7 +1586,7 @@ components:
             type: object
             properties:
                 metadata:
-                    $ref: '#/components/schemas/ProjectMetadata'
+                    $ref: '#/components/schemas/DatabaseMetadata'
                 collections:
                     type: array
                     items:
