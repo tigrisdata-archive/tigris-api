@@ -49,6 +49,7 @@ main() {
 		yq_fix_object $i filter
 	done
 
+	yq_fix_object ImportRequest documents.items
 	yq_fix_object InsertRequest documents.items
 	yq_fix_object ReplaceRequest documents.items
 	yq_fix_object UpdateRequest fields
@@ -69,7 +70,7 @@ main() {
 
 	for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
 		CreateOrUpdateCollectionRequest DropCollectionRequest \
-		CreateProjectRequest DeleteProjectRequest \
+		CreateProjectRequest DeleteProjectRequest ImportRequest \
 		ListProjectsRequest ListCollectionsRequest SearchRequest \
 		BeginTransactionRequest CommitTransactionRequest \
 		RollbackTransactionRequest CreateApplicationRequest \
@@ -95,7 +96,6 @@ fix_bytes() {
 	# According to the OpenAPI spec format should be "byte",
 	# but protoc-gen-openapi generates it as "bytes".
 	# We fix it here
-	# This is done last to also copy input file to output
 	sed -i'' -e 's/format: bytes/format: byte/g' "$IN_FILE"
 }
 
@@ -189,4 +189,5 @@ yq_update_description() {
 yq_fix_access_token_request() {
   yq_cmd ".paths./v1/auth/token.post.requestBody.content.x-www-form-urlencoded = .paths./v1/auth/token.post.requestBody.content.application/json | del(.paths./v1/auth/token.post.requestBody.content.application/json)"
 }
+
 main
