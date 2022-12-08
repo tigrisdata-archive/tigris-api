@@ -710,6 +710,102 @@ message DatabaseMetadata {
 message CollectionMetadata {
 }
 
+
+// Request creation of user application
+message CreateApplicationRequest {
+  // A human readable app name
+  string name = 1;
+  // A human readable app description
+  string description = 2;
+  // Project name
+  string project = 3;
+}
+
+// CreateApplication returns created application
+message CreateApplicationResponse {
+  // created app object
+  Application created_application = 1;
+}
+
+// Request creation of user application
+message UpdateApplicationRequest {
+  // application id - this is not allowed to update
+  string id = 1;
+  // project name -  this is not allowed to update
+  string project = 2;
+  // A new human readable app name
+  string name = 3;
+  // A new human readable app description
+  string description = 4;
+}
+
+// CreateApplication returns created application
+message UpdateApplicationResponse {
+  // updated application object
+  Application updated_application = 1;
+}
+
+// An user application
+message Application {
+  // Generated client id
+  string id = 1;
+  // A human readable app name
+  string name = 2;
+  // A human readable app description
+  string description = 3;
+  // Generated app secret
+  string secret = 4;
+  // Created at
+  int64 created_at = 5;
+  // Created by
+  string created_by = 6;
+  // Updated at
+  int64 updated_at = 7;
+  // Updated by
+  string updated_by = 8;
+  // Project it belongs to
+  string project = 9;
+}
+
+// Request listing of all the application those are visible to requesting actor
+message ListApplicationsRequest {
+  // Project name filter
+  string project = 1;
+}
+
+// ListApplication returns one or more visible application to user
+message ListApplicationsResponse {
+  repeated Application applications = 1;
+}
+
+// Request deletion of an application
+message DeleteApplicationsRequest {
+  // application id
+  string id = 1;
+  // project name
+  string project = 2;
+}
+
+// DeleteApplication returns the flag to convey if application was deleted
+message DeleteApplicationResponse {
+  // status flag for delete operation
+  bool deleted = 1;
+}
+
+// Request rotation of an application secret
+message RotateApplicationSecretRequest {
+  // application id
+  string id = 1;
+  // project name
+  string project = 2;
+}
+
+// RotateApplicationRequest returns the new application with rotated secret
+message RotateApplicationSecretResponse{
+  // A new Application with rotated secret.
+  Application application = 1;
+}
+
 service Tigris {
   // Starts a new transaction and returns a transactional object. All reads/writes performed
   // within a transaction will run with serializable isolation.
@@ -946,6 +1042,71 @@ service Tigris {
     option(openapi.v3.operation) = {
       summary: "Describe Collection"
       tags: "Collections"
+    };
+  }
+
+  // Create an application.
+  rpc CreateApplication(CreateApplicationRequest) returns
+      (CreateApplicationResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/applications/create"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Creates the Application"
+      tags: "Management"
+    };
+  }
+
+  // Update an application.
+  rpc UpdateApplication(UpdateApplicationRequest) returns
+      (UpdateApplicationResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/applications/update"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Updates the Application"
+      tags: "Management"
+    };
+  }
+
+  // Delete an application.
+  rpc DeleteApplication(DeleteApplicationsRequest) returns
+      (DeleteApplicationResponse) {
+    option (google.api.http) = {
+      delete : "/v1/projects/{project}/applications/delete"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Deletes the Application"
+      tags: "Management"
+    };
+  }
+
+  // Lists all application visible to requesting actor.
+  rpc ListApplications(ListApplicationsRequest) returns
+      (ListApplicationsResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/applications/list"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "List Applications"
+      tags: "Management"
+    };
+  }
+
+  // Endpoint is used to rotate the secret for the application.
+  rpc RotateApplicationSecret(RotateApplicationSecretRequest) returns
+      (RotateApplicationSecretResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/applications/rotate"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Rotates the Application Secret"
+      tags: "Management"
     };
   }
 }

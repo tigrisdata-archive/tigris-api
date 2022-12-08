@@ -71,8 +71,10 @@ main() {
 		CreateOrUpdateCollectionRequest DropCollectionRequest \
 		CreateProjectRequest DeleteProjectRequest \
 		ListProjectsRequest ListCollectionsRequest SearchRequest \
-		BeginTransactionRequest CommitTransactionRequest RollbackTransactionRequest; do
-
+		BeginTransactionRequest CommitTransactionRequest \
+		RollbackTransactionRequest CreateApplicationRequest \
+		UpdateApplicationRequest ListApplicationsRequest \
+		DeleteApplicationsRequest; do
 		yq_del_project_coll $i
 	done
 
