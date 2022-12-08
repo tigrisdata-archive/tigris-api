@@ -64,136 +64,6 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/Status'
             security: []
-    /v1/management/applications/create:
-        post:
-            tags:
-                - Management
-            summary: Creates the Application
-            description: Create an application.
-            operationId: Management_CreateApplication
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateApplicationRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateApplicationResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/management/applications/delete:
-        delete:
-            tags:
-                - Management
-            summary: Deletes the Application
-            description: Delete an application.
-            operationId: Management_DeleteApplication
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/DeleteApplicationsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DeleteApplicationResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/management/applications/list:
-        post:
-            tags:
-                - Management
-            summary: List Applications
-            description: Lists all application visible to requesting actor.
-            operationId: Management_ListApplications
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/ListApplicationsRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListApplicationsResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/management/applications/rotate:
-        post:
-            tags:
-                - Management
-            summary: Rotates the Application Secret
-            description: Endpoint is used to rotate the secret for the application.
-            operationId: Management_RotateApplicationSecret
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/RotateApplicationSecretRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/RotateApplicationSecretResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/management/applications/update:
-        post:
-            tags:
-                - Management
-            summary: Updates the Application
-            description: Update an application.
-            operationId: Management_UpdateApplication
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UpdateApplicationRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UpdateApplicationResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /v1/management/namespace/metadata/{metadataKey}/get:
         post:
             tags:
@@ -564,6 +434,171 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListProjectsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/applications/create:
+        post:
+            tags:
+                - Management
+            summary: Creates the Application
+            description: Create an application.
+            operationId: Tigris_CreateApplication
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/applications/delete:
+        delete:
+            tags:
+                - Management
+            summary: Deletes the Application
+            description: Delete an application.
+            operationId: Tigris_DeleteApplication
+            parameters:
+                - name: project
+                  in: path
+                  description: project name
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteApplicationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteApplicationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/applications/list:
+        post:
+            tags:
+                - Management
+            summary: List Applications
+            description: Lists all application visible to requesting actor.
+            operationId: Tigris_ListApplications
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name filter
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListApplicationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListApplicationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/applications/rotate:
+        post:
+            tags:
+                - Management
+            summary: Rotates the Application Secret
+            description: Endpoint is used to rotate the secret for the application.
+            operationId: Tigris_RotateApplicationSecret
+            parameters:
+                - name: project
+                  in: path
+                  description: project name
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RotateApplicationSecretRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RotateApplicationSecretResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/applications/update:
+        post:
+            tags:
+                - Management
+            summary: Updates the Application
+            description: Update an application.
+            operationId: Tigris_UpdateApplication
+            parameters:
+                - name: project
+                  in: path
+                  description: project name -  this is not allowed to update
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateApplicationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateApplicationResponse'
                 default:
                     description: Default error response
                     content:
@@ -1374,9 +1409,6 @@ components:
                 description:
                     type: string
                     description: A human readable app description
-                project:
-                    type: string
-                    description: Project name
             description: Request creation of user application
         CreateApplicationResponse:
             type: object
@@ -1852,10 +1884,7 @@ components:
             description: Insertion of user metadata response
         ListApplicationsRequest:
             type: object
-            properties:
-                project:
-                    type: string
-                    description: Project name filter
+            properties: {}
             description: Request listing of all the application those are visible to requesting actor
         ListApplicationsResponse:
             type: object
@@ -2200,6 +2229,9 @@ components:
                 id:
                     type: string
                     description: application id
+                project:
+                    type: string
+                    description: project name
             description: Request rotation of an application secret
         RotateApplicationSecretResponse:
             type: object
@@ -2327,7 +2359,7 @@ components:
             properties:
                 id:
                     type: string
-                    description: application id
+                    description: application id - this is not allowed to update
                 name:
                     type: string
                     description: A new human readable app name
