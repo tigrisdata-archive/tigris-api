@@ -71,6 +71,9 @@ option (openapi.v3.document) = {
   }, {
     name: "Observability"
     description: "The Observability section has APIs that provides full visibility into the health, metrics, and monitoring of the Server."
+  }, {
+    name: "Cache"
+    description: "The cache section provide APIs that can be used to perform cache operations."
   }]
   components: {
     security_schemes: {
