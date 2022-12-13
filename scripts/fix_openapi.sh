@@ -90,6 +90,14 @@ main() {
 	yq_error_response
 
 	yq_fix_access_token_request
+
+	for i in CreateCacheRequest  DeleteCacheRequest KeysRequest ; do
+		yq_del_project_cache $i
+	done
+
+	for i in SetRequest GetRequest DelRequest; do
+		yq_del_project_cache_key $i
+	done
 }
 
 fix_bytes() {
@@ -137,6 +145,7 @@ yq_del_service_tags() {
 	yq_cmd "del(.tags[] | select(.name == \"Auth\"))"
 	yq_cmd "del(.tags[] | select(.name == \"Management\" and .description != \"*\"))"
 	yq_cmd "del(.tags[] | select(.name == \"Observability\" and .description != \"*\"))"
+	yq_cmd "del(.tags[] | select(.name == \"Cache\" and .description != \"*\"))"
 }
 
 # By default GRPC gateway returns streaming response and error wrapped in a new
@@ -188,6 +197,18 @@ yq_update_description() {
 # get-access-token request
 yq_fix_access_token_request() {
   yq_cmd ".paths./v1/auth/token.post.requestBody.content.x-www-form-urlencoded = .paths./v1/auth/token.post.requestBody.content.application/json | del(.paths./v1/auth/token.post.requestBody.content.application/json)"
+}
+
+# Delete project and cache name from request body
+yq_del_project_cache() {
+	yq_cmd "del(.components.schemas.$1.properties.project)"
+	yq_cmd "del(.components.schemas.$1.properties.name)"
+}
+
+# Delete project, cache name and cache key name from request body
+yq_del_project_cache_key() {
+  yq_del_project_cache "$1"
+	yq_cmd "del(.components.schemas.$1.properties.key)"
 }
 
 main

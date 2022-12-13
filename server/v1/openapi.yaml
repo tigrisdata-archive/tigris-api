@@ -605,6 +605,252 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/caches/{name}/create:
+        post:
+            tags:
+                - Cache
+            summary: Creates the cache
+            operationId: Cache_CreateCache
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: path
+                  description: cache name
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateCacheRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateCacheResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/caches/{name}/delete:
+        delete:
+            tags:
+                - Cache
+            summary: Creates the cache
+            operationId: Cache_DeleteCache
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: path
+                  description: cache name
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteCacheRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteCacheResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/caches/{name}/keys:
+        post:
+            tags:
+                - Cache
+            summary: Lists all the key for this cache
+            operationId: Cache_Keys
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: path
+                  description: cache name
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/KeysRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/KeysResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/caches/{name}/{key}/delete:
+        delete:
+            tags:
+                - Cache
+            summary: Deletes an entry from cache
+            operationId: Cache_Del
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: path
+                  description: cache name
+                  required: true
+                  schema:
+                    type: string
+                - name: key
+                  in: path
+                  description: cache key
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DelRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DelResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/caches/{name}/{key}/get:
+        post:
+            tags:
+                - Cache
+            summary: Reads an entry from cache
+            operationId: Cache_Get
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: path
+                  description: cache name
+                  required: true
+                  schema:
+                    type: string
+                - name: key
+                  in: path
+                  description: cache key
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/caches/{name}/{key}/set:
+        post:
+            tags:
+                - Cache
+            summary: Sets an entry in the cache
+            operationId: Cache_Set
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: path
+                  description: cache name
+                  required: true
+                  schema:
+                    type: string
+                - name: key
+                  in: path
+                  description: cache key
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SetRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SetResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/create:
         post:
             tags:
@@ -1473,6 +1719,26 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created".
+        CreateCacheOptions:
+            type: object
+            properties:
+                ttl_ms:
+                    type: integer
+                    format: uint64
+        CreateCacheRequest:
+            type: object
+            properties:
+                options:
+                    $ref: '#/components/schemas/CreateCacheOptions'
+        CreateCacheResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "created"
         CreateNamespaceRequest:
             type: object
             properties:
@@ -1545,6 +1811,18 @@ components:
         DatabaseMetadata:
             type: object
             properties: {}
+        DelRequest:
+            type: object
+            properties: {}
+        DelResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "deleted" or "not_found"
         DeleteApplicationResponse:
             type: object
             properties:
@@ -1571,6 +1849,18 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "deleted".
+        DeleteCacheRequest:
+            type: object
+            properties: {}
+        DeleteCacheResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "deleted"
         DeleteProjectRequest:
             type: object
             properties: {}
@@ -1827,6 +2117,20 @@ components:
                 value:
                     type: object
             description: Namespace metadata response
+        GetRequest:
+            type: object
+            properties: {}
+        GetResponse:
+            type: object
+            properties:
+                value:
+                    type: string
+                    description: value
+                    format: byte
+                expires_in_ms:
+                    type: integer
+                    description: expiration ms
+                    format: uint64
         GetUserMetadataRequest:
             type: object
             properties:
@@ -1973,6 +2277,20 @@ components:
                 value:
                     type: object
             description: Insertion of user metadata response
+        KeysRequest:
+            type: object
+            properties:
+                pattern:
+                    type: string
+                    description: optional key pattern
+        KeysResponse:
+            type: object
+            properties:
+                keys:
+                    type: array
+                    items:
+                        type: string
+                    description: all the keys
         ListApplicationsRequest:
             type: object
             properties: {}
@@ -2431,6 +2749,43 @@ components:
                 meta:
                     $ref: '#/components/schemas/SearchMetadata'
             description: Response struct for search
+        SetRequest:
+            type: object
+            properties:
+                value:
+                    type: string
+                    description: free form byte[] value
+                    format: byte
+                ex:
+                    type: integer
+                    description: optional - ttl specific to this key in second
+                    format: uint64
+                px:
+                    type: integer
+                    description: optional - ttl specific to this key in millisecond
+                    format: uint64
+                nx:
+                    type: boolean
+                    description: set only if the key doesn't exist
+                xx:
+                    type: boolean
+                    description: set only if the key exist
+                get:
+                    type: boolean
+                    description: get the old value as part of response
+        SetResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "set" or "updated"
+                old_value:
+                    type: string
+                    description: Optionally the old value if requested in SetRequest
+                    format: byte
         TransactionCtx:
             type: object
             properties:
@@ -2574,6 +2929,8 @@ security:
 tags:
     - name: Authentication
       description: 'The auth section of API provides open authorization (OAuth 2.0) APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.'
+    - name: Cache
+      description: The cache section provide APIs that can be used to perform cache operations.
     - name: Collections
       description: The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents.
     - name: Databases
