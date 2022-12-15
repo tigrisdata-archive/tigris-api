@@ -49,6 +49,7 @@ main() {
 		yq_fix_object $i filter
 	done
 
+	yq_fix_object ImportRequest documents.items
 	yq_fix_object InsertRequest documents.items
 	yq_fix_object ReplaceRequest documents.items
 	yq_fix_object UpdateRequest fields
@@ -69,11 +70,18 @@ main() {
 
 	for i in InsertRequest ReplaceRequest UpdateRequest DeleteRequest ReadRequest \
 		CreateOrUpdateCollectionRequest DropCollectionRequest \
-		CreateProjectRequest DeleteProjectRequest \
+		CreateProjectRequest DeleteProjectRequest ImportRequest \
 		ListProjectsRequest ListCollectionsRequest SearchRequest \
-		BeginTransactionRequest CommitTransactionRequest RollbackTransactionRequest; do
-
+		BeginTransactionRequest CommitTransactionRequest \
+		RollbackTransactionRequest CreateApplicationRequest \
+		UpdateApplicationRequest ListApplicationsRequest \
+		DeleteApplicationsRequest; do
 		yq_del_project_coll $i
+	done
+
+	for i in CreateBranchRequest DeleteBranchRequest; do
+
+		yq_del_project_branch $i
 	done
 
 	yq_streaming_response ReadResponse "collections/{collection}/documents/read"
@@ -82,13 +90,20 @@ main() {
 	yq_error_response
 
 	yq_fix_access_token_request
+
+	for i in CreateCacheRequest  DeleteCacheRequest KeysRequest ; do
+		yq_del_project_cache $i
+	done
+
+	for i in SetRequest GetRequest DelRequest; do
+		yq_del_project_cache_key $i
+	done
 }
 
 fix_bytes() {
 	# According to the OpenAPI spec format should be "byte",
 	# but protoc-gen-openapi generates it as "bytes".
 	# We fix it here
-	# This is done last to also copy input file to output
 	sed -i'' -e 's/format: bytes/format: byte/g' "$IN_FILE"
 }
 
@@ -114,6 +129,12 @@ yq_del_project_coll() {
 	yq_cmd "del(.components.schemas.$1.properties.collection)"
 }
 
+# Delete project and branch fields from request body
+yq_del_project_branch() {
+	yq_cmd "del(.components.schemas.$1.properties.project)"
+	yq_cmd "del(.components.schemas.$1.properties.branch)"
+}
+
 yq_del_service_tags() {
 	yq_cmd "del(.paths[] | .get.tags[0])"
 	yq_cmd "del(.paths[] | .post.tags[0])"
@@ -124,6 +145,7 @@ yq_del_service_tags() {
 	yq_cmd "del(.tags[] | select(.name == \"Auth\"))"
 	yq_cmd "del(.tags[] | select(.name == \"Management\" and .description != \"*\"))"
 	yq_cmd "del(.tags[] | select(.name == \"Observability\" and .description != \"*\"))"
+	yq_cmd "del(.tags[] | select(.name == \"Cache\" and .description != \"*\"))"
 }
 
 # By default GRPC gateway returns streaming response and error wrapped in a new
@@ -145,7 +167,7 @@ yq_streaming_response() {
 	.properties.error.$ref="#/components/schemas/Error"
 	)'
 
-	yq_cmd '.paths."/v1/projects/{project}/'"$2"'".post.responses.200.content."application/json".schema.$ref="#/components/schemas/Streaming'"$1"'"'
+	yq_cmd '.paths."/v1/projects/{project}/database/'"$2"'".post.responses.200.content."application/json".schema.$ref="#/components/schemas/Streaming'"$1"'"'
 }
 
 # Rewrite default response Status to look like:
@@ -176,4 +198,17 @@ yq_update_description() {
 yq_fix_access_token_request() {
   yq_cmd ".paths./v1/auth/token.post.requestBody.content.x-www-form-urlencoded = .paths./v1/auth/token.post.requestBody.content.application/json | del(.paths./v1/auth/token.post.requestBody.content.application/json)"
 }
+
+# Delete project and cache name from request body
+yq_del_project_cache() {
+	yq_cmd "del(.components.schemas.$1.properties.project)"
+	yq_cmd "del(.components.schemas.$1.properties.name)"
+}
+
+# Delete project, cache name and cache key name from request body
+yq_del_project_cache_key() {
+  yq_del_project_cache "$1"
+	yq_cmd "del(.components.schemas.$1.properties.key)"
+}
+
 main
