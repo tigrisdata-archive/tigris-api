@@ -752,8 +752,8 @@ message CollectionMetadata {
 }
 
 
-// Request creation of user application
-message CreateApplicationRequest {
+// Request creation of user application keys
+message CreateAppKeyRequest {
   // A human readable app name
   string name = 1;
   // A human readable app description
@@ -762,14 +762,14 @@ message CreateApplicationRequest {
   string project = 3;
 }
 
-// CreateApplication returns created application
-message CreateApplicationResponse {
+// CreateApplication returns created application keys
+message CreateAppKeyResponse {
   // created app object
   Application created_application = 1;
 }
 
-// Request creation of user application
-message UpdateApplicationRequest {
+// To update the description of the application key
+message UpdateAppKeyRequest {
   // application id - this is not allowed to update
   string id = 1;
   // project name -  this is not allowed to update
@@ -780,8 +780,8 @@ message UpdateApplicationRequest {
   string description = 4;
 }
 
-// CreateApplication returns created application
-message UpdateApplicationResponse {
+// Returns response for updating the application key description
+message UpdateAppKeyResponse {
   // updated application object
   Application updated_application = 1;
 }
@@ -808,41 +808,41 @@ message Application {
   string project = 9;
 }
 
-// Request listing of all the application those are visible to requesting actor
-message ListApplicationsRequest {
+// Request listing of all the application keys those are visible to requesting actor
+message ListAppKeysRequest {
   // Project name filter
   string project = 1;
 }
 
 // ListApplication returns one or more visible application to user
-message ListApplicationsResponse {
+message ListAppKeysResponse {
   repeated Application applications = 1;
 }
 
-// Request deletion of an application
-message DeleteApplicationsRequest {
+// Request deletion of an application key
+message DeleteAppKeyRequest {
   // application id
   string id = 1;
   // project name
   string project = 2;
 }
 
-// DeleteApplication returns the flag to convey if application was deleted
-message DeleteApplicationResponse {
+// AppKeys returns the flag to convey if application key was deleted
+message DeleteAppKeyResponse {
   // status flag for delete operation
   bool deleted = 1;
 }
 
-// Request rotation of an application secret
-message RotateApplicationSecretRequest {
+// Request rotation of an application key secret
+message RotateAppKeyRequest {
   // application id
   string id = 1;
   // project name
   string project = 2;
 }
 
-// RotateApplicationRequest returns the new application with rotated secret
-message RotateApplicationSecretResponse{
+// RotateAppKeyResponse returns the new application key with rotated secret
+message RotateAppKeyResponse{
   // A new Application with rotated secret.
   Application application = 1;
 }
@@ -1101,66 +1101,66 @@ service Tigris {
     };
   }
 
-  // Create an application.
-  rpc CreateApplication(CreateApplicationRequest) returns
-      (CreateApplicationResponse) {
+  // Create an application key.
+  rpc CreateAppKey(CreateAppKeyRequest) returns
+      (CreateAppKeyResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/applications/create"
+      post : "/v1/projects/{project}/apps/keys/create"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Creates the Application"
+      summary: "Creates the application keys"
       tags: "Management"
     };
   }
 
-  // Update an application.
-  rpc UpdateApplication(UpdateApplicationRequest) returns
-      (UpdateApplicationResponse) {
+  // Update the description of an application key.
+  rpc UpdateAppKey(UpdateAppKeyRequest) returns
+      (UpdateAppKeyResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/applications/update"
+      post : "/v1/projects/{project}/apps/keys/update"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Updates the Application"
+      summary: "Updates the description of the application key"
       tags: "Management"
     };
   }
 
-  // Delete an application.
-  rpc DeleteApplication(DeleteApplicationsRequest) returns
-      (DeleteApplicationResponse) {
+  // Delete an application key.
+  rpc DeleteAppKey(DeleteAppKeyRequest) returns
+      (DeleteAppKeyResponse) {
     option (google.api.http) = {
-      delete : "/v1/projects/{project}/applications/delete"
+      delete : "/v1/projects/{project}/apps/keys/delete"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Deletes the Application"
+      summary: "Deletes the application key"
       tags: "Management"
     };
   }
 
-  // Lists all application visible to requesting actor.
-  rpc ListApplications(ListApplicationsRequest) returns
-      (ListApplicationsResponse) {
+  // Lists all application keys visible to requesting actor.
+  rpc ListAppKeys(ListAppKeysRequest) returns
+      (ListAppKeysResponse) {
     option (google.api.http) = {
-      get : "/v1/projects/{project}/applications"
+      get : "/v1/projects/{project}/apps/keys"
     };
     option(openapi.v3.operation) = {
-      summary: "List Applications"
+      summary: "List all the application keys"
       tags: "Management"
     };
   }
 
   // Endpoint is used to rotate the secret for the application.
-  rpc RotateApplicationSecret(RotateApplicationSecretRequest) returns
-      (RotateApplicationSecretResponse) {
+  rpc RotateAppKeySecret(RotateAppKeyRequest) returns
+      (RotateAppKeyResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/applications/rotate"
+      post : "/v1/projects/{project}/apps/keys/rotate"
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Rotates the Application Secret"
+      summary: "Rotates the application secret"
       tags: "Management"
     };
   }
