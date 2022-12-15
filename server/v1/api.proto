@@ -1009,7 +1009,7 @@ service Tigris {
   // List returns all the projects.
   rpc ListProjects(ListProjectsRequest) returns (ListProjectsResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/list"
+      get : "/v1/projects"
     };
     option(openapi.v3.operation) = {
       summary: "List Projects"
@@ -1019,8 +1019,7 @@ service Tigris {
   // List all the collections present in the project passed in the request.
   rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/database/collections/list"
-      body : "*"
+      get : "/v1/projects/{project}/database/collections"
     };
     option(openapi.v3.operation) = {
       summary: "List Collections"
@@ -1145,8 +1144,7 @@ service Tigris {
   rpc ListApplications(ListApplicationsRequest) returns
       (ListApplicationsResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/applications/list"
-      body : "*"
+      get : "/v1/projects/{project}/applications"
     };
     option(openapi.v3.operation) = {
       summary: "List Applications"
