@@ -154,8 +154,7 @@ service Cache {
 
   rpc Get(GetRequest) returns (GetResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/caches/{name}/{key}/get"
-      body : "*"
+      get : "/v1/projects/{project}/caches/{name}/{key}/get"
     };
     option(openapi.v3.operation) = {
       summary: "Reads an entry from cache"
@@ -176,8 +175,7 @@ service Cache {
 
   rpc Keys(KeysRequest) returns (KeysResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/caches/{name}/keys"
-      body : "*"
+      get : "/v1/projects/{project}/caches/{name}/keys"
     };
     option(openapi.v3.operation) = {
       summary: "Lists all the key for this cache"
