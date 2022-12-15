@@ -75,7 +75,7 @@ main() {
 		BeginTransactionRequest CommitTransactionRequest \
 		RollbackTransactionRequest CreateAppKeyRequest \
 		UpdateAppKeyRequest ListAppKeysRequest \
-		DeleteAppKeysRequest; do
+		DeleteAppKeyRequest; do
 		yq_del_project_coll $i
 	done
 

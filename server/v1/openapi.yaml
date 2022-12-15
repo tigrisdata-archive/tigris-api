@@ -1815,9 +1815,6 @@ components:
                 id:
                     type: string
                     description: app_key id
-                project:
-                    type: string
-                    description: project name
             description: Request deletion of an app key
         DeleteAppKeyResponse:
             type: object
