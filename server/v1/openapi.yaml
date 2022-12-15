@@ -440,13 +440,13 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/applications:
+    /v1/projects/{project}/apps/keys:
         get:
             tags:
                 - Management
-            summary: List Applications
-            description: Lists all application visible to requesting actor.
-            operationId: Tigris_ListApplications
+            summary: List all the application keys
+            description: Lists all application keys visible to requesting actor.
+            operationId: Tigris_ListAppKeys
             parameters:
                 - name: project
                   in: path
@@ -460,20 +460,20 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ListApplicationsResponse'
+                                $ref: '#/components/schemas/ListAppKeysResponse'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/applications/create:
+    /v1/projects/{project}/apps/keys/create:
         post:
             tags:
                 - Management
-            summary: Creates the Application
-            description: Create an application.
-            operationId: Tigris_CreateApplication
+            summary: Creates the application keys
+            description: Create an application key.
+            operationId: Tigris_CreateAppKey
             parameters:
                 - name: project
                   in: path
@@ -485,7 +485,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/CreateApplicationRequest'
+                            $ref: '#/components/schemas/CreateAppKeyRequest'
                 required: true
             responses:
                 "200":
@@ -493,20 +493,20 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/CreateApplicationResponse'
+                                $ref: '#/components/schemas/CreateAppKeyResponse'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/applications/delete:
+    /v1/projects/{project}/apps/keys/delete:
         delete:
             tags:
                 - Management
-            summary: Deletes the Application
-            description: Delete an application.
-            operationId: Tigris_DeleteApplication
+            summary: Deletes the application key
+            description: Delete an application key.
+            operationId: Tigris_DeleteAppKey
             parameters:
                 - name: project
                   in: path
@@ -518,7 +518,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/DeleteApplicationsRequest'
+                            $ref: '#/components/schemas/DeleteAppKeyRequest'
                 required: true
             responses:
                 "200":
@@ -526,20 +526,20 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/DeleteApplicationResponse'
+                                $ref: '#/components/schemas/DeleteAppKeyResponse'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/applications/rotate:
+    /v1/projects/{project}/apps/keys/rotate:
         post:
             tags:
                 - Management
-            summary: Rotates the Application Secret
+            summary: Rotates the application secret
             description: Endpoint is used to rotate the secret for the application.
-            operationId: Tigris_RotateApplicationSecret
+            operationId: Tigris_RotateAppKeySecret
             parameters:
                 - name: project
                   in: path
@@ -551,7 +551,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/RotateApplicationSecretRequest'
+                            $ref: '#/components/schemas/RotateAppKeyRequest'
                 required: true
             responses:
                 "200":
@@ -559,20 +559,20 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/RotateApplicationSecretResponse'
+                                $ref: '#/components/schemas/RotateAppKeyResponse'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/applications/update:
+    /v1/projects/{project}/apps/keys/update:
         post:
             tags:
                 - Management
-            summary: Updates the Application
-            description: Update an application.
-            operationId: Tigris_UpdateApplication
+            summary: Updates the description of the application key
+            description: Update the description of an application key.
+            operationId: Tigris_UpdateAppKey
             parameters:
                 - name: project
                   in: path
@@ -584,7 +584,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/UpdateApplicationRequest'
+                            $ref: '#/components/schemas/UpdateAppKeyRequest'
                 required: true
             responses:
                 "200":
@@ -592,7 +592,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/UpdateApplicationResponse'
+                                $ref: '#/components/schemas/UpdateAppKeyResponse'
                 default:
                     description: Default error response
                     content:
@@ -1684,7 +1684,7 @@ components:
                 status:
                     type: string
                     description: Status of commit transaction operation.
-        CreateApplicationRequest:
+        CreateAppKeyRequest:
             type: object
             properties:
                 name:
@@ -1693,13 +1693,16 @@ components:
                 description:
                     type: string
                     description: A human readable app description
-            description: Request creation of user application
-        CreateApplicationResponse:
+                project:
+                    type: string
+                    description: Project name
+            description: Request creation of user application keys
+        CreateAppKeyResponse:
             type: object
             properties:
                 created_application:
                     $ref: '#/components/schemas/Application'
-            description: CreateApplication returns created application
+            description: CreateApplication returns created application keys
         CreateBranchRequest:
             type: object
             properties: {}
@@ -1816,20 +1819,23 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "deleted" or "not_found"
-        DeleteApplicationResponse:
-            type: object
-            properties:
-                deleted:
-                    type: boolean
-                    description: status flag for delete operation
-            description: DeleteApplication returns the flag to convey if application was deleted
-        DeleteApplicationsRequest:
+        DeleteAppKeyRequest:
             type: object
             properties:
                 id:
                     type: string
                     description: application id
-            description: Request deletion of an application
+                project:
+                    type: string
+                    description: project name
+            description: Request deletion of an application key
+        DeleteAppKeyResponse:
+            type: object
+            properties:
+                deleted:
+                    type: boolean
+                    description: status flag for delete operation
+            description: AppKeys returns the flag to convey if application key was deleted
         DeleteBranchRequest:
             type: object
             properties: {}
@@ -2284,7 +2290,7 @@ components:
                     items:
                         type: string
                     description: all the keys
-        ListApplicationsResponse:
+        ListAppKeysResponse:
             type: object
             properties:
                 applications:
@@ -2613,7 +2619,7 @@ components:
                     type: integer
                     format: int64
             description: Rollup function aggregates the slices of metrics returned by original query and lets you operate on the slices using aggregator and constructs the bigger slice of your choice of interval (specified in seconds).
-        RotateApplicationSecretRequest:
+        RotateAppKeyRequest:
             type: object
             properties:
                 id:
@@ -2622,13 +2628,13 @@ components:
                 project:
                     type: string
                     description: project name
-            description: Request rotation of an application secret
-        RotateApplicationSecretResponse:
+            description: Request rotation of an application key secret
+        RotateAppKeyResponse:
             type: object
             properties:
                 application:
                     $ref: '#/components/schemas/Application'
-            description: RotateApplicationRequest returns the new application with rotated secret
+            description: RotateAppKeyResponse returns the new application key with rotated secret
         SearchFacet:
             type: object
             properties:
@@ -2781,25 +2787,28 @@ components:
             type: object
             properties: {}
             description: Options that can be used to modify the transaction semantics.
-        UpdateApplicationRequest:
+        UpdateAppKeyRequest:
             type: object
             properties:
                 id:
                     type: string
                     description: application id - this is not allowed to update
+                project:
+                    type: string
+                    description: project name -  this is not allowed to update
                 name:
                     type: string
                     description: A new human readable app name
                 description:
                     type: string
                     description: A new human readable app description
-            description: Request creation of user application
-        UpdateApplicationResponse:
+            description: To update the description of the application key
+        UpdateAppKeyResponse:
             type: object
             properties:
                 updated_application:
                     $ref: '#/components/schemas/Application'
-            description: CreateApplication returns created application
+            description: Returns response for updating the application key description
         UpdateNamespaceMetadataRequest:
             type: object
             properties:
