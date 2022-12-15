@@ -1572,6 +1572,221 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/realtime/channels:
+        get:
+            tags:
+                - Realtime
+            summary: Get all channels for your application project
+            operationId: Realtime_GetRTChannels
+            parameters:
+                - name: project
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetRTChannelsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/realtime/channels/{channel}:
+        get:
+            tags:
+                - Realtime
+            summary: Get the details about a channel
+            operationId: Realtime_GetRTChannel
+            parameters:
+                - name: project
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: channel
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetRTChannelResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/realtime/channels/{channel}/messages:
+        get:
+            tags:
+                - Realtime
+            summary: Get all messages for a channel
+            operationId: Realtime_ReadMessages
+            parameters:
+                - name: project
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: channel
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: session_id
+                  in: query
+                  schema:
+                    type: string
+                - name: socket_id
+                  in: query
+                  schema:
+                    type: string
+                - name: event
+                  in: query
+                  schema:
+                    type: string
+                - name: start
+                  in: query
+                  schema:
+                    type: string
+                - name: end
+                  in: query
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ReadMessagesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Realtime
+            summary: push messages to a single channel
+            operationId: Realtime_Messages
+            parameters:
+                - name: project
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: channel
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/MessagesRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MessagesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/realtime/channels/{channel}/presence:
+        get:
+            tags:
+                - Realtime
+            summary: Presence about the channel
+            operationId: Realtime_Presence
+            parameters:
+                - name: project
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: channel
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PresenceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/realtime/channels/{channel}/subscriptions:
+        get:
+            tags:
+                - Realtime
+            summary: Get the subscriptions details about a channel
+            operationId: Realtime_ListSubscriptions
+            parameters:
+                - name: project
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: channel
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: page_size
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListSubscriptionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
         AdditionalFunction:
@@ -1628,6 +1843,11 @@ components:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
             description: Start transaction returns transaction context  which uniquely identifies the transaction
+        ChannelMetadata:
+            type: object
+            properties:
+                channel:
+                    type: string
         Collation:
             type: object
             properties:
@@ -2106,6 +2326,18 @@ components:
                 value:
                     type: object
             description: Namespace metadata response
+        GetRTChannelResponse:
+            type: object
+            properties:
+                channel:
+                    type: string
+        GetRTChannelsResponse:
+            type: object
+            properties:
+                channels:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ChannelMetadata'
         GetResponse:
             type: object
             properties:
@@ -2302,6 +2534,45 @@ components:
                     items:
                         $ref: '#/components/schemas/ProjectInfo'
                     description: List of the projects.
+        ListSubscriptionResponse:
+            type: object
+            properties:
+                devices:
+                    type: array
+                    items:
+                        type: string
+        Message:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: an optional id if idempotency is needed to ensure only a single time message is published during retries. If not specified then server will automatically add an id to message.
+                name:
+                    type: string
+                timestamp:
+                    type: string
+                data:
+                    type: string
+                    format: byte
+        MessagesRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                channel:
+                    type: string
+                messages:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Message'
+        MessagesResponse:
+            type: object
+            properties:
+                ids:
+                    type: array
+                    items:
+                        type: string
+                    description: ids of the published messages
         MetricSeries:
             type: object
             properties:
@@ -2345,6 +2616,12 @@ components:
                     description: Maximum number of results per page
                     format: int32
             description: Pagination metadata for SearchResponse
+        PresenceResponse:
+            type: object
+            properties:
+                response:
+                    type: string
+                    format: byte
         ProjectInfo:
             type: object
             properties:
@@ -2474,6 +2751,11 @@ components:
                     description: Number of bytes throttled. Number of bytes which were attempted to write in excess of quota and were rejected.
                     format: int64
             description: Contains current quota usage
+        ReadMessagesResponse:
+            type: object
+            properties:
+                message:
+                    $ref: '#/components/schemas/Message'
         ReadRequest:
             type: object
             properties:
@@ -2915,5 +3197,7 @@ tags:
       description: The Observability section has APIs that provides full visibility into the health, metrics, and monitoring of the Server.
     - name: Projects
       description: The Projects section provide APIs that can be used to manage Tigris projects. A single project has one database
+    - name: Realtime
+      description: The realtime section provide APIs that can be used realtime operations.
     - name: Transactions
       description: Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability.

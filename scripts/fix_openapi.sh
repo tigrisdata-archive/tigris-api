@@ -146,6 +146,7 @@ yq_del_service_tags() {
 	yq_cmd "del(.tags[] | select(.name == \"Management\" and .description != \"*\"))"
 	yq_cmd "del(.tags[] | select(.name == \"Observability\" and .description != \"*\"))"
 	yq_cmd "del(.tags[] | select(.name == \"Cache\" and .description != \"*\"))"
+	yq_cmd "del(.tags[] | select(.name == \"Realtime\" and .description != \"*\"))"
 }
 
 # By default GRPC gateway returns streaming response and error wrapped in a new
