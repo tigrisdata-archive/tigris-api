@@ -67,7 +67,7 @@ option (openapi.v3.document) = {
     description: "Tigris has built-in event streaming support. This functionality is enabled for the `Messages` collection type. This type of collection is referred as Topic and has endpoints that allows you to both subscribe and publish to a topic which enable building event-driven applications. Ordering is guaranteed on a partition level"
   },{
     name: "Management"
-    description: "The Management section provide APIs that can be used to manage users, and applications."
+    description: "The Management section provide APIs that can be used to manage users, and app_keys."
   }, {
     name: "Observability"
     description: "The Observability section has APIs that provides full visibility into the health, metrics, and monitoring of the Server."
@@ -752,7 +752,7 @@ message CollectionMetadata {
 }
 
 
-// Request creation of user application keys
+// Request creation of user app key
 message CreateAppKeyRequest {
   // A human readable app name
   string name = 1;
@@ -762,15 +762,15 @@ message CreateAppKeyRequest {
   string project = 3;
 }
 
-// CreateApplication returns created application keys
+// CreateAppKeyResponse returns created app keys
 message CreateAppKeyResponse {
   // created app object
-  Application created_application = 1;
+  AppKey created_app_key = 1;
 }
 
-// To update the description of the application key
+// To update the description of the app key
 message UpdateAppKeyRequest {
-  // application id - this is not allowed to update
+  // app key id - this is not allowed to update
   string id = 1;
   // project name -  this is not allowed to update
   string project = 2;
@@ -780,14 +780,14 @@ message UpdateAppKeyRequest {
   string description = 4;
 }
 
-// Returns response for updating the application key description
+// Returns response for updating the app key description
 message UpdateAppKeyResponse {
-  // updated application object
-  Application updated_application = 1;
+  // updated app key object
+  AppKey updated_app_key = 1;
 }
 
-// An user application
-message Application {
+// An user AppKey
+message AppKey {
   // Generated client id
   string id = 1;
   // A human readable app name
@@ -808,43 +808,43 @@ message Application {
   string project = 9;
 }
 
-// Request listing of all the application keys those are visible to requesting actor
+// Request listing of all the app keys those are visible to requesting actor
 message ListAppKeysRequest {
   // Project name filter
   string project = 1;
 }
 
-// ListApplication returns one or more visible application to user
+// ListAppKeysResponse returns one or more visible app keys to user
 message ListAppKeysResponse {
-  repeated Application applications = 1;
+  repeated AppKey app_keys = 1;
 }
 
-// Request deletion of an application key
+// Request deletion of an app key
 message DeleteAppKeyRequest {
-  // application id
+  // app_key id
   string id = 1;
   // project name
   string project = 2;
 }
 
-// AppKeys returns the flag to convey if application key was deleted
+// AppKeys returns the flag to convey if app key was deleted
 message DeleteAppKeyResponse {
   // status flag for delete operation
   bool deleted = 1;
 }
 
-// Request rotation of an application key secret
+// Request rotation of an app key secret
 message RotateAppKeyRequest {
-  // application id
+  // app key id
   string id = 1;
   // project name
   string project = 2;
 }
 
-// RotateAppKeyResponse returns the new application key with rotated secret
+// RotateAppKeyResponse returns the new app key with rotated secret
 message RotateAppKeyResponse{
-  // A new Application with rotated secret.
-  Application application = 1;
+  // A new app key with rotated secret.
+  AppKey app_key = 1;
 }
 
 service Tigris {
@@ -1101,7 +1101,7 @@ service Tigris {
     };
   }
 
-  // Create an application key.
+  // Create an app key.
   rpc CreateAppKey(CreateAppKeyRequest) returns
       (CreateAppKeyResponse) {
     option (google.api.http) = {
@@ -1109,12 +1109,12 @@ service Tigris {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Creates the application keys"
+      summary: "Creates the app key"
       tags: "Management"
     };
   }
 
-  // Update the description of an application key.
+  // Update the description of an app key.
   rpc UpdateAppKey(UpdateAppKeyRequest) returns
       (UpdateAppKeyResponse) {
     option (google.api.http) = {
@@ -1122,12 +1122,12 @@ service Tigris {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Updates the description of the application key"
+      summary: "Updates the description of the app key"
       tags: "Management"
     };
   }
 
-  // Delete an application key.
+  // Delete an app key.
   rpc DeleteAppKey(DeleteAppKeyRequest) returns
       (DeleteAppKeyResponse) {
     option (google.api.http) = {
@@ -1135,24 +1135,24 @@ service Tigris {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Deletes the application key"
+      summary: "Deletes the app key"
       tags: "Management"
     };
   }
 
-  // Lists all application keys visible to requesting actor.
+  // Lists all app keys visible to requesting actor.
   rpc ListAppKeys(ListAppKeysRequest) returns
       (ListAppKeysResponse) {
     option (google.api.http) = {
       get : "/v1/projects/{project}/apps/keys"
     };
     option(openapi.v3.operation) = {
-      summary: "List all the application keys"
+      summary: "List all the app keys"
       tags: "Management"
     };
   }
 
-  // Endpoint is used to rotate the secret for the application.
+  // Endpoint is used to rotate the secret for the app key.
   rpc RotateAppKeySecret(RotateAppKeyRequest) returns
       (RotateAppKeyResponse) {
     option (google.api.http) = {
@@ -1160,7 +1160,7 @@ service Tigris {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Rotates the application secret"
+      summary: "Rotates the app key secret"
       tags: "Management"
     };
   }

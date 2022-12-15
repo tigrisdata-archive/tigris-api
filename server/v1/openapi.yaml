@@ -444,8 +444,8 @@ paths:
         get:
             tags:
                 - Management
-            summary: List all the application keys
-            description: Lists all application keys visible to requesting actor.
+            summary: List all the app keys
+            description: Lists all app keys visible to requesting actor.
             operationId: Tigris_ListAppKeys
             parameters:
                 - name: project
@@ -471,8 +471,8 @@ paths:
         post:
             tags:
                 - Management
-            summary: Creates the application keys
-            description: Create an application key.
+            summary: Creates the app key
+            description: Create an app key.
             operationId: Tigris_CreateAppKey
             parameters:
                 - name: project
@@ -504,8 +504,8 @@ paths:
         delete:
             tags:
                 - Management
-            summary: Deletes the application key
-            description: Delete an application key.
+            summary: Deletes the app key
+            description: Delete an app key.
             operationId: Tigris_DeleteAppKey
             parameters:
                 - name: project
@@ -537,8 +537,8 @@ paths:
         post:
             tags:
                 - Management
-            summary: Rotates the application secret
-            description: Endpoint is used to rotate the secret for the application.
+            summary: Rotates the app key secret
+            description: Endpoint is used to rotate the secret for the app key.
             operationId: Tigris_RotateAppKeySecret
             parameters:
                 - name: project
@@ -570,8 +570,8 @@ paths:
         post:
             tags:
                 - Management
-            summary: Updates the description of the application key
-            description: Update the description of an application key.
+            summary: Updates the description of the app key
+            description: Update the description of an app key.
             operationId: Tigris_UpdateAppKey
             parameters:
                 - name: project
@@ -676,7 +676,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/Status'
     /v1/projects/{project}/caches/{name}/keys:
-        post:
+        get:
             tags:
                 - Cache
             summary: Lists all the key for this cache
@@ -694,12 +694,11 @@ paths:
                   required: true
                   schema:
                     type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/KeysRequest'
-                required: true
+                - name: pattern
+                  in: query
+                  description: optional key pattern
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -758,7 +757,7 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/Status'
     /v1/projects/{project}/caches/{name}/{key}/get:
-        post:
+        get:
             tags:
                 - Cache
             summary: Reads an entry from cache
@@ -782,12 +781,6 @@ paths:
                   required: true
                   schema:
                     type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/GetRequest'
-                required: true
             responses:
                 "200":
                     description: OK
@@ -1587,7 +1580,7 @@ components:
                 rollup:
                     $ref: '#/components/schemas/RollupFunction'
             description: Additional function to apply on metrics query
-        Application:
+        AppKey:
             type: object
             properties:
                 id:
@@ -1619,7 +1612,7 @@ components:
                 project:
                     type: string
                     description: Project it belongs to
-            description: An user application
+            description: An user AppKey
         BeginTransactionRequest:
             type: object
             properties:
@@ -1693,16 +1686,13 @@ components:
                 description:
                     type: string
                     description: A human readable app description
-                project:
-                    type: string
-                    description: Project name
-            description: Request creation of user application keys
+            description: Request creation of user app key
         CreateAppKeyResponse:
             type: object
             properties:
-                created_application:
-                    $ref: '#/components/schemas/Application'
-            description: CreateApplication returns created application keys
+                created_app_key:
+                    $ref: '#/components/schemas/AppKey'
+            description: CreateAppKeyResponse returns created app keys
         CreateBranchRequest:
             type: object
             properties: {}
@@ -1824,18 +1814,18 @@ components:
             properties:
                 id:
                     type: string
-                    description: application id
+                    description: app_key id
                 project:
                     type: string
                     description: project name
-            description: Request deletion of an application key
+            description: Request deletion of an app key
         DeleteAppKeyResponse:
             type: object
             properties:
                 deleted:
                     type: boolean
                     description: status flag for delete operation
-            description: AppKeys returns the flag to convey if application key was deleted
+            description: AppKeys returns the flag to convey if app key was deleted
         DeleteBranchRequest:
             type: object
             properties: {}
@@ -2116,9 +2106,6 @@ components:
                 value:
                     type: object
             description: Namespace metadata response
-        GetRequest:
-            type: object
-            properties: {}
         GetResponse:
             type: object
             properties:
@@ -2276,12 +2263,6 @@ components:
                 value:
                     type: object
             description: Insertion of user metadata response
-        KeysRequest:
-            type: object
-            properties:
-                pattern:
-                    type: string
-                    description: optional key pattern
         KeysResponse:
             type: object
             properties:
@@ -2293,11 +2274,11 @@ components:
         ListAppKeysResponse:
             type: object
             properties:
-                applications:
+                app_keys:
                     type: array
                     items:
-                        $ref: '#/components/schemas/Application'
-            description: ListApplication returns one or more visible application to user
+                        $ref: '#/components/schemas/AppKey'
+            description: ListAppKeysResponse returns one or more visible app keys to user
         ListCollectionsResponse:
             type: object
             properties:
@@ -2624,17 +2605,17 @@ components:
             properties:
                 id:
                     type: string
-                    description: application id
+                    description: app key id
                 project:
                     type: string
                     description: project name
-            description: Request rotation of an application key secret
+            description: Request rotation of an app key secret
         RotateAppKeyResponse:
             type: object
             properties:
-                application:
-                    $ref: '#/components/schemas/Application'
-            description: RotateAppKeyResponse returns the new application key with rotated secret
+                app_key:
+                    $ref: '#/components/schemas/AppKey'
+            description: RotateAppKeyResponse returns the new app key with rotated secret
         SearchFacet:
             type: object
             properties:
@@ -2792,23 +2773,20 @@ components:
             properties:
                 id:
                     type: string
-                    description: application id - this is not allowed to update
-                project:
-                    type: string
-                    description: project name -  this is not allowed to update
+                    description: app key id - this is not allowed to update
                 name:
                     type: string
                     description: A new human readable app name
                 description:
                     type: string
                     description: A new human readable app description
-            description: To update the description of the application key
+            description: To update the description of the app key
         UpdateAppKeyResponse:
             type: object
             properties:
-                updated_application:
-                    $ref: '#/components/schemas/Application'
-            description: Returns response for updating the application key description
+                updated_app_key:
+                    $ref: '#/components/schemas/AppKey'
+            description: Returns response for updating the app key description
         UpdateNamespaceMetadataRequest:
             type: object
             properties:
@@ -2930,7 +2908,7 @@ tags:
     - name: Event Streaming
       description: Tigris has built-in event streaming support. This functionality is enabled for the `Messages` collection type. This type of collection is referred as Topic and has endpoints that allows you to both subscribe and publish to a topic which enable building event-driven applications. Ordering is guaranteed on a partition level
     - name: Management
-      description: The Management section provide APIs that can be used to manage users, and applications.
+      description: The Management section provide APIs that can be used to manage users, and app_keys.
     - name: Namespaces
       description: The Namespaces section provide APIs that can be used to manage namespaces. A single namespace can have one or more projects.
     - name: Observability
