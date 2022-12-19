@@ -35,17 +35,26 @@ enum EventType {
   // if a heartbeat is delayed by up to D seconds, and our timeout is T,
   // the client sends a heartbeat command every (T - D) seconds, if it is not sending any other data.
   heartbeat=9;
-  connected=10;
-  disconnect=11;
-  disconnected=12;
-  reconnect=13;
-  attach=14;
-  detach=15;
+  connect=10;
+  connected=11;
+  disconnect=12;
+  disconnected=13;
+  reconnect=14;
+  attach=15;
+  detach=16;
 }
 
 message RealTimeMessage {
   EventType event_type=1;
   bytes event=2;
+}
+
+// Establish connection with server
+// with optional session and socket id 
+// from previous session
+message ConnectEvent {
+  optional string session_id=1;
+  optional string socket_id=2;
 }
 
 message ConnectedEvent {
