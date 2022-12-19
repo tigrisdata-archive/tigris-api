@@ -34,27 +34,27 @@ enum EventType {
   // the client sends a heartbeat command every (T - D) seconds, if it is not sending any other data.
   heartbeat=8;
   connected=9;
-  disconnect=10;
-  disconnected=11;
-}
-
-enum ActionType {
-  retry=0;
-  publish=1;
-  presence=2;
-}
-
-message ConnectedMessage {
-  string session_id=1;
-  string socket_id=2;
-  string event=3;
+  reconnect=10;
+  disconnect=11;
+  disconnected=12;
+  attach=13;
+  detach=14;
 }
 
 message RealTimeMessage {
-  string action=1;
-  string event_type=2;
+  EventType event_type=2;
   string serial=3;
   bytes event=4;
+}
+
+message ConnectedEvent {
+  string session_id=1;
+  string socket_id=2;
+}
+
+message ReConnectEvent {
+  string session_id=1;
+  string socket_id=2;
 }
 
 message HeartbeatEvent {}
@@ -87,9 +87,37 @@ message MessageEvent {
   string id=1;
   string name=2;
   string channel=3;
-  string timestamp=4;
   bytes data=5;
 }
+
+message AttachEvent {
+  string channel=1;
+}
+
+message DetachEvent {
+  string channel=1;
+}
+
+enum PresenceActions {
+  present=0;
+  enter=1;
+  leave=2;
+  update=3;
+}
+
+message PresenceEvent {
+  string channel=1;
+  string clientid=2;
+  PresenceActions action=3;
+  bytes data=4;
+}
+
+message PresenceMemberEvent {
+  string channel=1;
+  repeated PresenceEvent presence=2;
+}
+
+// HTTP messages
 
 message PresenceRequest {
   string project=1;
