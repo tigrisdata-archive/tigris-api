@@ -108,7 +108,6 @@ enum PresenceActions {
 
 message PresenceEvent {
   string channel=1;
-  string clientid=2;
   PresenceActions action=3;
   bytes data=4;
 }

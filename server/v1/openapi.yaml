@@ -1,5 +1,6 @@
 # Generated with protoc-gen-openapi
 # https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
 openapi: 3.0.3
 info:
     title: Tigris API Reference
