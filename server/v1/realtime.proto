@@ -28,8 +28,8 @@ enum EventType {
   error=2;
   message=3;
   subscribe=4;
-  presence_message=5;
-  presence_subscribe=6;
+  presence=5;
+  presence_member=6;
   subscribed=7;
   unsubscribe=8;
   // if a heartbeat is delayed by up to D seconds, and our timeout is T,
@@ -38,17 +38,19 @@ enum EventType {
   connected=10;
   disconnect=11;
   disconnected=12;
-}
-
-message ConnectedMessage {
-  string session_id=1;
-  string socket_id=2;
-  string event=3;
+  reconnect=13;
+  attach=14;
+  detach=15;
 }
 
 message RealTimeMessage {
   EventType event_type=1;
   bytes event=2;
+}
+
+message ConnectedEvent {
+  string session_id=1;
+  string socket_id=2;
 }
 
 message HeartbeatEvent {}
@@ -95,9 +97,29 @@ message MessageEvent {
   string id=1;
   string name=2;
   string channel=3;
-  string timestamp=4;
   bytes data=5;
 }
+
+enum PresenceActions {
+  present=0;
+  enter=1;
+  leave=2;
+  update=3;
+}
+
+message PresenceEvent {
+  string channel=1;
+  string clientid=2;
+  PresenceActions action=3;
+  bytes data=4;
+}
+
+message PresenceMemberEvent {
+  string channel=1;
+  repeated PresenceEvent presence=2;
+}
+
+// HTTP
 
 message PresenceRequest {
   string project=1;
