@@ -157,7 +157,7 @@ service Management {
     };
     option(openapi.v3.operation) = {
       summary: "Creates a Namespace"
-      tags: "Namespaces"
+      tags: "Management"
     };
   }
 
@@ -169,7 +169,7 @@ service Management {
     };
     option(openapi.v3.operation) = {
       summary: "Describe the details of all namespaces"
-      tags: "Namespaces"
+      tags: "Management"
     };
   }
 
@@ -181,7 +181,7 @@ service Management {
     };
     option(openapi.v3.operation) = {
       summary: "Lists all Namespaces"
-      tags: "Namespaces"
+      tags: "Management"
     };
   }
 
