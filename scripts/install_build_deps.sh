@@ -27,7 +27,7 @@ go install github.com/mikefarah/yq/v4@latest # used to fix OpenAPI spec in scrip
 
 ARCH=$(uname -m)
 OS=$(uname -s)
-PROTO_VERSION=3.15.8
+PROTO_VERSION=21.9
 PB_REL="https://github.com/protocolbuffers/protobuf/releases"
 
 if [[ "$OS" == "Darwin" ]]; then

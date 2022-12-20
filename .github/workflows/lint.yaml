@@ -2,9 +2,9 @@ name: lint
 on:
   push:
     branches:
-      - "release"
-      - "beta"
-      - "main"
+      - "!release"
+      - "!beta"
+      - "!main"
   pull_request:
   workflow_call:
 jobs:
@@ -21,6 +21,7 @@ jobs:
       - name: Check OpenAPI generated
         run: |
           touch server/v1/api.proto && make generate
+          git diff
           git diff --quiet HEAD server/v1/openapi.yaml || (echo -e "\nRun 'touch server/v1/api.proto && make generate' and check-in OpenAPI specification" && exit 1)
       - name: Install Redocly CLI
         run: npm install @redocly/cli -g
