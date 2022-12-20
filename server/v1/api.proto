@@ -43,29 +43,20 @@ option (openapi.v3.document) = {
   }
   tags: [{
     name: "Authentication"
-    description: "The auth section of API provides open authorization (OAuth 2.0) APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H \"Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I\"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail."
+    description: "The auth section of API provides OAuth 2.0 APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H \"Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I\"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail."
   },{
-    name: "Namespaces"
-    description: "The Namespaces section provide APIs that can be used to manage namespaces. A single namespace can have one or more projects."
+    name: "Application Keys"
+    description: "The application keys section provide APIs that can be used to manage application keys for your project. A single project can have one or more application keys."
   },{
     name: "Projects"
-    description: "The Projects section provide APIs that can be used to manage Tigris projects. A single project has one database"
+    description: "Every Tigris projects comes with a transactional document database built on FoundationDB, one of the most resilient and battle-tested open source distributed key-value store. A database is created automatically for you when you create a project."
   },{
-    name: "Databases"
-    description: "The Databases section provide APIs that can be used to manage Tigris Databases. A single Database can have one or more collections."
+    name: "Database"
+    description: "The Database section provide APIs that can be used to interact with the database. A single Database can have one or more collections. A database is created automatically for you when you create a project."
   },{
     name: "Collections"
     description: "The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents."
-  },{
-    name: "Documents"
-    description: "The Documents section provide APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key."
   }, {
-    name: "Transactions"
-    description: "Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability."
-  }, {
-    name: "Event Streaming"
-    description: "Tigris has built-in event streaming support. This functionality is enabled for the `Messages` collection type. This type of collection is referred as Topic and has endpoints that allows you to both subscribe and publish to a topic which enable building event-driven applications. Ordering is guaranteed on a partition level"
-  },{
     name: "Management"
     description: "The Management section provide APIs that can be used to manage users, and app_keys."
   }, {
@@ -852,7 +843,8 @@ message RotateAppKeyResponse{
 
 service Tigris {
   // Starts a new transaction and returns a transactional object. All reads/writes performed
-  // within a transaction will run with serializable isolation.
+  // within a transaction will run with serializable isolation. Tigris offers global transactions,
+  // with ACID properties and strict serializability.
   rpc BeginTransaction(BeginTransactionRequest) returns (BeginTransactionResponse) {
     option (google.api.http) = {
       post : "/v1/projects/{project}/database/transactions/begin"
@@ -860,7 +852,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Begin a transaction"
-      tags: "Transactions"
+      tags: "Database"
     };
   }
   // Atomically commit all the changes performed in the context of the transaction. Commit provides all
@@ -872,7 +864,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Commit a Transaction"
-      tags: "Transactions"
+      tags: "Database"
     };
   }
   // Rollback transaction discards all the changes
@@ -884,7 +876,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Rollback a transaction"
-      tags: "Transactions"
+      tags: "Database"
     };
   }
 
@@ -898,7 +890,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Insert Documents"
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Inserts the documents or replaces the existing documents in the collections.
@@ -909,7 +901,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Insert or Replace Documents"
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Delete a range of documents in the collection using the condition provided in the filter.
@@ -920,7 +912,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Delete Documents"
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Update a range of documents in the collection using the condition provided in the filter.
@@ -931,7 +923,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Update Documents."
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
@@ -947,7 +939,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Read Documents"
-      tags: "Documents"
+      tags: "Collections"
     };
   }
 
@@ -962,7 +954,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Search Documents."
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Imports documents into the collection.
@@ -978,7 +970,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Import Documents"
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
@@ -1005,7 +997,7 @@ service Tigris {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Drops Collection"
+      summary: "Drop Collection"
       tags: "Collections"
     };
   }
@@ -1026,7 +1018,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "List Collections"
-      tags: "Projects"
+      tags: "Database"
     };
   }
   // Creates a new project. Returns an AlreadyExists error with a status code 409 if the project already exists.
@@ -1063,7 +1055,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Describe database"
-      tags: "Databases"
+      tags: "Database"
     };
   }
 
@@ -1075,7 +1067,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Create a database branch"
-      tags: "Databases"
+      tags: "Database"
     };
   }
 
@@ -1088,7 +1080,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Delete a database branch"
-      tags: "Databases"
+      tags: "Database"
     };
   }
 
@@ -1113,7 +1105,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Creates the app key"
-      tags: "Management"
+      tags: "Application Keys"
     };
   }
 
@@ -1126,7 +1118,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Updates the description of the app key"
-      tags: "Management"
+      tags: "Application Keys"
     };
   }
 
@@ -1139,7 +1131,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Deletes the app key"
-      tags: "Management"
+      tags: "Application Keys"
     };
   }
 
@@ -1151,7 +1143,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "List all the app keys"
-      tags: "Management"
+      tags: "Application Keys"
     };
   }
 
@@ -1164,7 +1156,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Rotates the app key secret"
-      tags: "Management"
+      tags: "Application Keys"
     };
   }
 }

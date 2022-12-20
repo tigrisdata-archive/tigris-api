@@ -164,7 +164,7 @@ paths:
     /v1/management/namespaces/create:
         post:
             tags:
-                - Namespaces
+                - Management
             summary: Creates a Namespace
             description: Creates a new namespace, if it does not exist
             operationId: Management_CreateNamespace
@@ -190,7 +190,7 @@ paths:
     /v1/management/namespaces/describe:
         post:
             tags:
-                - Namespaces
+                - Management
             summary: Describe the details of all namespaces
             description: Get details for all namespaces
             operationId: Management_DescribeNamespaces
@@ -210,7 +210,7 @@ paths:
     /v1/management/namespaces/list:
         post:
             tags:
-                - Namespaces
+                - Management
             summary: Lists all Namespaces
             description: List all namespace
             operationId: Management_ListNamespaces
@@ -444,7 +444,7 @@ paths:
     /v1/projects/{project}/apps/keys:
         get:
             tags:
-                - Management
+                - Application Keys
             summary: List all the app keys
             description: Lists all app keys visible to requesting actor.
             operationId: Tigris_ListAppKeys
@@ -471,7 +471,7 @@ paths:
     /v1/projects/{project}/apps/keys/create:
         post:
             tags:
-                - Management
+                - Application Keys
             summary: Creates the app key
             description: Create an app key.
             operationId: Tigris_CreateAppKey
@@ -504,7 +504,7 @@ paths:
     /v1/projects/{project}/apps/keys/delete:
         delete:
             tags:
-                - Management
+                - Application Keys
             summary: Deletes the app key
             description: Delete an app key.
             operationId: Tigris_DeleteAppKey
@@ -537,7 +537,7 @@ paths:
     /v1/projects/{project}/apps/keys/rotate:
         post:
             tags:
-                - Management
+                - Application Keys
             summary: Rotates the app key secret
             description: Endpoint is used to rotate the secret for the app key.
             operationId: Tigris_RotateAppKeySecret
@@ -570,7 +570,7 @@ paths:
     /v1/projects/{project}/apps/keys/update:
         post:
             tags:
-                - Management
+                - Application Keys
             summary: Updates the description of the app key
             description: Update the description of an app key.
             operationId: Tigris_UpdateAppKey
@@ -875,7 +875,7 @@ paths:
     /v1/projects/{project}/database/branches/{branch}/create:
         post:
             tags:
-                - Databases
+                - Database
             summary: Create a database branch
             description: Creates a new database branch, if not already existing.
             operationId: Tigris_CreateBranch
@@ -914,7 +914,7 @@ paths:
     /v1/projects/{project}/database/branches/{branch}/delete:
         delete:
             tags:
-                - Databases
+                - Database
             summary: Delete a database branch
             description: |-
                 Deletes a database branch, if exists.
@@ -955,7 +955,7 @@ paths:
     /v1/projects/{project}/database/collections:
         get:
             tags:
-                - Projects
+                - Database
             summary: List Collections
             description: List all the collections present in the project passed in the request.
             operationId: Tigris_ListCollections
@@ -1070,7 +1070,7 @@ paths:
     /v1/projects/{project}/database/collections/{collection}/documents/delete:
         delete:
             tags:
-                - Documents
+                - Collections
             summary: Delete Documents
             description: Delete a range of documents in the collection using the condition provided in the filter.
             operationId: Tigris_Delete
@@ -1109,7 +1109,7 @@ paths:
     /v1/projects/{project}/database/collections/{collection}/documents/import:
         post:
             tags:
-                - Documents
+                - Collections
             summary: Import Documents
             description: |-
                 Imports documents into the collection.
@@ -1154,7 +1154,7 @@ paths:
     /v1/projects/{project}/database/collections/{collection}/documents/insert:
         post:
             tags:
-                - Documents
+                - Collections
             summary: Insert Documents
             description: |-
                 Inserts new documents in the collection and returns an AlreadyExists error if any of the documents
@@ -1196,7 +1196,7 @@ paths:
     /v1/projects/{project}/database/collections/{collection}/documents/read:
         post:
             tags:
-                - Documents
+                - Collections
             summary: Read Documents
             description: |-
                 Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
@@ -1241,7 +1241,7 @@ paths:
     /v1/projects/{project}/database/collections/{collection}/documents/replace:
         put:
             tags:
-                - Documents
+                - Collections
             summary: Insert or Replace Documents
             description: Inserts the documents or replaces the existing documents in the collections.
             operationId: Tigris_Replace
@@ -1280,7 +1280,7 @@ paths:
     /v1/projects/{project}/database/collections/{collection}/documents/search:
         post:
             tags:
-                - Documents
+                - Collections
             summary: Search Documents.
             description: |-
                 Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
@@ -1323,7 +1323,7 @@ paths:
     /v1/projects/{project}/database/collections/{collection}/documents/update:
         put:
             tags:
-                - Documents
+                - Collections
             summary: Update Documents.
             description: Update a range of documents in the collection using the condition provided in the filter.
             operationId: Tigris_Update
@@ -1363,7 +1363,7 @@ paths:
         delete:
             tags:
                 - Collections
-            summary: Drops Collection
+            summary: Drop Collection
             description: |-
                 Drops the collection inside this project. This API deletes all of the
                  documents inside this collection and any metadata associated with it.
@@ -1403,7 +1403,7 @@ paths:
     /v1/projects/{project}/database/describe:
         post:
             tags:
-                - Databases
+                - Database
             summary: Describe database
             description: |-
                 This API returns information related to the project along with all the collections inside the project.
@@ -1438,11 +1438,12 @@ paths:
     /v1/projects/{project}/database/transactions/begin:
         post:
             tags:
-                - Transactions
+                - Database
             summary: Begin a transaction
             description: |-
                 Starts a new transaction and returns a transactional object. All reads/writes performed
-                 within a transaction will run with serializable isolation.
+                 within a transaction will run with serializable isolation. Tigris offers global transactions,
+                 with ACID properties and strict serializability.
             operationId: Tigris_BeginTransaction
             parameters:
                 - name: project
@@ -1473,7 +1474,7 @@ paths:
     /v1/projects/{project}/database/transactions/commit:
         post:
             tags:
-                - Transactions
+                - Database
             summary: Commit a Transaction
             description: |-
                 Atomically commit all the changes performed in the context of the transaction. Commit provides all
@@ -1508,7 +1509,7 @@ paths:
     /v1/projects/{project}/database/transactions/rollback:
         post:
             tags:
-                - Transactions
+                - Database
             summary: Rollback a transaction
             description: |-
                 Rollback transaction discards all the changes
@@ -3175,27 +3176,21 @@ components:
 security:
     - BearerAuth: []
 tags:
+    - name: Application Keys
+      description: The application keys section provide APIs that can be used to manage application keys for your project. A single project can have one or more application keys.
     - name: Authentication
-      description: 'The auth section of API provides open authorization (OAuth 2.0) APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.'
+      description: 'The auth section of API provides OAuth 2.0 APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.'
     - name: Cache
       description: The cache section provide APIs that can be used to perform cache operations.
     - name: Collections
       description: The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents.
-    - name: Databases
-      description: The Databases section provide APIs that can be used to manage Tigris Databases. A single Database can have one or more collections.
-    - name: Documents
-      description: The Documents section provide APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key.
-    - name: Event Streaming
-      description: Tigris has built-in event streaming support. This functionality is enabled for the `Messages` collection type. This type of collection is referred as Topic and has endpoints that allows you to both subscribe and publish to a topic which enable building event-driven applications. Ordering is guaranteed on a partition level
+    - name: Database
+      description: The Database section provide APIs that can be used to interact with the database. A single Database can have one or more collections. A database is created automatically for you when you create a project.
     - name: Management
       description: The Management section provide APIs that can be used to manage users, and app_keys.
-    - name: Namespaces
-      description: The Namespaces section provide APIs that can be used to manage namespaces. A single namespace can have one or more projects.
     - name: Observability
       description: The Observability section has APIs that provides full visibility into the health, metrics, and monitoring of the Server.
     - name: Projects
-      description: The Projects section provide APIs that can be used to manage Tigris projects. A single project has one database
+      description: Every Tigris projects comes with a transactional document database built on FoundationDB, one of the most resilient and battle-tested open source distributed key-value store. A database is created automatically for you when you create a project.
     - name: Realtime
       description: The realtime section provide APIs that can be used realtime operations.
-    - name: Transactions
-      description: Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability.
