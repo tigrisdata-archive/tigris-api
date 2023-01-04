@@ -600,6 +600,32 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/caches/list:
+        get:
+            tags:
+                - Cache
+            summary: Lists all the caches for the given project
+            operationId: Cache_ListCaches
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListCachesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/caches/{name}/create:
         post:
             tags:
@@ -1845,6 +1871,12 @@ components:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
             description: Start transaction returns transaction context  which uniquely identifies the transaction
+        CacheMetadata:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Cache name
         ChannelMetadata:
             type: object
             properties:
@@ -2510,6 +2542,14 @@ components:
                     items:
                         $ref: '#/components/schemas/AppKey'
             description: ListAppKeysResponse returns one or more visible app keys to user
+        ListCachesResponse:
+            type: object
+            properties:
+                cachesMetadata:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CacheMetadata'
+                    description: List of caches metadata
         ListCollectionsResponse:
             type: object
             properties:

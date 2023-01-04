@@ -88,6 +88,20 @@ message GetResponse {
   optional uint64 expires_in_ms = 2;
 }
 
+message ListCachesRequest {
+  // Tigris project name
+  string project = 1;
+}
+
+message ListCachesResponse {
+  // List of caches metadata
+  repeated CacheMetadata cachesMetadata = 1;
+}
+
+message CacheMetadata {
+  // Cache name
+  string name = 1;
+}
 message DelRequest {
   // Tigris project name
   string project = 1;
@@ -126,6 +140,16 @@ service Cache {
     };
     option(openapi.v3.operation) = {
       summary: "Creates the cache"
+      tags: "Cache"
+    };
+  }
+
+  rpc ListCaches(ListCachesRequest) returns (ListCachesResponse){
+    option (google.api.http) = {
+      get : "/v1/projects/{project}/caches/list"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Lists all the caches for the given project"
       tags: "Cache"
     };
   }
