@@ -2545,7 +2545,7 @@ components:
         ListCachesResponse:
             type: object
             properties:
-                cachesMetadata:
+                caches:
                     type: array
                     items:
                         $ref: '#/components/schemas/CacheMetadata'
