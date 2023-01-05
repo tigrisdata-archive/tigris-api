@@ -95,7 +95,7 @@ message ListCachesRequest {
 
 message ListCachesResponse {
   // List of caches metadata
-  repeated CacheMetadata cachesMetadata = 1;
+  repeated CacheMetadata caches = 1;
 }
 
 message CacheMetadata {
