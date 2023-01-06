@@ -702,7 +702,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/caches/{name}/keys:
+    /v1/projects/{project}/caches/{name}/kv/keys:
         get:
             tags:
                 - Cache
@@ -739,7 +739,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/caches/{name}/{key}/delete:
+    /v1/projects/{project}/caches/{name}/kv/{key}/delete:
         delete:
             tags:
                 - Cache
@@ -783,7 +783,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/caches/{name}/{key}/get:
+    /v1/projects/{project}/caches/{name}/kv/{key}/get:
         get:
             tags:
                 - Cache
@@ -821,7 +821,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/caches/{name}/{key}/getset:
+    /v1/projects/{project}/caches/{name}/kv/{key}/getset:
         post:
             tags:
                 - Cache
@@ -865,7 +865,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/projects/{project}/caches/{name}/{key}/set:
+    /v1/projects/{project}/caches/{name}/kv/{key}/set:
         post:
             tags:
                 - Cache
