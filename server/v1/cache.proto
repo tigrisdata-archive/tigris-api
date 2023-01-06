@@ -182,7 +182,7 @@ service Cache {
 
   rpc Set(SetRequest) returns (SetResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/caches/{name}/{key}/set"
+      post : "/v1/projects/{project}/caches/{name}/kv/{key}/set"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -193,7 +193,7 @@ service Cache {
 
   rpc GetSet(GetSetRequest) returns (GetSetResponse) {
     option (google.api.http) = {
-      post : "/v1/projects/{project}/caches/{name}/{key}/getset"
+      post : "/v1/projects/{project}/caches/{name}/kv/{key}/getset"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -204,7 +204,7 @@ service Cache {
 
   rpc Get(GetRequest) returns (GetResponse) {
     option (google.api.http) = {
-      get : "/v1/projects/{project}/caches/{name}/{key}/get"
+      get : "/v1/projects/{project}/caches/{name}/kv/{key}/get"
     };
     option(openapi.v3.operation) = {
       summary: "Reads an entry from cache"
@@ -214,7 +214,7 @@ service Cache {
 
   rpc Del(DelRequest) returns (DelResponse) {
     option (google.api.http) = {
-      delete : "/v1/projects/{project}/caches/{name}/{key}/delete"
+      delete : "/v1/projects/{project}/caches/{name}/kv/{key}/delete"
       body : "*"
     };
     option(openapi.v3.operation) = {
@@ -225,7 +225,7 @@ service Cache {
 
   rpc Keys(KeysRequest) returns (KeysResponse) {
     option (google.api.http) = {
-      get : "/v1/projects/{project}/caches/{name}/keys"
+      get : "/v1/projects/{project}/caches/{name}/kv/keys"
     };
     option(openapi.v3.operation) = {
       summary: "Lists all the key for this cache"
