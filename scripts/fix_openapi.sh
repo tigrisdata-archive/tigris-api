@@ -95,7 +95,7 @@ main() {
 		yq_del_project_cache $i
 	done
 
-	for i in SetRequest GetRequest DelRequest; do
+	for i in SetRequest GetSetRequest GetRequest DelRequest; do
 		yq_del_project_cache_key $i
 	done
 }

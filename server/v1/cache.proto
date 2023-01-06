@@ -59,19 +59,34 @@ message SetRequest {
   bool nx = 7;
   // set only if the key exist
   bool xx = 8;
-  // get the old value as part of response
-  bool get = 9;
 }
 
 message SetResponse {
   // A detailed response message.
   string message = 1;
-  // An enum with value set as "set" or "updated"
+  // An enum with value set as "set"
   string status = 2;
-  // Optionally the old value if requested in SetRequest
-  optional bytes old_value = 3;
 }
 
+message GetSetRequest {
+  // Tigris project name
+  string project = 1;
+  // cache name
+  string name = 2;
+  // cache key
+  string key = 3;
+  // free form byte[] value
+  bytes value = 4;
+}
+
+message GetSetResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "set"
+  string status = 2;
+  // An old value if exists
+  optional bytes old_value = 3;
+}
 message GetRequest {
   // Tigris project name
   string project = 1;
@@ -172,6 +187,17 @@ service Cache {
     };
     option(openapi.v3.operation) = {
       summary: "Sets an entry in the cache"
+      tags: "Cache"
+    };
+  }
+
+  rpc GetSet(GetSetRequest) returns (GetSetResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/caches/{name}/{key}/getset"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Sets an entry in the cache and returns the previous value if exists"
       tags: "Cache"
     };
   }

@@ -821,6 +821,50 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/caches/{name}/{key}/getset:
+        post:
+            tags:
+                - Cache
+            summary: Sets an entry in the cache and returns the previous value if exists
+            operationId: Cache_GetSet
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: path
+                  description: cache name
+                  required: true
+                  schema:
+                    type: string
+                - name: key
+                  in: path
+                  description: cache key
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetSetRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetSetResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/caches/{name}/{key}/set:
         post:
             tags:
@@ -2380,6 +2424,26 @@ components:
                     type: integer
                     description: expiration ms
                     format: uint64
+        GetSetRequest:
+            type: object
+            properties:
+                value:
+                    type: string
+                    description: free form byte[] value
+                    format: byte
+        GetSetResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "set"
+                old_value:
+                    type: string
+                    description: An old value if exists
+                    format: byte
         GetUserMetadataRequest:
             type: object
             properties:
@@ -3059,9 +3123,6 @@ components:
                 xx:
                     type: boolean
                     description: set only if the key exist
-                get:
-                    type: boolean
-                    description: get the old value as part of response
         SetResponse:
             type: object
             properties:
@@ -3070,11 +3131,7 @@ components:
                     description: A detailed response message.
                 status:
                     type: string
-                    description: An enum with value set as "set" or "updated"
-                old_value:
-                    type: string
-                    description: Optionally the old value if requested in SetRequest
-                    format: byte
+                    description: An enum with value set as "set"
         TransactionCtx:
             type: object
             properties:
