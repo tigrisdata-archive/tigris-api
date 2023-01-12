@@ -175,7 +175,7 @@ service Cache {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Creates the cache"
+      summary: "Deletes the cache"
       tags: "Cache"
     };
   }

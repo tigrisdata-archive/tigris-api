@@ -668,7 +668,7 @@ paths:
         delete:
             tags:
                 - Cache
-            summary: Creates the cache
+            summary: Deletes the cache
             operationId: Cache_DeleteCache
             parameters:
                 - name: project
