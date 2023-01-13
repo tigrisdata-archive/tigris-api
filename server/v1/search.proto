@@ -1,0 +1,122 @@
+// Copyright 2022-2023 Tigris Data, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package tigrisdata.search.v1;
+
+import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
+
+option go_package = "github.com/tigrisdata/tigris/api";
+option java_package = "com.tigrisdata.db.api.v1.grpc";
+
+message CreateOrUpdateIndexRequest {
+  // Tigris project name
+  string project = 1;
+  // search index name
+  string name = 2;
+  // schema of the index. The schema specifications are same as
+  // JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.
+  //<p></p>
+  // Schema example:
+  // `{
+  //  "title": "ecommerce_index",
+  //  "description": "an ecommerce store search index",
+  //  "properties": {
+  //    "name": {
+  //      "description": "Name of the product",
+  //      "type": "string",
+  //      "maxLength": 128
+  //    },
+  //    "brand": {
+  //      "description": "Brand of the product",
+  //      "type": "string"
+  //    },
+  //    "price": {
+  //      "description": "Price of the product",
+  //      "type": "number"
+  //    }
+  //  }
+  // }`
+  bytes schema = 3;
+  // If set to `true` then a conflict with HTTP Status code 409 is returned if an index already exists.
+  // The default is false.
+  bool only_create = 4;
+}
+
+message CreateOrUpdateIndexResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "created"
+  string status = 2;
+}
+
+message DeleteIndexRequest {
+  // Tigris project name
+  string project = 1;
+  // index name
+  string name = 2;
+}
+
+message DeleteIndexResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "deleted"
+  string status = 2;
+}
+
+message ListIndexesRequest {
+  // Tigris project name
+  string project = 1;
+}
+
+message ListIndexesResponse {
+  // List of indexes
+  repeated string indexes = 1;
+}
+
+service Search {
+  rpc CreateOrUpdateIndex(CreateOrUpdateIndexRequest) returns (CreateOrUpdateIndexResponse){
+    option (google.api.http) = {
+      put : "/v1/projects/{project}/search/indexes/{name}"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Creates or updates search index"
+      tags: "Search"
+    };
+  }
+
+  rpc DeleteIndex(DeleteIndexRequest) returns (DeleteIndexResponse){
+    option (google.api.http) = {
+      delete : "/v1/projects/{project}/search/indexes/{name}"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Deletes search index"
+      tags: "Search"
+    };
+  }
+
+  rpc ListIndexes(ListIndexesRequest) returns (ListIndexesResponse){
+    option (google.api.http) = {
+      get : "/v1/projects/{project}/search/indexes"
+    };
+    option(openapi.v3.operation) = {
+      summary: "List search indexes"
+      tags: "Search"
+    };
+  }
+}

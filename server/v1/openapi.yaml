@@ -1859,6 +1859,107 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/search/indexes:
+        get:
+            tags:
+                - Search
+            summary: List search indexes
+            operationId: Search_ListIndexes
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListIndexesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/search/indexes/{name}:
+        put:
+            tags:
+                - Search
+            summary: Creates or updates search index
+            operationId: Search_CreateOrUpdateIndex
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: path
+                  description: search index name
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateOrUpdateIndexRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateOrUpdateIndexResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Search
+            summary: Deletes search index
+            operationId: Search_DeleteIndex
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: path
+                  description: index name
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteIndexRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteIndexResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
         AdditionalFunction:
@@ -2052,7 +2153,7 @@ components:
             properties:
                 schema:
                     type: object
-                    description: 'The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>. The schema of the `documents` collection differs from the schema of `topic` collection as `topic` collection does not have any concept of `primary_key`. The server recognizes type of the collection by the `collection_type` set in the schema.<p></p> Schema example of `documents`: `{  "title": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "integer"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 100    },    "balance": {      "description": "User account balance",      "type": "number"    }  },  "primary_key": ["id"] }` <p></p>*Note: The `collection_type` is not set as default is documents.* <p></p>Schema example of `topic`: `{  "title": "user_events",  "description": "Topic for user events",  "properties": {    "event_id": {      "description": "A id for the event",      "type": "integer"    },    "event_type": {      "description": "Type of the Event",      "type": "string",      "maxLength": 100    }    "event_details": {      "description": "Details about the Event",      "type": "string"    }  },  "collection_type": "topic" }` <p></p> *Note: The `collection_type` is set as "topic".*'
+                    description: 'The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.<p></p> Schema example: `{  "title": "user",  "description": "Collection of documents with details of users",  "properties": {    "id": {      "description": "A unique identifier for the user",      "type": "integer"    },    "name": {      "description": "Name of the user",      "type": "string",      "maxLength": 128    },    "balance": {      "description": "User account balance",      "type": "number"    }  },  "primary_key": ["id"] }`'
                 only_create:
                     type: boolean
                     description: If set to `true` then the update schema request to the collection will fail by returning a conflict with HTTP Status code 409. The default is false.
@@ -2070,6 +2171,31 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created" or "updated"
+        CreateOrUpdateIndexRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Tigris project name
+                name:
+                    type: string
+                    description: search index name
+                schema:
+                    type: string
+                    description: 'schema of the index. The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.<p></p> Schema example: `{  "title": "ecommerce_index",  "description": "an ecommerce store search index",  "properties": {    "name": {      "description": "Name of the product",      "type": "string",      "maxLength": 128    },    "brand": {      "description": "Brand of the product",      "type": "string"    },    "price": {      "description": "Price of the product",      "type": "number"    }  } }`'
+                    format: byte
+                only_create:
+                    type: boolean
+                    description: If set to `true` then a conflict with HTTP Status code 409 is returned if an index already exists. The default is false.
+        CreateOrUpdateIndexResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "created"
         CreateProjectRequest:
             type: object
             properties: {}
@@ -2137,6 +2263,24 @@ components:
             type: object
             properties: {}
         DeleteCacheResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "deleted"
+        DeleteIndexRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Tigris project name
+                name:
+                    type: string
+                    description: index name
+        DeleteIndexResponse:
             type: object
             properties:
                 message:
@@ -2622,6 +2766,14 @@ components:
                     items:
                         $ref: '#/components/schemas/CollectionInfo'
                     description: List of the collections info in the database.
+        ListIndexesResponse:
+            type: object
+            properties:
+                indexes:
+                    type: array
+                    items:
+                        type: string
+                    description: List of indexes
         ListNamespacesResponse:
             type: object
             properties:
@@ -3291,3 +3443,4 @@ tags:
       description: Every Tigris projects comes with a transactional document database built on FoundationDB, one of the most resilient and battle-tested open source distributed key-value store. A database is created automatically for you when you create a project.
     - name: Realtime
       description: The realtime section provide APIs that can be used realtime operations.
+    - name: Search
