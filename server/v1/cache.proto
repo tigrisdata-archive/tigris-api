@@ -151,12 +151,21 @@ message KeysRequest {
   string project = 1;
   // cache name
   string name = 2;
+  // optional - cursor - skip this argument if no cursor is associated
+  optional uint64 cursor = 3;
+  // optional - count of keys to return a stream response line.
+  optional int64  count = 4;
   // optional key pattern
-  optional string pattern = 3;
+  optional string pattern = 5;
 }
+
 message KeysResponse {
-  // all the keys
+  // keys
   repeated string keys = 1;
+
+  // cursor - 0 is the keys scan is finished, non-zero cursor can be passed in next keys request to continue the scan
+  // this is useful if streaming breaks and user wants to resume stream
+  optional uint64 cursor = 2;
 }
 
 service Cache {
@@ -236,7 +245,7 @@ service Cache {
     };
   }
 
-  rpc Keys(KeysRequest) returns (KeysResponse) {
+  rpc Keys(KeysRequest) returns (stream KeysResponse) {
     option (google.api.http) = {
       get : "/v1/projects/{project}/caches/{name}/kv/keys"
     };

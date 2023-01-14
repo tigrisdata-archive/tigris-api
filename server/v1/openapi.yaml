@@ -721,6 +721,18 @@ paths:
                   required: true
                   schema:
                     type: string
+                - name: cursor
+                  in: query
+                  description: optional - cursor - skip this argument if no cursor is associated
+                  schema:
+                    type: integer
+                    format: uint64
+                - name: count
+                  in: query
+                  description: optional - count of keys to return a stream response line.
+                  schema:
+                    type: integer
+                    format: int64
                 - name: pattern
                   in: query
                   description: optional key pattern
@@ -2741,7 +2753,11 @@ components:
                     type: array
                     items:
                         type: string
-                    description: all the keys
+                    description: keys
+                cursor:
+                    type: integer
+                    description: cursor - 0 is the keys scan is finished, non-zero cursor can be passed in next keys request to continue the scan this is useful if streaming breaks and user wants to resume stream
+                    format: uint64
         ListAppKeysResponse:
             type: object
             properties:
