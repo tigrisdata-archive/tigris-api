@@ -1880,7 +1880,7 @@ paths:
             parameters:
                 - name: project
                   in: path
-                  description: Tigris project name
+                  description: Tigris project name.
                   required: true
                   schema:
                     type: string
@@ -1897,6 +1897,307 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/search/indexes/{index}/documents:
+        get:
+            tags:
+                - Search
+            summary: Get a single or multiple documents
+            description: |-
+                Retrieves one or more documents by id. The response is an array of documents in the same order it is requests.
+                 A null is returned for the documents that are not found.
+            operationId: Search_Get
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to insert documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: index
+                  in: path
+                  description: index name where to create documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: ids
+                  in: query
+                  description: document id.
+                  schema:
+                    type: array
+                    items:
+                        type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetDocumentResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        put:
+            tags:
+                - Search
+            summary: Create or replace documents in an index
+            description: |-
+                Creates or replaces one or more documents. Each document is a JSON object. A document is replaced
+                 if it already exists. An "id" is generated automatically in case it is missing in the document. The
+                 document is created if "id" doesn't exists otherwise it is replaced. Returns an array of status indicating
+                 the status of each document.
+            operationId: Search_CreateOrReplace
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to insert documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: index
+                  in: path
+                  description: index name where to create documents.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateOrReplaceDocumentRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateOrReplaceDocumentResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - Search
+            summary: Create multiple documents
+            description: |-
+                Create is used for indexing a single or multiple documents. The API expects an array of documents.
+                 Each document is a JSON object. An "id" is optional and the server can automatically generate it for you in
+                 case it is missing. In cases when an id is provided in the document and the document already exists then that
+                 document will not be indexed and in the response there will be an error corresponding to that document id other
+                 documents will succeed. Returns an array of status indicating the status of each document.
+            operationId: Search_Create
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name.
+                  required: true
+                  schema:
+                    type: string
+                - name: index
+                  in: path
+                  description: index name where to create documents.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateDocumentRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateDocumentResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Search
+            summary: Delete documents by ids
+            description: |-
+                Delete one or more documents by id. Returns an array of status indicating the status of each document. Each status
+                 has an error field that is set to null in case document is deleted successfully otherwise it will non null with
+                 an error code and message.
+            operationId: Search_Delete
+            parameters:
+                - name: project
+                  in: path
+                  description: The project name.
+                  required: true
+                  schema:
+                    type: string
+                - name: index
+                  in: path
+                  description: The index name of the documents that needs deletion.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteDocumentRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteDocumentResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - Search
+                - Search
+            summary: Update documents in an index
+            description: |-
+                Updates one or more documents by "id". Each document is required to have the
+                 "id" field in it. Returns an array of status indicating the status of each document. Each status
+                 has an error field that is set to null in case document is updated successfully otherwise the error
+                 field is set with a code and message.
+            operationId: Search_Update
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to insert documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: index
+                  in: path
+                  description: Index name where to create documents.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateDocumentRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateDocumentResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/search/indexes/{index}/documents/deleteByQuery:
+        delete:
+            tags:
+                - Search
+            summary: Delete documents by query
+            description: |-
+                DeleteByQuery is used to delete documents that match the filter. A filter is required. To delete document by id,
+                 you can pass the filter as follows ```{"id": "test"}```. Returns a count of number of documents deleted.
+            operationId: Search_DeleteByQuery
+            parameters:
+                - name: project
+                  in: path
+                  description: The project name.
+                  required: true
+                  schema:
+                    type: string
+                - name: index
+                  in: path
+                  description: The index name of the documents that needs deletion.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteByQueryRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteByQueryResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/search/indexes/{index}/documents/{id}:
+        post:
+            tags:
+                - Search
+            summary: Create a single document
+            description: |-
+                CreateById is used for indexing a single document. The API expects a single document. An "id" is optional
+                 and the server can automatically generate it for you in case it is missing. In cases an id is provided in
+                 the document and the document already exists then that document will not be indexed and an error is returned
+                 with HTTP status code 409.
+            operationId: Search_CreateById
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name.
+                  required: true
+                  schema:
+                    type: string
+                - name: index
+                  in: path
+                  description: index name where to create document.
+                  required: true
+                  schema:
+                    type: string
+                - name: id
+                  in: path
+                  description: document id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateByIdRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateByIdResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/search/indexes/{name}:
         put:
             tags:
@@ -1906,13 +2207,13 @@ paths:
             parameters:
                 - name: project
                   in: path
-                  description: Tigris project name
+                  description: Tigris project name.
                   required: true
                   schema:
                     type: string
                 - name: name
                   in: path
-                  description: search index name
+                  description: search index name.
                   required: true
                   schema:
                     type: string
@@ -1943,13 +2244,13 @@ paths:
             parameters:
                 - name: project
                   in: path
-                  description: Tigris project name
+                  description: Tigris project name.
                   required: true
                   schema:
                     type: string
                 - name: name
                   in: path
-                  description: index name
+                  description: index name.
                   required: true
                   schema:
                     type: string
@@ -2116,6 +2417,28 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created".
+        CreateByIdRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Tigris project name.
+                index:
+                    type: string
+                    description: index name where to create document.
+                id:
+                    type: string
+                    description: document id.
+                document:
+                    type: string
+                    description: A JSON document that needs to be indexed.
+                    format: byte
+        CreateByIdResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Returns the id of the created document.
         CreateCacheOptions:
             type: object
             properties:
@@ -2136,6 +2459,29 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created"
+        CreateDocumentRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Tigris project name.
+                index:
+                    type: string
+                    description: index name where to create documents.
+                documents:
+                    type: array
+                    items:
+                        type: string
+                        format: byte
+                    description: An array of documents to be created or replaced. Each document is a JSON object.
+        CreateDocumentResponse:
+            type: object
+            properties:
+                status:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DocStatus'
+                    description: An array of statuses of all the documents received in the request. Order is same as it is received in the request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null in case of success, otherwise error is set with an error code and message.
         CreateNamespaceRequest:
             type: object
             properties:
@@ -2160,6 +2506,29 @@ components:
                     description: An enum with value set as "created".
                 namespace:
                     $ref: '#/components/schemas/NamespaceInfo'
+        CreateOrReplaceDocumentRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Project name whose db is under target to insert documents.
+                index:
+                    type: string
+                    description: index name where to create documents.
+                documents:
+                    type: array
+                    items:
+                        type: string
+                        format: byte
+                    description: An array of documents to create. Each document is a JSON object. In case an id is missing then the server will automatically generate it for you and create the document and in case an id is provided in the document and the document already exists then that document will not index and in the response there will be an error corresponding to that document id other documents will succeed.
+        CreateOrReplaceDocumentResponse:
+            type: object
+            properties:
+                status:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DocStatus'
+                    description: An array of statuses of all the documents received in the request. Order is same as it is received in the request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null in case of success, otherwise error is set with an error code and message.
         CreateOrUpdateCollectionRequest:
             type: object
             properties:
@@ -2188,10 +2557,10 @@ components:
             properties:
                 project:
                     type: string
-                    description: Tigris project name
+                    description: Tigris project name.
                 name:
                     type: string
-                    description: search index name
+                    description: search index name.
                 schema:
                     type: string
                     description: 'schema of the index. The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.<p></p> Schema example: `{  "title": "ecommerce_index",  "description": "an ecommerce store search index",  "properties": {    "name": {      "description": "Name of the product",      "type": "string",      "maxLength": 128    },    "brand": {      "description": "Brand of the product",      "type": "string"    },    "price": {      "description": "Price of the product",      "type": "number"    }  } }`'
@@ -2271,6 +2640,26 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "deleted".
+        DeleteByQueryRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: The project name.
+                index:
+                    type: string
+                    description: The index name of the documents that needs deletion.
+                filter:
+                    type: string
+                    description: 'A filter is required to delete matching documents. To delete document by id, you can pass the filter as follows ```{"id": "test"}```'
+                    format: byte
+        DeleteByQueryResponse:
+            type: object
+            properties:
+                count:
+                    type: integer
+                    description: The number of documents deleted.
+                    format: int32
         DeleteCacheRequest:
             type: object
             properties: {}
@@ -2283,15 +2672,37 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "deleted"
+        DeleteDocumentRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: The project name.
+                index:
+                    type: string
+                    description: The index name of the documents that needs deletion.
+                ids:
+                    type: array
+                    items:
+                        type: string
+                    description: A list of ids
+        DeleteDocumentResponse:
+            type: object
+            properties:
+                status:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DocStatus'
+                    description: An array of statuses of all the documents received in the request. Order is same as it is received in the request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null in case of success, otherwise error is set with an error code and message.
         DeleteIndexRequest:
             type: object
             properties:
                 project:
                     type: string
-                    description: Tigris project name
+                    description: Tigris project name.
                 name:
                     type: string
-                    description: index name
+                    description: index name.
         DeleteIndexResponse:
             type: object
             properties:
@@ -2300,7 +2711,7 @@ components:
                     description: A detailed response message.
                 status:
                     type: string
-                    description: An enum with value set as "deleted"
+                    description: An enum with value set as "deleted".
         DeleteProjectRequest:
             type: object
             properties: {}
@@ -2419,6 +2830,14 @@ components:
             properties:
                 data:
                     $ref: '#/components/schemas/DescribeNamespacesData'
+        DocStatus:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: An id of the document.
+                error:
+                    $ref: '#/components/schemas/Error'
         DropCollectionRequest:
             type: object
             properties:
@@ -2533,6 +2952,15 @@ components:
                     description: Access token expiration timeout in seconds.
                     format: int32
             description: The response of GetAccessToken which contains access_token and optionally refresh_token.
+        GetDocumentResponse:
+            type: object
+            properties:
+                documents:
+                    type: array
+                    items:
+                        type: string
+                        format: byte
+                    description: An array of documents.
         GetInfoResponse:
             type: object
             properties:
@@ -2673,6 +3101,30 @@ components:
                         type: string
                         format: byte
                     description: an array returns the value of the primary keys.
+        IndexInfo:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Name of the index.
+                schema:
+                    type: string
+                    description: Schema of the index.
+                    format: byte
+                source:
+                    $ref: '#/components/schemas/IndexSource'
+        IndexSource:
+            type: object
+            properties:
+                type:
+                    type: string
+                    description: An index can be either managed by user explicitly then the type is set as "user" or the index is backed by Tigris collection. In case it is backed by Tigris collection the type is "tigris".
+                collection:
+                    type: string
+                    description: Applicable only in case index is backed by Tigris collection.
+                branch:
+                    type: string
+                    description: Applicable only in case index is backed by Tigris collection.
         InsertNamespaceMetadataRequest:
             type: object
             properties:
@@ -2788,8 +3240,8 @@ components:
                 indexes:
                     type: array
                     items:
-                        type: string
-                    description: List of indexes
+                        $ref: '#/components/schemas/IndexInfo'
+                    description: List of indexes.
         ListNamespacesResponse:
             type: object
             properties:
@@ -3333,6 +3785,29 @@ components:
                 updated_app_key:
                     $ref: '#/components/schemas/AppKey'
             description: Returns response for updating the app key description
+        UpdateDocumentRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Project name whose db is under target to insert documents.
+                index:
+                    type: string
+                    description: Index name where to create documents.
+                documents:
+                    type: array
+                    items:
+                        type: string
+                        format: byte
+                    description: An array of documents. Each document should have "id" present which will be used by Tigris for updating the document.
+        UpdateDocumentResponse:
+            type: object
+            properties:
+                status:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DocStatus'
+                    description: An array of statuses of all the documents received in the request. Order is same as it is received in the request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null in case of success, otherwise error is set with an error code and message.
         UpdateNamespaceMetadataRequest:
             type: object
             properties:
