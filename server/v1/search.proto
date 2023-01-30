@@ -19,6 +19,7 @@ package tigrisdata.search.v1;
 import "google/api/annotations.proto";
 import "openapiv3/annotations.proto";
 import "server/v1/observability.proto";
+import "server/v1/api.proto";
 
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
@@ -63,7 +64,8 @@ message IndexSource {
   string type = 1;
   // Applicable only in case index is backed by Tigris collection.
   string collection = 2;
-  // Applicable only in case index is backed by Tigris collection.
+  // Applicable only in case index is backed by Tigris collection. This is the database branch for the above collection.
+  // For primary database it can be omitted or "main" can be passed.
   string branch=3;
 }
 
@@ -91,6 +93,8 @@ message DeleteIndexResponse {
 message ListIndexesRequest {
   // Tigris project name.
   string project = 1;
+  // Restrict the result to only return indexes matches the filter.
+  IndexSource filter = 2;
 }
 
 message IndexInfo {
@@ -115,7 +119,7 @@ message DocStatus {
 }
 
 message GetDocumentRequest {
-  // Project name whose db is under target to insert documents.
+  // Tigris project name.
   string project = 1;
   // index name where to create documents.
   string index = 2;
@@ -224,6 +228,42 @@ message DeleteByQueryRequest {
 message DeleteByQueryResponse {
   // The number of documents deleted.
   int32 count = 1;
+}
+
+message SearchIndexRequest {
+  // Project name whose db is under target to search documents from.
+  string project = 1;
+  // The index name to search documents from.
+  string index = 2;
+  // Query string for searching across text fields
+  string q = 3;
+  // Array of fields to project search query against
+  repeated string search_fields = 4;
+  // Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
+  bytes filter = 5;
+  // Facet query to aggregate results on given fields. The field name for the facet search can be passed like this `{"brand": { "size": 10 }}`
+  // where the size controls the total facets for this field.
+  bytes facet = 6;
+  // Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`
+  bytes sort = 7;
+  // Array of document field names to include in results. By default, all fields are included.
+  repeated string include_fields = 8;
+  // Array of document field names to exclude from results. `include_fields`, if specified, takes precedence over `exclude_fields`.
+  repeated string exclude_fields = 9;
+  // Optionally can set the number of hits to be returned per page, default is 20.
+  int32 page_size = 10;
+  // Optionally can specify the page to retrieve. If page is set then only hits for this page is returned
+  int32 page = 11;
+  // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+  // this option to 'ci' that will apply to all the text fields in the filters.
+  tigrisdata.v1.Collation collation = 12;
+}
+
+// Response struct for search
+message SearchIndexResponse {
+  repeated  tigrisdata.v1.SearchHit hits = 1;
+  map<string,  tigrisdata.v1.SearchFacet> facets = 2;
+  tigrisdata.v1.SearchMetadata meta = 3;
 }
 
 service Search {
@@ -355,6 +395,22 @@ service Search {
     };
     option(openapi.v3.operation) = {
       summary: "Delete documents by query"
+      tags: "Search"
+    };
+  }
+
+  // Searches an index for the documents matching the query. A search can be a term search or a phrase search.
+  // Search API allows filtering the result set using filters as documented
+  // <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>. You can also perform
+  // a faceted search by passing the fields in the facet parameter. You can find more detailed documentation of the
+  // Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
+  rpc Search(SearchIndexRequest) returns (stream SearchIndexResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/search/indexes/{index}/documents/search"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Search Documents."
       tags: "Search"
     };
   }

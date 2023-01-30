@@ -68,6 +68,9 @@ option (openapi.v3.document) = {
   }, {
     name: "Realtime"
     description: "The realtime section provide APIs that can be used realtime operations."
+  }, {
+    name: "Search"
+    description: "The search section provides you APIs that can be used to implement powerful apps with search experiences. You can manage storing documents on your own or you can simply integrate it with your database and let Tigris automatically sync it for you."
   }]
   components: {
     security_schemes: {
