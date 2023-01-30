@@ -1884,6 +1884,21 @@ paths:
                   required: true
                   schema:
                     type: string
+                - name: filter.type
+                  in: query
+                  description: An index can be either managed by user explicitly then the type is set as "user" or the index is backed by Tigris collection. In case it is backed by Tigris collection the type is "tigris".
+                  schema:
+                    type: string
+                - name: filter.collection
+                  in: query
+                  description: Applicable only in case index is backed by Tigris collection.
+                  schema:
+                    type: string
+                - name: filter.branch
+                  in: query
+                  description: Applicable only in case index is backed by Tigris collection. This is the database branch for the above collection. For primary database it can be omitted or "main" can be passed.
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -1909,7 +1924,7 @@ paths:
             parameters:
                 - name: project
                   in: path
-                  description: Project name whose db is under target to insert documents.
+                  description: Tigris project name.
                   required: true
                   schema:
                     type: string
@@ -2143,6 +2158,50 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DeleteByQueryResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/search/indexes/{index}/documents/search:
+        post:
+            tags:
+                - Search
+            summary: Search Documents.
+            description: |-
+                Searches an index for the documents matching the query. A search can be a term search or a phrase search.
+                 Search API allows filtering the result set using filters as documented
+                 <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>. You can also perform
+                 a faceted search by passing the fields in the facet parameter. You can find more detailed documentation of the
+                 Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
+            operationId: Search_Search
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to search documents from.
+                  required: true
+                  schema:
+                    type: string
+                - name: index
+                  in: path
+                  description: The index name to search documents from.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SearchIndexRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SearchIndexResponse'
                 default:
                     description: Default error response
                     content:
@@ -3124,7 +3183,7 @@ components:
                     description: Applicable only in case index is backed by Tigris collection.
                 branch:
                     type: string
-                    description: Applicable only in case index is backed by Tigris collection.
+                    description: Applicable only in case index is backed by Tigris collection. This is the database branch for the above collection. For primary database it can be omitted or "main" can be passed.
         InsertNamespaceMetadataRequest:
             type: object
             properties:
@@ -3650,6 +3709,69 @@ components:
                     description: Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
                     format: date-time
             description: Contains metadata related to the search hit, has information about document created_at/updated_at as well.
+        SearchIndexRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Project name whose db is under target to search documents from.
+                index:
+                    type: string
+                    description: The index name to search documents from.
+                q:
+                    type: string
+                    description: Query string for searching across text fields
+                search_fields:
+                    type: array
+                    items:
+                        type: string
+                    description: Array of fields to project search query against
+                filter:
+                    type: string
+                    description: Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
+                    format: byte
+                facet:
+                    type: string
+                    description: 'Facet query to aggregate results on given fields. The field name for the facet search can be passed like this `{"brand": { "size": 10 }}` where the size controls the total facets for this field.'
+                    format: byte
+                sort:
+                    type: string
+                    description: 'Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`'
+                    format: byte
+                include_fields:
+                    type: array
+                    items:
+                        type: string
+                    description: Array of document field names to include in results. By default, all fields are included.
+                exclude_fields:
+                    type: array
+                    items:
+                        type: string
+                    description: Array of document field names to exclude from results. `include_fields`, if specified, takes precedence over `exclude_fields`.
+                page_size:
+                    type: integer
+                    description: Optionally can set the number of hits to be returned per page, default is 20.
+                    format: int32
+                page:
+                    type: integer
+                    description: Optionally can specify the page to retrieve. If page is set then only hits for this page is returned
+                    format: int32
+                collation:
+                    $ref: '#/components/schemas/Collation'
+        SearchIndexResponse:
+            type: object
+            properties:
+                hits:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SearchHit'
+                facets:
+                    type: object
+                    additionalProperties:
+                        $ref: '#/components/schemas/SearchFacet'
+                meta:
+                    $ref: '#/components/schemas/SearchMetadata'
+            description: Response struct for search
         SearchMetadata:
             type: object
             properties:
@@ -3934,4 +4056,6 @@ tags:
       description: Every Tigris projects comes with a transactional document database built on FoundationDB, one of the most resilient and battle-tested open source distributed key-value store. A database is created automatically for you when you create a project.
     - name: Realtime
       description: The realtime section provide APIs that can be used realtime operations.
+    - name: Search
+      description: The search section provides you APIs that can be used to implement powerful apps with search experiences. You can manage storing documents on your own or you can simply integrate it with your database and let Tigris automatically sync it for you.
     - name: Search
