@@ -2258,6 +2258,37 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/Status'
     /v1/projects/{project}/search/indexes/{name}:
+        get:
+            tags:
+                - Search
+            summary: Get information about a search index
+            operationId: Search_GetIndex
+            parameters:
+                - name: project
+                  in: path
+                  description: Tigris project name.
+                  required: true
+                  schema:
+                    type: string
+                - name: name
+                  in: path
+                  description: index name.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetIndexResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
         put:
             tags:
                 - Search
@@ -3020,6 +3051,11 @@ components:
                         type: string
                         format: byte
                     description: An array of documents.
+        GetIndexResponse:
+            type: object
+            properties:
+                index:
+                    $ref: '#/components/schemas/IndexInfo'
         GetInfoResponse:
             type: object
             properties:
