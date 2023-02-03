@@ -76,6 +76,18 @@ message CreateOrUpdateIndexResponse {
   string status = 2;
 }
 
+message GetIndexRequest {
+  // Tigris project name.
+  string project = 1;
+  // index name.
+  string name = 2;
+}
+
+message GetIndexResponse {
+  // index info in the response.
+  IndexInfo index = 1;
+}
+
 message DeleteIndexRequest {
   // Tigris project name.
   string project = 1;
@@ -274,6 +286,16 @@ service Search {
     };
     option(openapi.v3.operation) = {
       summary: "Creates or updates search index"
+      tags: "Search"
+    };
+  }
+
+  rpc GetIndex(GetIndexRequest) returns (GetIndexResponse){
+    option (google.api.http) = {
+      get : "/v1/projects/{project}/search/indexes/{name}"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Get information about a search index"
       tags: "Search"
     };
   }
