@@ -3206,20 +3206,6 @@ components:
                     type: string
                     description: Schema of the index.
                     format: byte
-                source:
-                    $ref: '#/components/schemas/IndexSource'
-        IndexSource:
-            type: object
-            properties:
-                type:
-                    type: string
-                    description: An index can be either managed by user explicitly then the type is set as "user" or the index is backed by Tigris collection. In case it is backed by Tigris collection the type is "tigris".
-                collection:
-                    type: string
-                    description: Applicable only in case index is backed by Tigris collection.
-                branch:
-                    type: string
-                    description: Applicable only in case index is backed by Tigris collection. This is the database branch for the above collection. For primary database it can be omitted or "main" can be passed.
         InsertNamespaceMetadataRequest:
             type: object
             properties:
@@ -4093,5 +4079,5 @@ tags:
     - name: Realtime
       description: The realtime section provide APIs that can be used realtime operations.
     - name: Search
-      description: The search section provides you APIs that can be used to implement powerful apps with search experiences. You can manage storing documents on your own or you can simply integrate it with your database and let Tigris automatically sync it for you.
+      description: The search section provides you APIs that can be used to implement powerful apps with search experiences. You can manage storing documents on your own or you can simply integrate it with your database.
     - name: Search

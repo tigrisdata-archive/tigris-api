@@ -114,8 +114,6 @@ message IndexInfo {
   string name = 1;
   // Schema of the index.
   bytes schema = 2;
-  // Source of this index.
-  IndexSource source = 3;
 }
 
 message ListIndexesResponse {
