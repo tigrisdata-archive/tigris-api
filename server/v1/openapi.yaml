@@ -2920,6 +2920,18 @@ components:
             properties:
                 data:
                     $ref: '#/components/schemas/DescribeNamespacesData'
+        DocMeta:
+            type: object
+            properties:
+                created_at:
+                    type: string
+                    description: Time at which the document was inserted/replaced. Measured in nano-seconds since the Unix epoch.
+                    format: date-time
+                updated_at:
+                    type: string
+                    description: Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
+                    format: date-time
+            description: Contains metadata related to the search hit, has information about document created_at/updated_at as well.
         DocStatus:
             type: object
             properties:
@@ -3048,8 +3060,7 @@ components:
                 documents:
                     type: array
                     items:
-                        type: string
-                        format: byte
+                        $ref: '#/components/schemas/IndexDoc'
                     description: An array of documents.
         GetIndexResponse:
             type: object
@@ -3196,6 +3207,15 @@ components:
                         type: string
                         format: byte
                     description: an array returns the value of the primary keys.
+        IndexDoc:
+            type: object
+            properties:
+                doc:
+                    type: string
+                    description: Actual search document
+                    format: byte
+                metadata:
+                    $ref: '#/components/schemas/DocMeta'
         IndexInfo:
             type: object
             properties:
@@ -3788,7 +3808,7 @@ components:
                 hits:
                     type: array
                     items:
-                        $ref: '#/components/schemas/SearchHit'
+                        $ref: '#/components/schemas/IndexDoc'
                 facets:
                     type: object
                     additionalProperties:

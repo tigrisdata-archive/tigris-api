@@ -20,6 +20,7 @@ import "google/api/annotations.proto";
 import "openapiv3/annotations.proto";
 import "server/v1/observability.proto";
 import "server/v1/api.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
@@ -139,7 +140,7 @@ message GetDocumentRequest {
 
 message GetDocumentResponse {
   // An array of documents.
-  repeated bytes documents = 1;
+  repeated IndexDoc documents = 1;
 }
 
 message CreateByIdRequest {
@@ -240,6 +241,21 @@ message DeleteByQueryResponse {
   int32 count = 1;
 }
 
+message IndexDoc {
+  // Actual search document
+  bytes doc = 1;
+  // Has metadata related to the search hit
+  DocMeta metadata = 2;
+}
+
+// Contains metadata related to the search hit, has information about document created_at/updated_at as well.
+message DocMeta {
+  // Time at which the document was inserted/replaced. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp created_at = 1;
+  // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
+  google.protobuf.Timestamp updated_at = 2;
+}
+
 message SearchIndexRequest {
   // Project name whose db is under target to search documents from.
   string project = 1;
@@ -271,7 +287,7 @@ message SearchIndexRequest {
 
 // Response struct for search
 message SearchIndexResponse {
-  repeated  tigrisdata.v1.SearchHit hits = 1;
+  repeated  IndexDoc hits = 1;
   map<string,  tigrisdata.v1.SearchFacet> facets = 2;
   tigrisdata.v1.SearchMetadata meta = 3;
 }
