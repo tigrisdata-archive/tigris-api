@@ -75,16 +75,17 @@ message Error {
 // Requests the time series metrics
 message QueryTimeSeriesMetricsRequest {
   string db = 1;
-  string collection = 2;
-  int64 from = 3;
-  int64 to = 4;
-  string metric_name = 5;
-  TigrisOperation tigris_operation = 6;
-  MetricQuerySpaceAggregation space_aggregation = 7;
-  repeated string space_aggregated_by = 8;
-  MetricQueryFunction function = 9;
-  float quantile = 10;
-  repeated AdditionalFunction additionalFunctions = 11;
+  string branch = 2;
+  string collection = 3;
+  int64 from = 4;
+  int64 to = 5;
+  string metric_name = 6;
+  TigrisOperation tigris_operation = 7;
+  MetricQuerySpaceAggregation space_aggregation = 8;
+  repeated string space_aggregated_by = 9;
+  MetricQueryFunction function = 10;
+  float quantile = 11;
+  repeated AdditionalFunction additionalFunctions = 12;
 }
 
 // Represents Tigris operation category

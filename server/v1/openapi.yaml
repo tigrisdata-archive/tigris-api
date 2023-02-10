@@ -3442,6 +3442,8 @@ components:
             properties:
                 db:
                     type: string
+                branch:
+                    type: string
                 collection:
                     type: string
                 from:
