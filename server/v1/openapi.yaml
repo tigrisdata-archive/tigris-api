@@ -954,6 +954,33 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/branches:
+        get:
+            tags:
+                - Database
+            summary: List database branches
+            description: List database branches
+            operationId: Tigris_ListBranches
+            parameters:
+                - name: project
+                  in: path
+                  description: List database branches in this project
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListBranchesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/database/branches/{branch}/create:
         post:
             tags:
@@ -2419,6 +2446,17 @@ components:
                 tx_ctx:
                     $ref: '#/components/schemas/TransactionCtx'
             description: Start transaction returns transaction context  which uniquely identifies the transaction
+        BranchInfo:
+            type: object
+            properties:
+                branch:
+                    type: string
+                    description: Branch name
+                metadata:
+                    $ref: '#/components/schemas/BranchMetadata'
+        BranchMetadata:
+            type: object
+            properties: {}
         CacheMetadata:
             type: object
             properties:
@@ -3319,6 +3357,14 @@ components:
                     items:
                         $ref: '#/components/schemas/AppKey'
             description: ListAppKeysResponse returns one or more visible app keys to user
+        ListBranchesResponse:
+            type: object
+            properties:
+                branches:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/BranchInfo'
+                    description: List of all the branches in this database
         ListCachesResponse:
             type: object
             properties:

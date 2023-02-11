@@ -44,16 +44,16 @@ option (openapi.v3.document) = {
   tags: [{
     name: "Authentication"
     description: "The auth section of API provides OAuth 2.0 APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H \"Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I\"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail."
-  },{
+  }, {
     name: "Application Keys"
     description: "The application keys section provide APIs that can be used to manage application keys for your project. A single project can have one or more application keys."
-  },{
+  }, {
     name: "Projects"
     description: "Every Tigris projects comes with a transactional document database built on FoundationDB, one of the most resilient and battle-tested open source distributed key-value store. A database is created automatically for you when you create a project."
-  },{
+  }, {
     name: "Database"
     description: "The Database section provide APIs that can be used to interact with the database. A single Database can have one or more collections. A database is created automatically for you when you create a project."
-  },{
+  }, {
     name: "Collections"
     description: "The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents."
   }, {
@@ -538,6 +538,17 @@ message DeleteBranchResponse {
   string status = 2;
 }
 
+message ListBranchesRequest {
+  // List database branches in this project
+  string project = 1;
+}
+
+message ListBranchesResponse {
+  // List of all the branches in this database
+  repeated BranchInfo branches = 1;
+}
+
+
 message CreateOrUpdateCollectionRequest {
   // Project name whose db is under target to create or update collection.
   string project = 1;
@@ -614,6 +625,14 @@ message CollectionInfo {
 
   // Metadata about the collection.
   CollectionMetadata metadata = 2;
+}
+
+message BranchInfo {
+  // Branch name
+  string branch = 1;
+
+  // Metadata about the branch
+  BranchMetadata metadata = 2;
 }
 
 message ListProjectsRequest {
@@ -722,6 +741,8 @@ message DatabaseMetadata {
 message CollectionMetadata {
 }
 
+message BranchMetadata {
+}
 
 // Request creation of user app key
 message CreateAppKeyRequest {
@@ -1057,6 +1078,17 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Delete a database branch"
+      tags: "Database"
+    };
+  }
+
+  // List database branches
+  rpc ListBranches(ListBranchesRequest) returns (ListBranchesResponse) {
+    option(google.api.http) = {
+      get: "/v1/projects/{project}/database/branches"
+    };
+    option(openapi.v3.operation) = {
+      summary: "List database branches",
       tags: "Database"
     };
   }
