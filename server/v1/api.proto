@@ -473,6 +473,7 @@ message SearchMetadata {
   // Number representing the total pages of results
   int32 total_pages = 2;
   Page page = 3;
+  repeated string matched_fields = 4;
 }
 
 // Pagination metadata for SearchResponse
