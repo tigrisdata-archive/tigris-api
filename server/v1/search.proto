@@ -248,12 +248,23 @@ message IndexDoc {
   DocMeta metadata = 2;
 }
 
+message MatchField {
+ string name = 1;
+}
+
+message Match {
+  repeated MatchField fields = 1;
+  string score = 2;
+}
+
 // Contains metadata related to the search hit, has information about document created_at/updated_at as well.
 message DocMeta {
   // Time at which the document was inserted/replaced. Measured in nano-seconds since the Unix epoch.
   google.protobuf.Timestamp created_at = 1;
   // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
   google.protobuf.Timestamp updated_at = 2;
+  // Match has the information about the matching document like the matched field, etc
+  Match match = 3;
 }
 
 message SearchIndexRequest {

@@ -2969,6 +2969,8 @@ components:
                     type: string
                     description: Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
                     format: date-time
+                match:
+                    $ref: '#/components/schemas/Match'
             description: Contains metadata related to the search hit, has information about document created_at/updated_at as well.
         DocStatus:
             type: object
@@ -3020,6 +3022,7 @@ components:
                         - CONFLICT
                         - BAD_GATEWAY
                         - METHOD_NOT_ALLOWED
+                        - CONTENT_TOO_LARGE
                     type: string
                     description: The status code is a short, machine parsable string, which uniquely identifies the error type. Tigris to HTTP code mapping [here](/reference/http-code)
                     format: enum
@@ -3411,6 +3414,20 @@ components:
                     type: array
                     items:
                         type: string
+        Match:
+            type: object
+            properties:
+                fields:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MatchField'
+                score:
+                    type: string
+        MatchField:
+            type: object
+            properties:
+                name:
+                    type: string
         Message:
             type: object
             properties:
@@ -3875,6 +3892,10 @@ components:
                     format: int32
                 page:
                     $ref: '#/components/schemas/Page'
+                matched_fields:
+                    type: array
+                    items:
+                        type: string
         SearchRequest:
             type: object
             properties:

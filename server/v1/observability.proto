@@ -47,6 +47,7 @@ enum Code {
   CONFLICT = 17; // 409
   BAD_GATEWAY = 18; // 502
   METHOD_NOT_ALLOWED = 19; // 405
+  CONTENT_TOO_LARGE = 20; // 413
 }
 
 // Contains retry information
