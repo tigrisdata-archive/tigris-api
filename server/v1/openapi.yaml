@@ -2958,20 +2958,6 @@ components:
             properties:
                 data:
                     $ref: '#/components/schemas/DescribeNamespacesData'
-        DocMeta:
-            type: object
-            properties:
-                created_at:
-                    type: string
-                    description: Time at which the document was inserted/replaced. Measured in nano-seconds since the Unix epoch.
-                    format: date-time
-                updated_at:
-                    type: string
-                    description: Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
-                    format: date-time
-                match:
-                    $ref: '#/components/schemas/Match'
-            description: Contains metadata related to the search hit, has information about document created_at/updated_at as well.
         DocStatus:
             type: object
             properties:
@@ -3101,7 +3087,7 @@ components:
                 documents:
                     type: array
                     items:
-                        $ref: '#/components/schemas/IndexDoc'
+                        $ref: '#/components/schemas/SearchHit'
                     description: An array of documents.
         GetIndexResponse:
             type: object
@@ -3197,6 +3183,17 @@ components:
                     type: string
                     format: byte
             description: User metadata response
+        GroupedSearchIndexResponse:
+            type: object
+            properties:
+                group_keys:
+                    type: array
+                    items:
+                        type: string
+                hits:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SearchHit'
         HealthCheckResponse:
             type: object
             properties:
@@ -3248,15 +3245,6 @@ components:
                         type: string
                         format: byte
                     description: an array returns the value of the primary keys.
-        IndexDoc:
-            type: object
-            properties:
-                doc:
-                    type: string
-                    description: Actual search document
-                    format: byte
-                metadata:
-                    $ref: '#/components/schemas/DocMeta'
         IndexInfo:
             type: object
             properties:
@@ -3815,6 +3803,8 @@ components:
                     type: string
                     description: Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
                     format: date-time
+                match:
+                    $ref: '#/components/schemas/Match'
             description: Contains metadata related to the search hit, has information about document created_at/updated_at as well.
         SearchIndexRequest:
             type: object
@@ -3871,14 +3861,18 @@ components:
                 hits:
                     type: array
                     items:
-                        $ref: '#/components/schemas/IndexDoc'
+                        $ref: '#/components/schemas/SearchHit'
                 facets:
                     type: object
                     additionalProperties:
                         $ref: '#/components/schemas/SearchFacet'
                 meta:
                     $ref: '#/components/schemas/SearchMetadata'
-            description: Response struct for search
+                group:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GroupedSearchIndexResponse'
+                    description: Group is returned when group_by is used in the search request. In this case the above hits will be empty and hits are returned by the group keys.
         SearchMetadata:
             type: object
             properties:

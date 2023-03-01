@@ -441,6 +441,8 @@ message SearchHitMeta {
   google.protobuf.Timestamp created_at = 1;
   // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
   google.protobuf.Timestamp updated_at = 2;
+  // Match has the information about the matching document like the matched field, etc
+  Match match = 3;
 }
 
 message SearchFacet {
@@ -474,6 +476,20 @@ message SearchMetadata {
   int32 total_pages = 2;
   Page page = 3;
   repeated string matched_fields = 4;
+}
+
+message MatchField {
+  string name = 1;
+}
+
+message Match {
+  repeated MatchField fields = 1;
+  string score = 2;
+}
+
+message GroupedSearchIndexResponse {
+  repeated string group_keys = 1;
+  repeated SearchHit hits = 2;
 }
 
 // Pagination metadata for SearchResponse
@@ -733,6 +749,7 @@ message CollectionDescription {
   // Collection size in bytes
   int64 size = 4;
 }
+
 message ProjectMetadata {
 }
 
