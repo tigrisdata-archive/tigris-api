@@ -3183,7 +3183,7 @@ components:
                     type: string
                     format: byte
             description: User metadata response
-        GroupedSearchIndexResponse:
+        GroupedSearchHits:
             type: object
             properties:
                 group_keys:
@@ -3871,7 +3871,7 @@ components:
                 group:
                     type: array
                     items:
-                        $ref: '#/components/schemas/GroupedSearchIndexResponse'
+                        $ref: '#/components/schemas/GroupedSearchHits'
                     description: Group is returned when group_by is used in the search request. In this case the above hits will be empty and hits are returned by the group keys.
         SearchMetadata:
             type: object
