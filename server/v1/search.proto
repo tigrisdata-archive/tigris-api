@@ -267,6 +267,9 @@ message SearchIndexRequest {
   // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
   // this option to 'ci' that will apply to all the text fields in the filters.
   tigrisdata.v1.Collation collation = 12;
+  // Group by can be used to group search results. For example, to group by city field the
+  // syntax would be: `{ "fields": ["city"]}`. Optionally a grouping limit can be set. By default it is 3 per group.
+  bytes group_by = 13;
 }
 
 message SearchIndexResponse {
