@@ -315,6 +315,8 @@ message DeleteResponse {
   ResponseMetadata metadata = 1;
   // an enum with value set as "deleted"
   string status = 2;
+  // Returns the number of documents deleted.
+  int32 deleted_count = 3;
 }
 
 // Additional options for update requests.

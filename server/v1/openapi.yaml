@@ -2883,6 +2883,10 @@ components:
                 status:
                     type: string
                     description: an enum with value set as "deleted"
+                deleted_count:
+                    type: integer
+                    description: Returns the number of documents deleted.
+                    format: int32
         DescribeCollectionRequest:
             type: object
             properties:
