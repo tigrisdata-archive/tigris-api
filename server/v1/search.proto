@@ -1,0 +1,442 @@
+// Copyright 2022-2023 Tigris Data, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package tigrisdata.search.v1;
+
+import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
+import "server/v1/observability.proto";
+import "server/v1/api.proto";
+
+option go_package = "github.com/tigrisdata/tigris/api";
+option java_package = "com.tigrisdata.db.api.v1.grpc";
+
+message CreateOrUpdateIndexRequest {
+  // Tigris project name.
+  string project = 1;
+  // search index name.
+  string name = 2;
+  // schema of the index. The schema specifications are same as
+  // JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.
+  //<p></p>
+  // Schema example:
+  // `{
+  //  "title": "ecommerce_index",
+  //  "description": "an ecommerce store search index",
+  //  "properties": {
+  //    "name": {
+  //      "description": "Name of the product",
+  //      "type": "string",
+  //      "maxLength": 128
+  //    },
+  //    "brand": {
+  //      "description": "Brand of the product",
+  //      "type": "string"
+  //    },
+  //    "price": {
+  //      "description": "Price of the product",
+  //      "type": "number"
+  //    }
+  //  }
+  // }`
+  bytes schema = 3;
+  // If set to `true` then a conflict with HTTP Status code 409 is returned if an index already exists.
+  // The default is false.
+  bool only_create = 4;
+}
+
+message IndexSource {
+  // An index can be either managed by user explicitly then the type is set as "user" or the index is backed by Tigris
+  // collection. In case it is backed by Tigris collection the type is "tigris".
+  string type = 1;
+  // Applicable only in case index is backed by Tigris collection.
+  string collection = 2;
+  // Applicable only in case index is backed by Tigris collection. This is the database branch for the above collection.
+  // For primary database it can be omitted or "main" can be passed.
+  string branch=3;
+}
+
+message CreateOrUpdateIndexResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "created"
+  string status = 2;
+}
+
+message GetIndexRequest {
+  // Tigris project name.
+  string project = 1;
+  // index name.
+  string name = 2;
+}
+
+message GetIndexResponse {
+  // index info in the response.
+  IndexInfo index = 1;
+}
+
+message DeleteIndexRequest {
+  // Tigris project name.
+  string project = 1;
+  // index name.
+  string name = 2;
+}
+
+message DeleteIndexResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "deleted".
+  string status = 2;
+}
+
+message ListIndexesRequest {
+  // Tigris project name.
+  string project = 1;
+  // Restrict the result to only return indexes matches the filter.
+  IndexSource filter = 2;
+}
+
+message IndexInfo {
+  // Name of the index.
+  string name = 1;
+  // Schema of the index.
+  bytes schema = 2;
+}
+
+message ListIndexesResponse {
+  // List of indexes.
+  repeated IndexInfo indexes = 1;
+}
+
+message DocStatus {
+  // An id of the document.
+  string id = 1;
+  // An error that has "code" and "message". It is set as null in case there is no error.
+  tigrisdata.observability.v1.Error error = 3;
+}
+
+message GetDocumentRequest {
+  // Tigris project name.
+  string project = 1;
+  // index name where to create documents.
+  string index = 2;
+  // document id.
+  repeated string ids = 3;
+}
+
+message GetDocumentResponse {
+  // An array of documents.
+  repeated tigrisdata.v1.SearchHit documents = 1;
+}
+
+message CreateByIdRequest {
+  // Tigris project name.
+  string project = 1;
+  // index name where to create document.
+  string index = 2;
+  // document id.
+  string id = 3;
+  // A JSON document that needs to be indexed.
+  bytes document = 4;
+}
+
+message CreateByIdResponse {
+  // Returns the id of the created document.
+  string id = 1;
+}
+
+message CreateDocumentRequest {
+  // Tigris project name.
+  string project = 1;
+  // index name where to create documents.
+  string index = 2;
+  // An array of documents to be created or replaced. Each document is a JSON object.
+  repeated bytes documents = 3;
+}
+
+message CreateDocumentResponse {
+  // An array of statuses of all the documents received in the request. Order is same as it is received in the
+  // request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null
+  // in case of success, otherwise error is set with an error code and message.
+  repeated DocStatus status = 1;
+}
+
+message CreateOrReplaceDocumentRequest {
+  // Project name whose db is under target to insert documents.
+  string project = 1;
+  // index name where to create documents.
+  string index = 2;
+  // An array of documents to create. Each document is a JSON object. In case an id is missing then the server will
+  // automatically generate it for you and create the document and in case an id is provided in the document and the
+  // document already exists then that document will not index and in the response there will be an error corresponding
+  // to that document id other documents will succeed.
+  repeated bytes documents = 3;
+}
+
+message CreateOrReplaceDocumentResponse {
+  // An array of statuses of all the documents received in the request. Order is same as it is received in the
+  // request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null
+  // in case of success, otherwise error is set with an error code and message.
+  repeated DocStatus status = 1;
+}
+
+message UpdateDocumentRequest {
+  // Project name whose db is under target to insert documents.
+  string project = 1;
+  // Index name where to create documents.
+  string index = 2;
+  // An array of documents. Each document should have "id" present which will be used by Tigris for updating the document.
+  repeated bytes documents = 3;
+}
+
+message UpdateDocumentResponse {
+  // An array of statuses of all the documents received in the request. Order is same as it is received in the
+  // request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null
+  // in case of success, otherwise error is set with an error code and message.
+  repeated DocStatus status = 1;
+}
+
+message DeleteDocumentRequest {
+  // The project name.
+  string project = 1;
+  // The index name of the documents that needs deletion.
+  string index = 2;
+  // A list of ids
+  repeated string ids = 3;
+}
+
+message DeleteDocumentResponse {
+  // An array of statuses of all the documents received in the request. Order is same as it is received in the
+  // request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null
+  // in case of success, otherwise error is set with an error code and message.
+  repeated DocStatus status = 1;
+}
+
+message DeleteByQueryRequest {
+  // The project name.
+  string project = 1;
+  // The index name of the documents that needs deletion.
+  string index = 2;
+  // A filter is required to delete matching documents. To delete document by id, you can pass the
+  // filter as follows ```{"id": "test"}```
+  bytes filter = 3;
+}
+
+message DeleteByQueryResponse {
+  // The number of documents deleted.
+  int32 count = 1;
+}
+
+message SearchIndexRequest {
+  // Project name whose db is under target to search documents from.
+  string project = 1;
+  // The index name to search documents from.
+  string index = 2;
+  // Query string for searching across text fields
+  string q = 3;
+  // Array of fields to project search query against
+  repeated string search_fields = 4;
+  // Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
+  bytes filter = 5;
+  // Facet query to aggregate results on given fields. The field name for the facet search can be passed like this `{"brand": { "size": 10 }}`
+  // where the size controls the total facets for this field.
+  bytes facet = 6;
+  // Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`
+  bytes sort = 7;
+  // Array of document field names to include in results. By default, all fields are included.
+  repeated string include_fields = 8;
+  // Array of document field names to exclude from results. `include_fields`, if specified, takes precedence over `exclude_fields`.
+  repeated string exclude_fields = 9;
+  // Optionally can set the number of hits to be returned per page, default is 20.
+  int32 page_size = 10;
+  // Optionally can specify the page to retrieve. If page is set then only hits for this page is returned
+  int32 page = 11;
+  // A collation allows you to specify string comparison rules. Default is case-sensitive, to override it you can set
+  // this option to 'ci' that will apply to all the text fields in the filters.
+  tigrisdata.v1.Collation collation = 12;
+  // Group by can be used to group search results. For example, to group by city field the
+  // syntax would be: `{ "fields": ["city"]}`. Optionally a grouping limit can be set. By default it is 3 per group.
+  bytes group_by = 13;
+}
+
+message SearchIndexResponse {
+  repeated tigrisdata.v1.SearchHit hits = 1;
+  map<string,  tigrisdata.v1.SearchFacet> facets = 2;
+  tigrisdata.v1.SearchMetadata meta = 3;
+  // Group is returned when group_by is used in the search request. In this case the above hits will be empty and
+  // hits are returned by the group keys.
+  repeated tigrisdata.v1.GroupedSearchHits group = 4;
+}
+
+service Search {
+  rpc CreateOrUpdateIndex(CreateOrUpdateIndexRequest) returns (CreateOrUpdateIndexResponse){
+    option (google.api.http) = {
+      put : "/v1/projects/{project}/search/indexes/{name}"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Creates or updates search index"
+      tags: "Search"
+    };
+  }
+
+  rpc GetIndex(GetIndexRequest) returns (GetIndexResponse){
+    option (google.api.http) = {
+      get : "/v1/projects/{project}/search/indexes/{name}"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Get information about a search index"
+      tags: "Search"
+    };
+  }
+
+  rpc DeleteIndex(DeleteIndexRequest) returns (DeleteIndexResponse){
+    option (google.api.http) = {
+      delete : "/v1/projects/{project}/search/indexes/{name}"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Deletes search index"
+      tags: "Search"
+    };
+  }
+
+  rpc ListIndexes(ListIndexesRequest) returns (ListIndexesResponse){
+    option (google.api.http) = {
+      get : "/v1/projects/{project}/search/indexes"
+    };
+    option(openapi.v3.operation) = {
+      summary: "List search indexes"
+      tags: "Search"
+    };
+  }
+
+  // Retrieves one or more documents by id. The response is an array of documents in the same order it is requests.
+  // A null is returned for the documents that are not found.
+  rpc Get(GetDocumentRequest) returns (GetDocumentResponse){
+    option (google.api.http) = {
+      get : "/v1/projects/{project}/search/indexes/{index}/documents"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Get a single or multiple documents"
+      tags: "Search"
+    };
+  }
+
+  // CreateById is used for indexing a single document. The API expects a single document. An "id" is optional
+  // and the server can automatically generate it for you in case it is missing. In cases an id is provided in
+  // the document and the document already exists then that document will not be indexed and an error is returned
+  // with HTTP status code 409.
+  rpc CreateById(CreateByIdRequest) returns (CreateByIdResponse){
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/search/indexes/{index}/documents/{id}"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Create a single document"
+      tags: "Search"
+    };
+  }
+
+  // Create is used for indexing a single or multiple documents. The API expects an array of documents.
+  // Each document is a JSON object. An "id" is optional and the server can automatically generate it for you in
+  // case it is missing. In cases when an id is provided in the document and the document already exists then that
+  // document will not be indexed and in the response there will be an error corresponding to that document id other
+  // documents will succeed. Returns an array of status indicating the status of each document.
+  rpc Create(CreateDocumentRequest) returns (CreateDocumentResponse){
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/search/indexes/{index}/documents"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Create multiple documents"
+      tags: "Search"
+    };
+  }
+
+  // Creates or replaces one or more documents. Each document is a JSON object. A document is replaced
+  // if it already exists. An "id" is generated automatically in case it is missing in the document. The
+  // document is created if "id" doesn't exists otherwise it is replaced. Returns an array of status indicating
+  // the status of each document.
+  rpc CreateOrReplace(CreateOrReplaceDocumentRequest) returns (CreateOrReplaceDocumentResponse){
+    option (google.api.http) = {
+      put : "/v1/projects/{project}/search/indexes/{index}/documents"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Create or replace documents in an index"
+      tags: "Search"
+    };
+  }
+
+  // Updates one or more documents by "id". Each document is required to have the
+  // "id" field in it. Returns an array of status indicating the status of each document. Each status
+  // has an error field that is set to null in case document is updated successfully otherwise the error
+  // field is set with a code and message.
+  rpc Update(UpdateDocumentRequest) returns (UpdateDocumentResponse){
+    option (google.api.http) = {
+      patch: "/v1/projects/{project}/search/indexes/{index}/documents"
+      body: "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Update documents in an index"
+      tags: "Search"
+    };
+  }
+
+  // Delete one or more documents by id. Returns an array of status indicating the status of each document. Each status
+  // has an error field that is set to null in case document is deleted successfully otherwise it will non null with
+  // an error code and message.
+  rpc Delete(DeleteDocumentRequest) returns (DeleteDocumentResponse){
+    option (google.api.http) = {
+      delete : "/v1/projects/{project}/search/indexes/{index}/documents"
+      body: "*",
+    };
+    option(openapi.v3.operation) = {
+      summary: "Delete documents by ids"
+      tags: "Search"
+    };
+  }
+
+  // DeleteByQuery is used to delete documents that match the filter. A filter is required. To delete document by id,
+  // you can pass the filter as follows ```{"id": "test"}```. Returns a count of number of documents deleted.
+  rpc DeleteByQuery(DeleteByQueryRequest) returns (DeleteByQueryResponse){
+    option (google.api.http) = {
+      delete : "/v1/projects/{project}/search/indexes/{index}/documents/deleteByQuery"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Delete documents by query"
+      tags: "Search"
+    };
+  }
+
+  // Searches an index for the documents matching the query. A search can be a term search or a phrase search.
+  // Search API allows filtering the result set using filters as documented
+  // <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>. You can also perform
+  // a faceted search by passing the fields in the facet parameter. You can find more detailed documentation of the
+  // Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
+  rpc Search(SearchIndexRequest) returns (stream SearchIndexResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/search/indexes/{index}/documents/search"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Search Documents."
+      tags: "Search"
+    };
+  }
+}

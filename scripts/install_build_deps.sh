@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2022 Tigris Data, Inc.
+# Copyright 2022-2023 Tigris Data, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ go install github.com/mikefarah/yq/v4@latest # used to fix OpenAPI spec in scrip
 
 ARCH=$(uname -m)
 OS=$(uname -s)
-PROTO_VERSION=3.15.8
+PROTO_VERSION=21.9
 PB_REL="https://github.com/protocolbuffers/protobuf/releases"
 
 if [[ "$OS" == "Darwin" ]]; then

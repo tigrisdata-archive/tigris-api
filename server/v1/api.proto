@@ -1,4 +1,4 @@
-// Copyright 2022 Tigris Data, Inc.
+// Copyright 2022-2023 Tigris Data, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,29 +43,20 @@ option (openapi.v3.document) = {
   }
   tags: [{
     name: "Authentication"
-    description: "The auth section of API provides open authorization (OAuth 2.0) APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H \"Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I\"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail."
-  },{
-    name: "Namespaces"
-    description: "The Namespaces section provide APIs that can be used to manage namespaces. A single namespace can have one or more projects."
-  },{
+    description: "The auth section of API provides OAuth 2.0 APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H \"Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I\"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail."
+  }, {
+    name: "Application Keys"
+    description: "The application keys section provide APIs that can be used to manage application keys for your project. A single project can have one or more application keys."
+  }, {
     name: "Projects"
-    description: "The Projects section provide APIs that can be used to manage Tigris projects. A single project has one database"
-  },{
-    name: "Databases"
-    description: "The Databases section provide APIs that can be used to manage Tigris Databases. A single Database can have one or more collections."
-  },{
+    description: "Every Tigris projects comes with a transactional document database built on FoundationDB, one of the most resilient and battle-tested open source distributed key-value store. A database is created automatically for you when you create a project."
+  }, {
+    name: "Database"
+    description: "The Database section provide APIs that can be used to interact with the database. A single Database can have one or more collections. A database is created automatically for you when you create a project."
+  }, {
     name: "Collections"
     description: "The Collections section provide APIs that can be used to manage collections. A collection can have one or more documents."
-  },{
-    name: "Documents"
-    description: "The Documents section provide APIs to manage documents insides a collection. Uniqueness of documents are enforced by the primary key."
   }, {
-    name: "Transactions"
-    description: "Transactional APIs are used to control the state of the transaction by explicitly starting a transaction and ending it using the commit/rollback endpoint. All operations performed in a transaction acts as a single unit. Tigris offers global transactions, with ACID properties and strict serializability."
-  }, {
-    name: "Event Streaming"
-    description: "Tigris has built-in event streaming support. This functionality is enabled for the `Messages` collection type. This type of collection is referred as Topic and has endpoints that allows you to both subscribe and publish to a topic which enable building event-driven applications. Ordering is guaranteed on a partition level"
-  },{
     name: "Management"
     description: "The Management section provide APIs that can be used to manage users, and app_keys."
   }, {
@@ -74,6 +65,12 @@ option (openapi.v3.document) = {
   }, {
     name: "Cache"
     description: "The cache section provide APIs that can be used to perform cache operations."
+  }, {
+    name: "Realtime"
+    description: "The realtime section provide APIs that can be used realtime operations."
+  }, {
+    name: "Search"
+    description: "The search section provides you APIs that can be used to implement powerful apps with search experiences. You can manage storing documents on your own or you can simply integrate it with your database."
   }]
   components: {
     security_schemes: {
@@ -318,6 +315,8 @@ message DeleteResponse {
   ResponseMetadata metadata = 1;
   // an enum with value set as "deleted"
   string status = 2;
+  // Returns the number of documents deleted.
+  int32 deleted_count = 3;
 }
 
 // Additional options for update requests.
@@ -444,6 +443,8 @@ message SearchHitMeta {
   google.protobuf.Timestamp created_at = 1;
   // Time at which the document was updated. Measured in nano-seconds since the Unix epoch.
   google.protobuf.Timestamp updated_at = 2;
+  // Match has the information about the matching document like the matched field, etc
+  Match match = 3;
 }
 
 message SearchFacet {
@@ -476,6 +477,21 @@ message SearchMetadata {
   // Number representing the total pages of results
   int32 total_pages = 2;
   Page page = 3;
+  repeated string matched_fields = 4;
+}
+
+message MatchField {
+  string name = 1;
+}
+
+message Match {
+  repeated MatchField fields = 1;
+  string score = 2;
+}
+
+message GroupedSearchHits {
+  repeated string group_keys = 1;
+  repeated SearchHit hits = 2;
 }
 
 // Pagination metadata for SearchResponse
@@ -541,6 +557,17 @@ message DeleteBranchResponse {
   string status = 2;
 }
 
+message ListBranchesRequest {
+  // List database branches in this project
+  string project = 1;
+}
+
+message ListBranchesResponse {
+  // List of all the branches in this database
+  repeated BranchInfo branches = 1;
+}
+
+
 message CreateOrUpdateCollectionRequest {
   // Project name whose db is under target to create or update collection.
   string project = 1;
@@ -548,11 +575,8 @@ message CreateOrUpdateCollectionRequest {
   string collection = 2;
   // The schema specifications are same as
   // JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.
-  // The schema of the `documents` collection differs from the schema of `topic` collection as `topic` collection does not
-  // have any concept of `primary_key`. The server recognizes type of the collection by the `collection_type` set in
-  // the schema.
   //<p></p>
-  // Schema example of `documents`:
+  // Schema example:
   // `{
   //  "title": "user",
   //  "description": "Collection of documents with details of users",
@@ -564,7 +588,7 @@ message CreateOrUpdateCollectionRequest {
   //    "name": {
   //      "description": "Name of the user",
   //      "type": "string",
-  //      "maxLength": 100
+  //      "maxLength": 128
   //    },
   //    "balance": {
   //      "description": "User account balance",
@@ -573,29 +597,6 @@ message CreateOrUpdateCollectionRequest {
   //  },
   //  "primary_key": ["id"]
   // }`
-  // <p></p>*Note: The `collection_type` is not set as default is documents.*
-  // <p></p>Schema example of `topic`:
-  // `{
-  //  "title": "user_events",
-  //  "description": "Topic for user events",
-  //  "properties": {
-  //    "event_id": {
-  //      "description": "A id for the event",
-  //      "type": "integer"
-  //    },
-  //    "event_type": {
-  //      "description": "Type of the Event",
-  //      "type": "string",
-  //      "maxLength": 100
-  //    }
-  //    "event_details": {
-  //      "description": "Details about the Event",
-  //      "type": "string"
-  //    }
-  //  },
-  //  "collection_type": "topic"
-  // }`
-  // <p></p> *Note: The `collection_type` is set as "topic".*
   bytes schema = 3;
   // If set to `true` then the update schema request to the collection will fail by returning a conflict with HTTP Status
   // code 409. The default is false.
@@ -643,6 +644,14 @@ message CollectionInfo {
 
   // Metadata about the collection.
   CollectionMetadata metadata = 2;
+}
+
+message BranchInfo {
+  // Branch name
+  string branch = 1;
+
+  // Metadata about the branch
+  BranchMetadata metadata = 2;
 }
 
 message ListProjectsRequest {
@@ -742,6 +751,7 @@ message CollectionDescription {
   // Collection size in bytes
   int64 size = 4;
 }
+
 message ProjectMetadata {
 }
 
@@ -751,6 +761,8 @@ message DatabaseMetadata {
 message CollectionMetadata {
 }
 
+message BranchMetadata {
+}
 
 // Request creation of user app key
 message CreateAppKeyRequest {
@@ -849,7 +861,8 @@ message RotateAppKeyResponse{
 
 service Tigris {
   // Starts a new transaction and returns a transactional object. All reads/writes performed
-  // within a transaction will run with serializable isolation.
+  // within a transaction will run with serializable isolation. Tigris offers global transactions,
+  // with ACID properties and strict serializability.
   rpc BeginTransaction(BeginTransactionRequest) returns (BeginTransactionResponse) {
     option (google.api.http) = {
       post : "/v1/projects/{project}/database/transactions/begin"
@@ -857,7 +870,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Begin a transaction"
-      tags: "Transactions"
+      tags: "Database"
     };
   }
   // Atomically commit all the changes performed in the context of the transaction. Commit provides all
@@ -869,7 +882,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Commit a Transaction"
-      tags: "Transactions"
+      tags: "Database"
     };
   }
   // Rollback transaction discards all the changes
@@ -881,7 +894,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Rollback a transaction"
-      tags: "Transactions"
+      tags: "Database"
     };
   }
 
@@ -895,7 +908,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Insert Documents"
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Inserts the documents or replaces the existing documents in the collections.
@@ -906,7 +919,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Insert or Replace Documents"
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Delete a range of documents in the collection using the condition provided in the filter.
@@ -917,7 +930,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Delete Documents"
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Update a range of documents in the collection using the condition provided in the filter.
@@ -928,7 +941,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Update Documents."
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
@@ -944,7 +957,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Read Documents"
-      tags: "Documents"
+      tags: "Collections"
     };
   }
 
@@ -959,7 +972,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Search Documents."
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Imports documents into the collection.
@@ -975,7 +988,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Import Documents"
-      tags: "Documents"
+      tags: "Collections"
     };
   }
   // Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
@@ -1002,7 +1015,7 @@ service Tigris {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Drops Collection"
+      summary: "Drop Collection"
       tags: "Collections"
     };
   }
@@ -1023,7 +1036,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "List Collections"
-      tags: "Projects"
+      tags: "Database"
     };
   }
   // Creates a new project. Returns an AlreadyExists error with a status code 409 if the project already exists.
@@ -1060,7 +1073,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Describe database"
-      tags: "Databases"
+      tags: "Database"
     };
   }
 
@@ -1072,7 +1085,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Create a database branch"
-      tags: "Databases"
+      tags: "Database"
     };
   }
 
@@ -1085,7 +1098,18 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Delete a database branch"
-      tags: "Databases"
+      tags: "Database"
+    };
+  }
+
+  // List database branches
+  rpc ListBranches(ListBranchesRequest) returns (ListBranchesResponse) {
+    option(google.api.http) = {
+      get: "/v1/projects/{project}/database/branches"
+    };
+    option(openapi.v3.operation) = {
+      summary: "List database branches",
+      tags: "Database"
     };
   }
 
@@ -1110,7 +1134,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Creates the app key"
-      tags: "Management"
+      tags: "Application Keys"
     };
   }
 
@@ -1123,7 +1147,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Updates the description of the app key"
-      tags: "Management"
+      tags: "Application Keys"
     };
   }
 
@@ -1136,7 +1160,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Deletes the app key"
-      tags: "Management"
+      tags: "Application Keys"
     };
   }
 
@@ -1148,7 +1172,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "List all the app keys"
-      tags: "Management"
+      tags: "Application Keys"
     };
   }
 
@@ -1161,7 +1185,7 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Rotates the app key secret"
-      tags: "Management"
+      tags: "Application Keys"
     };
   }
 }

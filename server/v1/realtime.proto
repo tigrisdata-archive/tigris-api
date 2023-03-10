@@ -1,0 +1,270 @@
+// Copyright 2022-2023 Tigris Data, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package tigrisdata.realtime.v1;
+
+import "google/api/annotations.proto";
+import "openapiv3/annotations.proto";
+
+option go_package = "github.com/tigrisdata/tigris/api";
+option java_package = "com.tigrisdata.db.api.v1.grpc";
+
+enum EventType {
+  ack=0;
+  auth=1;
+  error=2;
+  message=3;
+  subscribe=4;
+  presence=5;
+  presence_member=6;
+  subscribed=7;
+  unsubscribe=8;
+  // if a heartbeat is delayed by up to D seconds, and our timeout is T,
+  // the client sends a heartbeat command every (T - D) seconds, if it is not sending any other data.
+  heartbeat=9;
+  connected=11;
+  disconnect=12;
+  disconnected=13;
+  attach=14;
+  detach=15;
+}
+
+message RealTimeMessage {
+  EventType event_type=1;
+  bytes event=2;
+}
+
+message ConnectedEvent {
+  string session_id=1;
+  string socket_id=2;
+}
+
+message HeartbeatEvent {}
+
+message ErrorEvent {
+  int32 code=1;
+  string message=2;
+}
+
+message AuthEvent {
+  bytes access_token=1;
+}
+
+message DisconnectEvent {
+  string channel=1;
+}
+
+message UnsubscribeEvent {
+  string channel=1;
+}
+
+message AttachEvent {
+  string channel=1;
+}
+
+message DetachEvent {
+  string channel=1;
+}
+
+message SubscribeEvent {
+  string channel=1;
+  string position=2;
+  // name here is what type of event
+  // that the caller is interested in
+  string name = 3;
+}
+
+message SubscribedEvent {
+  string channel=1;
+  string position=2;
+}
+
+message MessageEvent {
+  string id=1;
+  string name=2;
+  string channel=3;
+  bytes data=5;
+}
+
+enum PresenceActions {
+  present=0;
+  enter=1;
+  leave=2;
+  update=3;
+}
+
+message PresenceEvent {
+  string channel=1;
+  PresenceActions action=3;
+  bytes data=4;
+}
+
+message PresenceMemberEvent {
+  string channel=1;
+  repeated PresenceEvent presence=2;
+}
+
+// HTTP
+message PresenceRequest {
+  string project=1;
+  string channel=2;
+}
+
+message PresenceResponse {
+  bytes response=1;
+}
+
+message GetRTChannelRequest {
+  string project=1;
+  string channel=2;
+}
+
+message ChannelMetadata {
+  string channel = 1;
+}
+
+message GetRTChannelResponse {
+  string channel = 1;
+}
+
+message GetRTChannelsRequest {
+  string project=1;
+}
+
+message GetRTChannelsResponse {
+  repeated ChannelMetadata channels=1;
+}
+
+message ReadMessagesRequest {
+  string project=1;
+  string channel=2;
+  string session_id=3;
+  string socket_id=4;
+  string event=5;
+  optional string start=6;
+  optional string end=7;
+  optional int64 limit=8;
+}
+
+message ReadMessagesResponse {
+  Message message=1;
+}
+
+message Message {
+  // an optional id if idempotency is needed to ensure only a single time message
+  // is published during retries. If not specified then server will automatically
+  // add an id to message.
+  optional string id=1;
+  string name=2;
+  string sequence=3;
+  bytes data=4;
+}
+
+message MessagesRequest {
+  string project=1;
+  string channel=2;
+  repeated Message messages=3;
+}
+
+message MessagesResponse {
+  // ids of the published messages
+  repeated string ids=1;
+}
+
+message UnSubscribeRequest {
+  string project=1;
+  string channel=2;
+  string device_id=3;
+}
+
+message UnSubscribeResponse {
+  string status=1;
+}
+
+message ListSubscriptionRequest {
+  string project=1;
+  string channel=2;
+  int32 page_size = 3;
+  int32 page = 4;
+}
+
+message ListSubscriptionResponse {
+  repeated string devices=1;
+}
+
+service Realtime {
+  rpc Presence(PresenceRequest) returns (PresenceResponse) {
+    option (google.api.http) = {
+      get : "/v1/projects/{project}/realtime/channels/{channel}/presence"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Presence about the channel"
+      tags: "Realtime"
+      security: []
+    };
+  }
+  rpc GetRTChannel(GetRTChannelRequest) returns (GetRTChannelResponse) {
+    option (google.api.http) = {
+      get : "/v1/projects/{project}/realtime/channels/{channel}"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Get the details about a channel"
+      tags: "Realtime"
+      security: []
+    };
+  }
+  rpc GetRTChannels(GetRTChannelsRequest) returns (GetRTChannelsResponse) {
+    option (google.api.http) = {
+      get : "/v1/projects/{project}/realtime/channels"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Get all channels for your application project"
+      tags: "Realtime"
+      security: []
+    };
+  }
+  rpc ReadMessages(ReadMessagesRequest) returns (stream ReadMessagesResponse) {
+    option (google.api.http) = {
+      get : "/v1/projects/{project}/realtime/channels/{channel}/messages"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Get all messages for a channel"
+      tags: "Realtime"
+      security: []
+    };
+  }
+  rpc Messages(MessagesRequest) returns (MessagesResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/realtime/channels/{channel}/messages"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "push messages to a single channel"
+      tags: "Realtime"
+      security: []
+    };
+  }
+  rpc ListSubscriptions(ListSubscriptionRequest) returns (ListSubscriptionResponse) {
+    option (google.api.http) = {
+      get : "/v1/projects/{project}/realtime/channels/{channel}/subscriptions"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Get the subscriptions details about a channel"
+      tags: "Realtime"
+      security: []
+    };
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright 2022 Tigris Data, Inc.
+// Copyright 2022-2023 Tigris Data, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ enum Code {
   CONFLICT = 17; // 409
   BAD_GATEWAY = 18; // 502
   METHOD_NOT_ALLOWED = 19; // 405
+  CONTENT_TOO_LARGE = 20; // 413
 }
 
 // Contains retry information
@@ -75,16 +76,17 @@ message Error {
 // Requests the time series metrics
 message QueryTimeSeriesMetricsRequest {
   string db = 1;
-  string collection = 2;
-  int64 from = 3;
-  int64 to = 4;
-  string metric_name = 5;
-  TigrisOperation tigris_operation = 6;
-  MetricQuerySpaceAggregation space_aggregation = 7;
-  repeated string space_aggregated_by = 8;
-  MetricQueryFunction function = 9;
-  float quantile = 10;
-  repeated AdditionalFunction additionalFunctions = 11;
+  string branch = 2;
+  string collection = 3;
+  int64 from = 4;
+  int64 to = 5;
+  string metric_name = 6;
+  TigrisOperation tigris_operation = 7;
+  MetricQuerySpaceAggregation space_aggregation = 8;
+  repeated string space_aggregated_by = 9;
+  MetricQueryFunction function = 10;
+  float quantile = 11;
+  repeated AdditionalFunction additionalFunctions = 12;
 }
 
 // Represents Tigris operation category
