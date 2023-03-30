@@ -270,6 +270,9 @@ message SearchIndexRequest {
   // Group by can be used to group search results. For example, to group by city field the
   // syntax would be: `{ "fields": ["city"]}`. Optionally a grouping limit can be set. By default it is 3 per group.
   bytes group_by = 13;
+  // Vector is an object that is used for vector search. For example, to vector search on a "vec" field the
+  // syntax would be: `{ "vec": [0.34, 0.12, 0.95], "top_k": 10}`.
+  bytes vector = 14;
 }
 
 message SearchIndexResponse {
