@@ -207,6 +207,32 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/management/namespaces/get:
+        post:
+            tags:
+                - Management
+            summary: Retrieves the namespace
+            description: Gets the namespace info for specific namespace
+            operationId: Management_GetNamespace
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetNamespaceRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetNamespaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/management/namespaces/list:
         post:
             tags:
@@ -3204,6 +3230,17 @@ components:
                 value:
                     type: object
             description: Namespace metadata response
+        GetNamespaceRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: namespace id
+        GetNamespaceResponse:
+            type: object
+            properties:
+                namespace_info:
+                    $ref: '#/components/schemas/NamespaceInfo'
         GetRTChannelResponse:
             type: object
             properties:

@@ -67,6 +67,16 @@ message DescribeNamespacesResponse {
   DescribeNamespacesData data = 1;
 }
 
+message GetNamespaceRequest{
+  // namespace id
+  string id = 1;
+}
+
+message GetNamespaceResponse {
+  // information about namespace
+  NamespaceInfo namespace_info = 1;
+}
+
 // Request user metadata
 message GetUserMetadataRequest {
   string metadataKey = 1;
@@ -181,6 +191,19 @@ service Management {
     };
     option(openapi.v3.operation) = {
       summary: "Lists all Namespaces"
+      tags: "Management"
+    };
+  }
+
+  // Gets the namespace info for specific namespace
+  rpc GetNamespace(GetNamespaceRequest) returns
+      (GetNamespaceResponse) {
+    option (google.api.http) = {
+      post : "/v1/management/namespaces/get"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Retrieves the namespace"
       tags: "Management"
     };
   }
