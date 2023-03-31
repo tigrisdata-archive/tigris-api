@@ -67,12 +67,12 @@ message DescribeNamespacesResponse {
   DescribeNamespacesData data = 1;
 }
 
-message GetNamespaceRequest{
+message NamespaceInfoRequest{
   // namespace id
   string id = 1;
 }
 
-message GetNamespaceResponse {
+message NamespaceInfoResponse {
   // information about namespace
   NamespaceInfo namespace_info = 1;
 }
@@ -196,10 +196,10 @@ service Management {
   }
 
   // Gets the namespace info for specific namespace
-  rpc GetNamespace(GetNamespaceRequest) returns
-      (GetNamespaceResponse) {
+  rpc NamespaceInfo(NamespaceInfoRequest) returns
+      (NamespaceInfoResponse) {
     option (google.api.http) = {
-      post : "/v1/management/namespaces/get"
+      post : "/v1/management/namespaces/info"
       body : "*"
     };
     option(openapi.v3.operation) = {

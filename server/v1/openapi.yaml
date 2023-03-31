@@ -207,18 +207,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/management/namespaces/get:
+    /v1/management/namespaces/info:
         post:
             tags:
                 - Management
             summary: Retrieves the namespace
             description: Gets the namespace info for specific namespace
-            operationId: Management_GetNamespace
+            operationId: Management_NamespaceInfo
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/GetNamespaceRequest'
+                            $ref: '#/components/schemas/NamespaceInfoRequest'
                 required: true
             responses:
                 "200":
@@ -226,7 +226,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/GetNamespaceResponse'
+                                $ref: '#/components/schemas/NamespaceInfoResponse'
                 default:
                     description: Default error response
                     content:
@@ -3230,17 +3230,6 @@ components:
                 value:
                     type: object
             description: Namespace metadata response
-        GetNamespaceRequest:
-            type: object
-            properties:
-                id:
-                    type: string
-                    description: namespace id
-        GetNamespaceResponse:
-            type: object
-            properties:
-                namespace_info:
-                    $ref: '#/components/schemas/NamespaceInfo'
         GetRTChannelResponse:
             type: object
             properties:
@@ -3605,6 +3594,17 @@ components:
                 name:
                     type: string
                     description: The namespace display name.
+        NamespaceInfoRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: namespace id
+        NamespaceInfoResponse:
+            type: object
+            properties:
+                namespace_info:
+                    $ref: '#/components/schemas/NamespaceInfo'
         Page:
             type: object
             properties:
