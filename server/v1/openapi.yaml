@@ -3415,6 +3415,9 @@ components:
                         $ref: '#/components/schemas/MatchField'
                 score:
                     type: string
+                vector_distance:
+                    type: number
+                    format: double
         MatchField:
             type: object
             properties:
