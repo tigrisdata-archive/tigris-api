@@ -493,6 +493,7 @@ message MatchField {
 message Match {
   repeated MatchField fields = 1;
   string score = 2;
+  optional double vector_distance = 3;
 }
 
 message GroupedSearchHits {
