@@ -395,7 +395,7 @@ message ReadResponse {
 message ExplainResponse {
   // The collection that the explain response is run against
   string collection = 1;
-  // The Type of read, either from primary key, secondary or search
+  // The Type of read can be either Scan or Secondary Index
   string read_type  = 2;
   // The filter used in the query
   string filter = 3;

@@ -3090,7 +3090,7 @@ components:
                     description: The collection that the explain response is run against
                 read_type:
                     type: string
-                    description: The Type of read, either from primary key, secondary or search
+                    description: The Type of read can be either Scan or Secondary Index
                 filter:
                     type: string
                     description: The filter used in the query
