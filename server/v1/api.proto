@@ -392,6 +392,17 @@ message ReadResponse {
   ResponseMetadata metadata = 3;
 }
 
+message ExplainResponse {
+  // The collection that the explain response is run against
+  string collection = 1;
+  // The Type of read can be either Scan or Secondary Index
+  string read_type  = 2;
+  // The filter used in the query
+  string filter = 3;
+  // The type of sort used
+  string sorting = 4;
+}
+
 message SearchRequest {
   // Project name whose db is under target to search documents from.
   string project = 1;
@@ -741,6 +752,8 @@ message DescribeCollectionResponse {
   bytes schema = 3;
   // The size of this collection in bytes.
   int64 size = 4;
+  // The index infromation
+  repeated CollectionIndex indexes = 5;
 }
 
 message ProjectDescription {
@@ -757,6 +770,8 @@ message CollectionDescription {
   bytes schema = 3;
   // Collection size in bytes
   int64 size = 4;
+  // The index infromation
+  repeated CollectionIndex indexes = 5;
 }
 
 message ProjectMetadata {
@@ -766,6 +781,16 @@ message DatabaseMetadata {
 }
 
 message CollectionMetadata {
+}
+
+message CollectionIndex {
+  string name = 1;
+  string state = 2;
+  repeated Field fields = 3;
+}
+
+message Field {
+  string name = 1;
 }
 
 message BranchMetadata {
@@ -964,6 +989,18 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Read Documents"
+      tags: "Collections"
+    };
+  }
+  // Explain takes the same parameters as Read and returns how the Tigris Query Planner would process the
+  // response
+  rpc Explain(ReadRequest) returns (ExplainResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/database/collections/{collection}/documents/explain"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Explain Read Documents"
       tags: "Collections"
     };
   }

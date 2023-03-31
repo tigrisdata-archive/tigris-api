@@ -1215,6 +1215,47 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/collections/{collection}/documents/explain:
+        post:
+            tags:
+                - Collections
+            summary: Explain Read Documents
+            description: |-
+                Explain takes the same parameters as Read and returns how the Tigris Query Planner would process the
+                 response
+            operationId: Tigris_Explain
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to read documents from.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name to read documents from.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReadRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ExplainResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/database/collections/{collection}/documents/import:
         post:
             tags:
@@ -2489,6 +2530,22 @@ components:
                     type: integer
                     description: Collection size in bytes
                     format: int64
+                indexes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CollectionIndex'
+                    description: The index infromation
+        CollectionIndex:
+            type: object
+            properties:
+                name:
+                    type: string
+                state:
+                    type: string
+                fields:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Field'
         CollectionInfo:
             type: object
             properties:
@@ -2919,6 +2976,11 @@ components:
                     type: integer
                     description: The size of this collection in bytes.
                     format: int64
+                indexes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CollectionIndex'
+                    description: The index infromation
             description: A detailed description of the collection. The description returns collection metadata and the schema.
         DescribeDatabaseRequest:
             type: object
@@ -3020,6 +3082,21 @@ components:
                     type: string
                     description: A developer-facing descriptive error message
             description: The Error type defines a logical error model
+        ExplainResponse:
+            type: object
+            properties:
+                collection:
+                    type: string
+                    description: The collection that the explain response is run against
+                read_type:
+                    type: string
+                    description: The Type of read can be either Scan or Secondary Index
+                filter:
+                    type: string
+                    description: The filter used in the query
+                sorting:
+                    type: string
+                    description: The type of sort used
         FacetCount:
             type: object
             properties:
@@ -3052,6 +3129,11 @@ components:
                     description: Total number of values in a field
                     format: int64
             description: Additional stats for faceted field
+        Field:
+            type: object
+            properties:
+                name:
+                    type: string
         GetAccessTokenRequest:
             type: object
             properties:
