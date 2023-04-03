@@ -98,6 +98,7 @@ main() {
 	for i in SetRequest GetSetRequest GetRequest DelRequest; do
 		yq_del_project_cache_key $i
 	done
+
 }
 
 fix_bytes() {
@@ -211,5 +212,6 @@ yq_del_project_cache_key() {
   yq_del_project_cache "$1"
 	yq_cmd "del(.components.schemas.$1.properties.key)"
 }
+
 
 main

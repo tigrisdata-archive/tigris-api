@@ -187,59 +187,25 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/management/namespaces/describe:
-        post:
-            tags:
-                - Management
-            summary: Describe the details of all namespaces
-            description: Get details for all namespaces
-            operationId: Management_DescribeNamespaces
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DescribeNamespacesResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/management/namespaces/info:
-        post:
-            tags:
-                - Management
-            summary: Retrieves the namespace
-            description: Gets the namespace info for specific namespace
-            operationId: Management_NamespaceInfo
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/NamespaceInfoRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/NamespaceInfoResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/management/namespaces/list:
-        post:
+    /v1/management/namespaces/{namespace_id}:
+        get:
             tags:
                 - Management
             summary: Lists all Namespaces
-            description: List all namespace
+            description: List all namespace and optionally lists specific namespace by namespaceId filter, also supports `describe` request.
             operationId: Management_ListNamespaces
+            parameters:
+                - name: namespace_id
+                  in: path
+                  description: Optionally filter by specific namespaceId
+                  required: true
+                  schema:
+                    type: string
+                - name: describe
+                  in: query
+                  description: Optionally specify if the description of each namespace is requested
+                  schema:
+                    type: boolean
             responses:
                 "200":
                     description: OK
@@ -3045,11 +3011,6 @@ components:
             properties:
                 details:
                     type: string
-        DescribeNamespacesResponse:
-            type: object
-            properties:
-                data:
-                    $ref: '#/components/schemas/DescribeNamespacesData'
         DocStatus:
             type: object
             properties:
@@ -3499,6 +3460,8 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/NamespaceInfo'
+                data:
+                    $ref: '#/components/schemas/DescribeNamespacesData'
         ListProjectsResponse:
             type: object
             properties:
@@ -3594,17 +3557,6 @@ components:
                 name:
                     type: string
                     description: The namespace display name.
-        NamespaceInfoRequest:
-            type: object
-            properties:
-                id:
-                    type: string
-                    description: namespace id
-        NamespaceInfoResponse:
-            type: object
-            properties:
-                namespace_info:
-                    $ref: '#/components/schemas/NamespaceInfo'
         Page:
             type: object
             properties:
