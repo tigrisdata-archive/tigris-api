@@ -99,8 +99,6 @@ main() {
 		yq_del_project_cache_key $i
 	done
 
-	## fix the additionalBindings
-	yq_fix_management_list_namespaces
 }
 
 fix_bytes() {
@@ -213,11 +211,6 @@ yq_del_project_cache() {
 yq_del_project_cache_key() {
   yq_del_project_cache "$1"
 	yq_cmd "del(.components.schemas.$1.properties.key)"
-}
-
-# Fixes the list namespaces API's additional bindings
-yq_fix_management_list_namespaces() {
-  yq_cmd ".paths./v1/management/namespaces.\$ref = \"#/paths//v1/management/namespaces/{namespace_id}\""
 }
 
 

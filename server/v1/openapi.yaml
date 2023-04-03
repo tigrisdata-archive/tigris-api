@@ -2423,8 +2423,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/management/namespaces:
-        $ref: '#/paths//v1/management/namespaces/{namespace_id}'
 components:
     schemas:
         AdditionalFunction:
