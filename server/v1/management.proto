@@ -54,17 +54,16 @@ message DescribeNamespacesData {
 }
 
 message ListNamespacesRequest {
+  // Optionally specify if the description of each namespace is requested
+  optional bool describe = 1;
+  // Optionally filter by specific namespaceId
+  string namespace_id = 2;
 }
 
 message ListNamespacesResponse {
   repeated NamespaceInfo namespaces = 1;
-}
+  optional DescribeNamespacesData data = 2;
 
-message DescribeNamespacesRequest {
-}
-
-message DescribeNamespacesResponse {
-  DescribeNamespacesData data = 1;
 }
 
 message NamespaceInfoRequest{
@@ -171,39 +170,18 @@ service Management {
     };
   }
 
-  // Get details for all namespaces
-  rpc DescribeNamespaces(DescribeNamespacesRequest) returns
-      (DescribeNamespacesResponse) {
-    option (google.api.http) = {
-      post : "/v1/management/namespaces/describe"
-    };
-    option(openapi.v3.operation) = {
-      summary: "Describe the details of all namespaces"
-      tags: "Management"
-    };
-  }
-
-  // List all namespace
+  // List all namespace and optionally lists specific namespace by namespaceId filter, also supports `describe` request.
   rpc ListNamespaces(ListNamespacesRequest) returns
       (ListNamespacesResponse) {
     option (google.api.http) = {
-      post : "/v1/management/namespaces/list"
+      get : "/v1/management/namespaces/{namespace_id}"
+      additional_bindings {
+        get : "/v1/management/namespaces"
+      }
     };
+
     option(openapi.v3.operation) = {
       summary: "Lists all Namespaces"
-      tags: "Management"
-    };
-  }
-
-  // Gets the namespace info for specific namespace
-  rpc NamespaceInfo(NamespaceInfoRequest) returns
-      (NamespaceInfoResponse) {
-    option (google.api.http) = {
-      post : "/v1/management/namespaces/info"
-      body : "*"
-    };
-    option(openapi.v3.operation) = {
-      summary: "Retrieves the namespace"
       tags: "Management"
     };
   }
