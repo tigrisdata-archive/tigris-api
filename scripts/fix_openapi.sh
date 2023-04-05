@@ -54,10 +54,11 @@ main() {
 	yq_fix_object ReplaceRequest documents.items
 	yq_fix_object UpdateRequest fields
 	yq_fix_object ReadRequest fields
+	yq_fix_array_object ReadRequest sort
 	yq_fix_object ReadResponse data
 	yq_fix_object SearchRequest fields
 	yq_fix_object SearchRequest facet
-	yq_fix_object SearchRequest sort
+	yq_fix_array_object SearchRequest sort
 	yq_fix_object SearchHit data
 	yq_fix_object CreateOrUpdateCollectionRequest schema
 	yq_fix_timestamp ResponseMetadata created_at
@@ -65,6 +66,20 @@ main() {
 
 	yq_fix_object DescribeCollectionResponse schema
 	yq_fix_object CollectionDescription schema
+
+	yq_fix_object CreateByIdRequest document
+ 	yq_fix_object DeleteByQueryRequest filter
+
+ 	yq_fix_object CreateOrUpdateIndexRequest schema
+ 	yq_fix_object IndexInfo schema
+
+ 	yq_fix_object UpdateDocumentRequest documents.items
+ 	yq_fix_object CreateOrReplaceDocumentRequest documents.items
+ 	yq_fix_object CreateDocumentRequest documents.items
+
+ 	yq_fix_object SearchIndexRequest filter
+ 	yq_fix_object SearchIndexRequest facet
+ 	yq_fix_array_object SearchIndexRequest sort
 
 	yq_del_service_tags
 
@@ -118,6 +133,12 @@ yq_cmd() {
 yq_fix_object() {
 	yq_cmd "del(.components.schemas.$1.properties.$2.format)"
 	yq_cmd ".components.schemas.$1.properties.$2.type=\"object\""
+}
+
+yq_fix_array_object() {
+	yq_cmd "del(.components.schemas.$1.properties.$2.format)"
+	yq_cmd ".components.schemas.$1.properties.$2.type=\"array\""
+	yq_cmd ".components.schemas.$1.properties.$2.items.type=\"object\""
 }
 
 yq_fix_timestamp() {

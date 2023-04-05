@@ -2607,9 +2607,8 @@ components:
                     type: string
                     description: document id.
                 document:
-                    type: string
+                    type: object
                     description: A JSON document that needs to be indexed.
-                    format: byte
         CreateByIdResponse:
             type: object
             properties:
@@ -2648,8 +2647,7 @@ components:
                 documents:
                     type: array
                     items:
-                        type: string
-                        format: byte
+                        type: object
                     description: An array of documents to be created or replaced. Each document is a JSON object.
         CreateDocumentResponse:
             type: object
@@ -2695,8 +2693,7 @@ components:
                 documents:
                     type: array
                     items:
-                        type: string
-                        format: byte
+                        type: object
                     description: An array of documents to create. Each document is a JSON object. In case an id is missing then the server will automatically generate it for you and create the document and in case an id is provided in the document and the document already exists then that document will not index and in the response there will be an error corresponding to that document id other documents will succeed.
         CreateOrReplaceDocumentResponse:
             type: object
@@ -2739,9 +2736,8 @@ components:
                     type: string
                     description: search index name.
                 schema:
-                    type: string
+                    type: object
                     description: 'schema of the index. The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.<p></p> Schema example: `{  "title": "ecommerce_index",  "description": "an ecommerce store search index",  "properties": {    "name": {      "description": "Name of the product",      "type": "string",      "maxLength": 128    },    "brand": {      "description": "Brand of the product",      "type": "string"    },    "price": {      "description": "Price of the product",      "type": "number"    }  } }`'
-                    format: byte
                 only_create:
                     type: boolean
                     description: If set to `true` then a conflict with HTTP Status code 409 is returned if an index already exists. The default is false.
@@ -2827,9 +2823,8 @@ components:
                     type: string
                     description: The index name of the documents that needs deletion.
                 filter:
-                    type: string
+                    type: object
                     description: 'A filter is required to delete matching documents. To delete document by id, you can pass the filter as follows ```{"id": "test"}```'
-                    format: byte
         DeleteByQueryResponse:
             type: object
             properties:
@@ -3325,9 +3320,8 @@ components:
                     type: string
                     description: Name of the index.
                 schema:
-                    type: string
+                    type: object
                     description: Schema of the index.
-                    format: byte
         InsertNamespaceMetadataRequest:
             type: object
             properties:
@@ -3723,9 +3717,10 @@ components:
                 options:
                     $ref: '#/components/schemas/ReadRequestOptions'
                 sort:
-                    type: string
+                    type: array
                     description: 'Array of fields and corresponding sort orders to order the results. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary": "$asc"}]`'
-                    format: byte
+                    items:
+                        type: object
                 branch:
                     type: string
                     description: Optionally specify a database branch name to perform operation on
@@ -3902,17 +3897,16 @@ components:
                         type: string
                     description: Array of fields to project search query against
                 filter:
-                    type: string
+                    type: object
                     description: Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
-                    format: byte
                 facet:
-                    type: string
+                    type: object
                     description: 'Facet query to aggregate results on given fields. The field name for the facet search can be passed like this `{"brand": { "size": 10 }}` where the size controls the total facets for this field.'
-                    format: byte
                 sort:
-                    type: string
+                    type: array
                     description: 'Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`'
-                    format: byte
+                    items:
+                        type: object
                 include_fields:
                     type: array
                     items:
@@ -3994,8 +3988,10 @@ components:
                     type: object
                     description: 'Facet query to aggregate results on given fields. The field name for the facet search can be passed like this `{"brand": { "size": 10 }}` where the size controls the total facets for this field.'
                 sort:
-                    type: object
+                    type: array
                     description: 'Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`'
+                    items:
+                        type: object
                 include_fields:
                     type: array
                     items:
@@ -4118,8 +4114,7 @@ components:
                 documents:
                     type: array
                     items:
-                        type: string
-                        format: byte
+                        type: object
                     description: An array of documents. Each document should have "id" present which will be used by Tigris for updating the document.
         UpdateDocumentResponse:
             type: object
