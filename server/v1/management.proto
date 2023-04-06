@@ -66,6 +66,18 @@ message ListNamespacesResponse {
 
 }
 
+message DeleteNamespaceRequest {
+  // string namespace id to delete.
+  string namespace_id = 1;
+}
+
+message DeleteNamespaceResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "deleted".
+  string status = 2;
+}
+
 message NamespaceInfoRequest{
   // namespace id
   string id = 1;
@@ -182,6 +194,18 @@ service Management {
 
     option(openapi.v3.operation) = {
       summary: "Lists all Namespaces"
+      tags: "Management"
+    };
+  }
+
+  // DeleteNamespace deletes the namespace and all the data inside it
+  rpc DeleteNamespace(DeleteNamespaceRequest) returns
+      (DeleteNamespaceResponse) {
+    option (google.api.http) = {
+      delete : "/v1/management/namespaces/{namespace_id}"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Deletes the namespace"
       tags: "Management"
     };
   }
