@@ -219,6 +219,32 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Management
+            summary: Deletes the namespace
+            description: DeleteNamespace deletes the namespace and all the data inside it
+            operationId: Management_DeleteNamespace
+            parameters:
+                - name: namespace_id
+                  in: path
+                  description: string namespace id to delete.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteNamespaceResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/management/users/metadata/{metadataKey}/get:
         post:
             tags:
@@ -2876,6 +2902,15 @@ components:
                     type: string
                     description: index name.
         DeleteIndexResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "deleted".
+        DeleteNamespaceResponse:
             type: object
             properties:
                 message:
