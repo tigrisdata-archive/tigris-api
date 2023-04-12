@@ -1319,6 +1319,47 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/collections/{collection}/documents/index:
+        post:
+            tags:
+                - Collections
+            summary: Index all documents in the collection
+            description: |-
+                Index Collection will do a full scan off all documents in the collection and rebuild
+                 all indexes in the collection
+            operationId: Tigris_BuildCollectionIndex
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to index documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Name of the collection.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BuildCollectionIndexRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BuildCollectionIndexResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/database/collections/{collection}/documents/insert:
         post:
             tags:
@@ -2516,6 +2557,25 @@ components:
         BranchMetadata:
             type: object
             properties: {}
+        BuildCollectionIndexRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Project name whose db is under target to index documents.
+                collection:
+                    type: string
+                    description: Name of the collection.
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
+        BuildCollectionIndexResponse:
+            type: object
+            properties:
+                indexes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CollectionIndex'
         CacheMetadata:
             type: object
             properties:
