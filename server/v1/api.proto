@@ -401,6 +401,10 @@ message ExplainResponse {
   string filter = 3;
   // The type of sort used
   string sorting = 4;
+  // the key range
+  repeated string key_range = 5;
+  // the name of the field
+  string field = 6;
 }
 
 message SearchRequest {
