@@ -3174,6 +3174,14 @@ components:
                 sorting:
                     type: string
                     description: The type of sort used
+                key_range:
+                    type: array
+                    items:
+                        type: string
+                    description: the key range
+                field:
+                    type: string
+                    description: the name of the field
         FacetCount:
             type: object
             properties:
