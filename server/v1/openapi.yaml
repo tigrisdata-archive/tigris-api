@@ -4311,6 +4311,11 @@ components:
                         $ref: '#/components/schemas/SearchFacet'
                 meta:
                     $ref: '#/components/schemas/SearchMetadata'
+                group:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GroupedSearchHits'
+                    description: Group is returned when group_by is used in the search request. In this case the above hits will be empty and hits are returned by the group keys.
             description: Response struct for search
         SetRequest:
             type: object
