@@ -93,7 +93,6 @@ message NamespaceInfoResponse {
 
 message ListInvoicesRequest{
   //RFC 3339 timestamp (inclusive). Invoices will only be returned for billing periods that start at or after this time.
-  // todo: fix timestamps in openapi
   optional google.protobuf.Timestamp starting_on = 1;
   //RFC 3339 timestamp (exclusive). Invoices will only be returned for billing periods that end before this time.
   optional google.protobuf.Timestamp ending_before = 2;
@@ -117,31 +116,41 @@ message Invoice {
   string id = 1;
   // entries that make up the invoice
   repeated InvoiceLineItem entries = 2;
-  // todo: fix timestamps in openapi
   // RFC 3339 starting time for usage period during which items were added to this invoice
   google.protobuf.Timestamp start_time = 3;
   // RFC 3339 ending time for usage period during which items were added to this invoice
   google.protobuf.Timestamp end_time = 4;
+  // invoice subtotal
   float subtotal = 5;
+  // total invoice amount
   float total = 6;
+  // Tigris price plan name
   string plan_name = 7;
 }
 
 message InvoiceLineItem {
+  // Product name
   string name = 1;
+  // Quantity
   float quantity = 2;
+  // Total amount for the product
   float total = 3;
+  // Broken down charges
   repeated Charge charges = 4;
 }
 
 message Charge {
+  // Charge name
   string name = 1;
   float quantity = 2;
   float subtotal = 3;
+  // Tiered charges, if any
   repeated ChargeTier tiers = 4;
 }
 
 message ChargeTier {
+  // Starting point where this Tier is applicable.
+  // Ex - A charge could be tiered as "Tier 1 (0-5)", "Tier 2 (5-10)"; starting_at will be 0, 5 etc.
   float starting_at = 1;
   float quantity = 2;
   float price = 3;
