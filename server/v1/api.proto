@@ -403,6 +403,8 @@ message CountRequest {
   // two or more fields using `$or` and `$and`. The detailed documentation of the filter
   // is <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
   bytes filter = 3;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 4;
 }
 
 message CountResponse {
