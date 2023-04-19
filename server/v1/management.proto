@@ -92,24 +92,24 @@ message NamespaceInfoResponse {
 }
 
 message ListInvoicesRequest{
-  // RFC 3339 timestamp (inclusive). Invoices will only be returned for billing periods that start at or after this time.
+  //RFC 3339 timestamp (inclusive). Invoices will only be returned for billing periods that start at or after this time.
   // todo: fix timestamps in openapi
-  google.protobuf.Timestamp starting_on = 1;
+  optional google.protobuf.Timestamp starting_on = 1;
   //RFC 3339 timestamp (exclusive). Invoices will only be returned for billing periods that end before this time.
-  google.protobuf.Timestamp ending_before = 2;
+  optional google.protobuf.Timestamp ending_before = 2;
   // optionally filter by a specific invoice_id
-  string invoice_id = 3;
+  optional string invoice_id = 3;
   // maximum number of items to include in result set
-  int32 page_size = 4;
+  optional int32 page_size = 4;
   // pagination token for fetching a particular result page, first page will be fetched if `null`
-  string next_page = 5;
+  optional string next_page = 5;
 }
 
 message ListInvoicesResponse {
   // Array of invoices
   repeated Invoice data = 1;
   // token for next page if it exists, else `null`
-  string next_page = 2;
+  optional string next_page = 2;
 }
 
 message Invoice {
@@ -122,31 +122,30 @@ message Invoice {
   google.protobuf.Timestamp start_time = 3;
   // RFC 3339 ending time for usage period during which items were added to this invoice
   google.protobuf.Timestamp end_time = 4;
-  int64 subtotal = 5;
-  int64 total = 6;
+  float subtotal = 5;
+  float total = 6;
   string plan_name = 7;
 }
 
 message InvoiceLineItem {
   string name = 1;
-  int64 quantity = 2;
-  int64 subtotal = 3;
+  float quantity = 2;
+  float total = 3;
   repeated Charge charges = 4;
 }
 
 message Charge {
   string name = 1;
-  int64 price = 2;
-  int64 quantity = 3;
-  int64 subtotal = 4;
-  repeated ChargeTier tiers = 5;
+  float quantity = 2;
+  float subtotal = 3;
+  repeated ChargeTier tiers = 4;
 }
 
 message ChargeTier {
-  int64 starting_at = 1;
-  int64 quantity = 2;
-  int64 price = 3;
-  int64 subtotal = 4;
+  float starting_at = 1;
+  float quantity = 2;
+  float price = 3;
+  float subtotal = 4;
 }
 
 // Request user metadata
