@@ -2358,7 +2358,6 @@ paths:
         patch:
             tags:
                 - Search
-                - Search
             summary: Update documents in an index
             description: |-
                 Updates one or more documents by "id". Each document is required to have the
