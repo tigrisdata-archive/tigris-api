@@ -1300,6 +1300,48 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/collections/{collection}/documents/count:
+        post:
+            tags:
+                - Collections
+            summary: Count Documents
+            description: |-
+                Count returns the number of documents in the collection. The filter parameter
+                 can be used to select which documents contribute to the count. An empty filter means
+                 count all documents in the collection.
+            operationId: Tigris_Count
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to count documents from.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name to count documents from.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CountRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CountResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/database/collections/{collection}/documents/delete:
         delete:
             tags:
@@ -2758,6 +2800,26 @@ components:
                 status:
                     type: string
                     description: Status of commit transaction operation.
+        CountRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Project name whose db is under target to count documents from.
+                collection:
+                    type: string
+                    description: Collection name to count documents from.
+                filter:
+                    type: string
+                    description: Count documents matching this filter. An empty filter means count all documents. A filter can simply be a key, value pair where a key is the field name and the value would be the value for this field. Tigris also allows complex filtering by passing logical expressions. Logical filters are applied on two or more fields using `$or` and `$and`. The detailed documentation of the filter is <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
+                    format: byte
+        CountResponse:
+            type: object
+            properties:
+                count:
+                    type: integer
+                    description: Count of documents.
+                    format: int64
         CreateAppKeyRequest:
             type: object
             properties:

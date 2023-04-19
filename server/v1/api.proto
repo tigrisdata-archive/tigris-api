@@ -392,6 +392,24 @@ message ReadResponse {
   ResponseMetadata metadata = 3;
 }
 
+message CountRequest {
+  // Project name whose db is under target to count documents from.
+  string project = 1;
+  // Collection name to count documents from.
+  string collection = 2;
+  // Count documents matching this filter. An empty filter means count all documents. A filter can simply
+  // be a key, value pair where a key is the field name and the value would be the value for this field.
+  // Tigris also allows complex filtering by passing logical expressions. Logical filters are applied on
+  // two or more fields using `$or` and `$and`. The detailed documentation of the filter
+  // is <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
+  bytes filter = 3;
+}
+
+message CountResponse {
+  // Count of documents.
+  int64 count = 1;
+}
+
 message ExplainResponse {
   // The collection that the explain response is run against
   string collection = 1;
@@ -1010,6 +1028,19 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Read Documents"
+      tags: "Collections"
+    };
+  }
+  // Count returns the number of documents in the collection. The filter parameter
+  // can be used to select which documents contribute to the count. An empty filter means
+  // count all documents in the collection.
+  rpc Count(CountRequest) returns (CountResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/database/collections/{collection}/documents/count"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Count Documents"
       tags: "Collections"
     };
   }
