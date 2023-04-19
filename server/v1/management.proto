@@ -79,18 +79,6 @@ message DeleteNamespaceResponse {
   string status = 2;
 }
 
-// TODO: remove, not being used
-message NamespaceInfoRequest{
-  // namespace id
-  string id = 1;
-}
-
-// TODO: remove, not being used
-message NamespaceInfoResponse {
-  // information about namespace
-  NamespaceInfo namespace_info = 1;
-}
-
 message ListInvoicesRequest{
   //RFC 3339 timestamp (inclusive). Invoices will only be returned for billing periods that start at or after this time.
   optional google.protobuf.Timestamp starting_on = 1;
