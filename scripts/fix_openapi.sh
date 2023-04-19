@@ -161,6 +161,7 @@ yq_del_service_tags() {
 	yq_cmd "del(.paths[] | .get.tags[0])"
 	yq_cmd "del(.paths[] | .post.tags[0])"
 	yq_cmd "del(.paths[] | .put.tags[0])"
+	yq_cmd "del(.paths[] | .patch.tags[0])"
 	yq_cmd "del(.paths[] | .delete.tags[0])"
 	yq_cmd "del(.tags[] | select(.name == \"Tigris\"))"
 	yq_cmd "del(.tags[] | select(.name == \"HealthAPI\"))"
