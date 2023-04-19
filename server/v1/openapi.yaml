@@ -150,34 +150,13 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/health:
+    /v1/billing/invoices:
         get:
             tags:
-                - Observability
-            summary: Health Check
-            description: This endpoint can be used to check the liveness of the server.
-            operationId: HealthAPI_Health
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HealthCheckResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-            security: []
-    /v1/management/billing/invoices:
-        get:
-            tags:
-                - Management
+                - Billing
             summary: Lists all invoices for the user
             description: ListInvoices fetches past invoices for this user
-            operationId: Management_ListInvoices
+            operationId: Billing_ListInvoices
             parameters:
                 - name: starting_on.seconds
                   in: query
@@ -232,6 +211,27 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/health:
+        get:
+            tags:
+                - Observability
+            summary: Health Check
+            description: This endpoint can be used to check the liveness of the server.
+            operationId: HealthAPI_Health
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HealthCheckResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+            security: []
     /v1/management/namespace/metadata/{metadataKey}/get:
         post:
             tags:
@@ -4750,6 +4750,7 @@ tags:
       description: The application keys section provide APIs that can be used to manage application keys for your project. A single project can have one or more application keys.
     - name: Authentication
       description: 'The auth section of API provides OAuth 2.0 APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.'
+    - name: Billing
     - name: Cache
       description: The cache section provide APIs that can be used to perform cache operations.
     - name: Collections
