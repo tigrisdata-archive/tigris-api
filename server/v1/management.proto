@@ -98,7 +98,7 @@ message ListInvoicesRequest{
   //RFC 3339 timestamp (exclusive). Invoices will only be returned for billing periods that end before this time.
   optional google.protobuf.Timestamp ending_before = 2;
   // optionally filter by a specific invoice_id
-  optional string invoice_id = 3;
+  string invoice_id = 3;
   // maximum number of items to include in result set
   optional int32 page_size = 4;
   // pagination token for fetching a particular result page, first page will be fetched if `null`
