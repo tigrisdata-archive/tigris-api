@@ -13,7 +13,7 @@ all: lint
 
 .PRECIOUS: ${PROTO_DIR}/openapi.yaml ${PROTO_DIR}/%.proto
 
-COMPONENTS = api cache health auth observability management realtime search
+COMPONENTS = api cache health auth observability management realtime search billing
 
 # Generate GRPC client/server, openapi spec, http server
 ${GEN_DIR}/%.pb.go ${GEN_DIR}/%.pb.gw.go: ${PROTO_DIR}/%.proto

@@ -78,16 +78,6 @@ message DeleteNamespaceResponse {
   string status = 2;
 }
 
-message NamespaceInfoRequest{
-  // namespace id
-  string id = 1;
-}
-
-message NamespaceInfoResponse {
-  // information about namespace
-  NamespaceInfo namespace_info = 1;
-}
-
 // Request user metadata
 message GetUserMetadataRequest {
   string metadataKey = 1;

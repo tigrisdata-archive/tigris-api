@@ -150,6 +150,67 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/billing/invoices:
+        get:
+            tags:
+                - Billing
+            summary: Lists all invoices for the user
+            description: ListInvoices fetches past invoices for this user
+            operationId: Billing_ListInvoices
+            parameters:
+                - name: starting_on.seconds
+                  in: query
+                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
+                  schema:
+                    type: integer
+                    format: int64
+                - name: starting_on.nanos
+                  in: query
+                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: ending_before.seconds
+                  in: query
+                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
+                  schema:
+                    type: integer
+                    format: int64
+                - name: ending_before.nanos
+                  in: query
+                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: invoice_id
+                  in: query
+                  description: optionally filter by a specific invoice_id
+                  schema:
+                    type: string
+                - name: page_size
+                  in: query
+                  description: maximum number of items to include in result set
+                  schema:
+                    type: integer
+                    format: int32
+                - name: next_page
+                  in: query
+                  description: pagination token for fetching a particular result page, first page will be fetched if `null`
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListInvoicesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/health:
         get:
             tags:
@@ -2734,6 +2795,39 @@ components:
             properties:
                 channel:
                     type: string
+        Charge:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Charge name
+                quantity:
+                    type: number
+                    format: float
+                subtotal:
+                    type: number
+                    format: float
+                tiers:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ChargeTier'
+                    description: Tiered charges, if any
+        ChargeTier:
+            type: object
+            properties:
+                starting_at:
+                    type: number
+                    description: Starting point where this Tier is applicable. Ex - A charge could be tiered as "Tier 1 (0-5)", "Tier 2 (5-10)"; starting_at will be 0, 5 etc.
+                    format: float
+                quantity:
+                    type: number
+                    format: float
+                price:
+                    type: number
+                    format: float
+                subtotal:
+                    type: number
+                    format: float
         Collation:
             type: object
             properties:
@@ -3725,6 +3819,55 @@ components:
                 invitation_sent_by_name:
                     type: string
                     description: Invitation sender name
+        Invoice:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: unique identifier for this invoice
+                entries:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/InvoiceLineItem'
+                    description: entries that make up the invoice
+                start_time:
+                    type: string
+                    description: RFC 3339 starting time for usage period during which items were added to this invoice
+                    format: date-time
+                end_time:
+                    type: string
+                    description: RFC 3339 ending time for usage period during which items were added to this invoice
+                    format: date-time
+                subtotal:
+                    type: number
+                    description: invoice subtotal
+                    format: float
+                total:
+                    type: number
+                    description: total invoice amount
+                    format: float
+                plan_name:
+                    type: string
+                    description: Tigris price plan name
+        InvoiceLineItem:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Product name
+                quantity:
+                    type: number
+                    description: Quantity
+                    format: float
+                total:
+                    type: number
+                    description: Total amount for the product
+                    format: float
+                charges:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Charge'
+                    description: Broken down charges
         KeysResponse:
             type: object
             properties:
@@ -3784,6 +3927,17 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Invitation'
+        ListInvoicesResponse:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Invoice'
+                    description: Array of invoices
+                next_page:
+                    type: string
+                    description: token for next page if it exists, else `null`
         ListNamespacesResponse:
             type: object
             properties:
@@ -4596,6 +4750,9 @@ tags:
       description: The application keys section provide APIs that can be used to manage application keys for your project. A single project can have one or more application keys.
     - name: Authentication
       description: 'The auth section of API provides OAuth 2.0 APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.'
+    - name: Billing
+      description: The billing section provides APIs for managing invoices and payments infrastructure.
+    - name: Billing
     - name: Cache
       description: The cache section provide APIs that can be used to perform cache operations.
     - name: Collections
