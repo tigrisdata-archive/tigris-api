@@ -117,6 +117,21 @@ message VerifyInvitationResponse {
   string role = 2;
 }
 
+message ListUsersRequest {
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+}
+
+message User {
+  string email = 1;
+  string name = 2;
+  int64 created_at = 3;
+  string picture = 4;
+  string role = 5;
+}
+
 service Auth {
   // Endpoint for receiving access token from Tigris Server. The endpoint
   // requires Grant Type(`grant_type`) which has two possible values
@@ -181,6 +196,18 @@ service Auth {
     };
     option (openapi.v3.operation) = {
       summary: "Verifies the invitation"
+      tags: "Management"
+    };
+  }
+
+  // List users
+  rpc ListUsers(ListUsersRequest)
+      returns (ListUsersResponse) {
+    option (google.api.http) = {
+      get: "/v1/auth/namespace/users"
+    };
+    option (openapi.v3.operation) = {
+      summary: "Lists the users in current namespace"
       tags: "Management"
     };
   }

@@ -119,6 +119,26 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/auth/namespace/users:
+        get:
+            tags:
+                - Management
+            summary: Lists the users in current namespace
+            description: List users
+            operationId: Auth_ListUsers
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListUsersResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/auth/token:
         post:
             tags:
@@ -3962,6 +3982,13 @@ components:
                     type: array
                     items:
                         type: string
+        ListUsersResponse:
+            type: object
+            properties:
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/User'
         Match:
             type: object
             properties:
@@ -4698,6 +4725,20 @@ components:
                 value:
                     type: object
             description: Update of user metadata response
+        User:
+            type: object
+            properties:
+                email:
+                    type: string
+                name:
+                    type: string
+                created_at:
+                    type: integer
+                    format: int64
+                picture:
+                    type: string
+                role:
+                    type: string
         VerifyInvitationRequest:
             type: object
             properties:
