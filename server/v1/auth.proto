@@ -86,12 +86,14 @@ message Invitation {
   string status = 3;
   // invited namespace
   string tigris_namespace = 4;
+  // invited namespace (display friendly)
+  string tigris_namespace_name = 5;
   // created by sub
-  string created_by = 5;
+  string created_by = 6;
   // created by name (display friendly)
-  string created_by_name = 6;
+  string created_by_name = 7;
   // expiration time
-  int64 expiration_time = 7;
+  int64 expiration_time = 8;
 }
 
 message ListInvitationsRequest {
@@ -113,8 +115,10 @@ message VerifyInvitationRequest {
 message VerifyInvitationResponse {
   // if successful - which namespace this user belongs to
   string tigris_namespace = 1;
+  // if successful - which namespace this user belongs to
+  string tigris_namespace_name = 2;
   // if successful - which role this user should be assigned to
-  string role = 2;
+  string role = 3;
 }
 
 message ListUsersRequest {
