@@ -3817,6 +3817,9 @@ components:
                 tigris_namespace:
                     type: string
                     description: invited namespace
+                tigris_namespace_name:
+                    type: string
+                    description: invited namespace (display friendly)
                 created_by:
                     type: string
                     description: created by sub
@@ -4752,6 +4755,9 @@ components:
             type: object
             properties:
                 tigris_namespace:
+                    type: string
+                    description: if successful - which namespace this user belongs to
+                tigris_namespace_name:
                     type: string
                     description: if successful - which namespace this user belongs to
                 role:
