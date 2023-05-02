@@ -837,6 +837,19 @@ message BuildCollectionIndexResponse {
   repeated CollectionIndex indexes = 1;
 }
 
+message BuildCollectionSearchIndexRequest {
+  // Project name whose db is under target to index documents.
+  string project = 1;
+  // Name of the collection.
+  string collection = 2;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 3;
+}
+
+message BuildCollectionSearchIndexResponse {
+  string status = 1;
+}
+
 message BranchMetadata {
 }
 
@@ -1057,11 +1070,22 @@ service Tigris {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Index all documents in the collection"
+      summary: "Build Index"
       tags: "Collections"
     };
   }
-
+  // Build search index for a collection will do a full scan off all documents in the collection and rebuild
+  // the search index for this collection
+  rpc BuildSearchIndex(BuildCollectionSearchIndexRequest) returns (BuildCollectionSearchIndexResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/database/collections/{collection}/documents/search/index"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Build Search Index"
+      tags: "Collections"
+    };
+  }
   // Explain takes the same parameters as Read and returns how the Tigris Query Planner would process the
   // response
   rpc Explain(ReadRequest) returns (ExplainResponse) {
@@ -1085,7 +1109,7 @@ service Tigris {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Search Documents."
+      summary: "Search Documents"
       tags: "Collections"
     };
   }
