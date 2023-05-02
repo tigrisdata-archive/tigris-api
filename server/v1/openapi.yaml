@@ -1552,7 +1552,7 @@ paths:
         post:
             tags:
                 - Collections
-            summary: Index all documents in the collection
+            summary: Build Index
             description: |-
                 Index Collection will do a full scan off all documents in the collection and rebuild
                  all indexes in the collection
@@ -1719,7 +1719,7 @@ paths:
         post:
             tags:
                 - Collections
-            summary: Search Documents.
+            summary: Search Documents
             description: |-
                 Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
                  a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
@@ -1752,6 +1752,47 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/StreamingSearchResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/collections/{collection}/documents/search/index:
+        post:
+            tags:
+                - Collections
+            summary: Build Search Index
+            description: |-
+                Build search index for a collection will do a full scan off all documents in the collection and rebuild
+                 the search index for this collection
+            operationId: Tigris_BuildSearchIndex
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to index documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Name of the collection.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BuildCollectionSearchIndexRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BuildCollectionSearchIndexResponse'
                 default:
                     description: Default error response
                     content:
@@ -2804,6 +2845,23 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/CollectionIndex'
+        BuildCollectionSearchIndexRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Project name whose db is under target to index documents.
+                collection:
+                    type: string
+                    description: Name of the collection.
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
+        BuildCollectionSearchIndexResponse:
+            type: object
+            properties:
+                status:
+                    type: string
         CacheMetadata:
             type: object
             properties:
