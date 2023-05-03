@@ -167,6 +167,8 @@ yq_del_service_tags() {
 	yq_cmd "del(.tags[] | select(.name == \"Tigris\"))"
 	yq_cmd "del(.tags[] | select(.name == \"HealthAPI\"))"
 	yq_cmd "del(.tags[] | select(.name == \"Auth\"))"
+	yq_cmd "del(.tags[] | select(.name == \"Billing\" and .description != \"*\"))"
+	yq_cmd "del(.tags[] | select(.name == \"Search\" and .description != \"*\"))"
 	yq_cmd "del(.tags[] | select(.name == \"Management\" and .description != \"*\"))"
 	yq_cmd "del(.tags[] | select(.name == \"Observability\" and .description != \"*\"))"
 	yq_cmd "del(.tags[] | select(.name == \"Cache\" and .description != \"*\"))"
