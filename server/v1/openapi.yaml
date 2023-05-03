@@ -1298,6 +1298,38 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/collections/createOrUpdate:
+        post:
+            tags:
+                - Collections
+            summary: Create or update a batch of collections
+            operationId: Tigris_CreateOrUpdateCollections
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to create or update collection.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateOrUpdateCollectionsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateOrUpdateCollectionsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/database/collections/{collection}/createOrUpdate:
         post:
             tags:
@@ -3063,6 +3095,12 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created"
+        CreateCollectionStatus:
+            type: object
+            properties:
+                status:
+                    type: string
+                    description: An enum with value set as "created" or "updated"
         CreateDocumentRequest:
             type: object
             properties:
@@ -3164,6 +3202,35 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created" or "updated"
+        CreateOrUpdateCollectionsRequest:
+            type: object
+            properties:
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
+                schemas:
+                    type: array
+                    items:
+                        type: object
+                    description: collections to create.
+                only_create:
+                    type: boolean
+                options:
+                    $ref: '#/components/schemas/CollectionOptions'
+        CreateOrUpdateCollectionsResponse:
+            type: object
+            properties:
+                resp:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CreateCollectionStatus'
+                    description: A detailed response message.
+                failedAtIndex:
+                    type: integer
+                    description: In the case, when API returns an error this is an index in the "schemas" field which failed.
+                    format: int32
+                error:
+                    $ref: '#/components/schemas/Error'
         CreateOrUpdateIndexRequest:
             type: object
             properties:
@@ -4856,8 +4923,8 @@ tags:
     - name: Authentication
       description: 'The auth section of API provides OAuth 2.0 APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.'
     - name: Billing
-      description: The billing section provides APIs for managing invoices and payments infrastructure.
     - name: Billing
+      description: The billing section provides APIs for managing invoices and payments infrastructure.
     - name: Cache
       description: The cache section provide APIs that can be used to perform cache operations.
     - name: Collections

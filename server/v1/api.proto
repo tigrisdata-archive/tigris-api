@@ -18,6 +18,7 @@ package tigrisdata.v1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "server/v1/observability.proto";
 import "openapiv3/annotations.proto";
 
 option go_package = "github.com/tigrisdata/tigris/api";
@@ -661,6 +662,31 @@ message CreateOrUpdateCollectionResponse {
   string status = 2;
 }
 
+message CreateOrUpdateCollectionsRequest {
+  // Project name whose db is under target to create or update collection.
+  string project = 1;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 2;
+  // collections to create.
+  repeated bytes schemas = 3;
+  bool only_create = 4;
+  CollectionOptions options = 5;
+}
+
+message CreateCollectionStatus {
+  // An enum with value set as "created" or "updated"
+  string status = 1;
+}
+
+message CreateOrUpdateCollectionsResponse {
+  // A detailed response message.
+  repeated CreateCollectionStatus resp = 1;
+  // In the case, when API returns an error this is an index
+  // in the "schemas" field which failed.
+  int32 failedAtIndex = 2;
+  tigrisdata.observability.v1.Error error = 3;
+}
+
 message DropCollectionRequest {
   // Project name whose db is under target to delete collection.
   string project = 1;
@@ -1141,6 +1167,17 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Create or update a collection"
+      tags: "Collections"
+    };
+  }
+
+  rpc CreateOrUpdateCollections(CreateOrUpdateCollectionsRequest) returns (CreateOrUpdateCollectionsResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/database/collections/createOrUpdate"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Create or update a batch of collections"
       tags: "Collections"
     };
   }

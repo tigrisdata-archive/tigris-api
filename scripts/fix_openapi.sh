@@ -61,6 +61,7 @@ main() {
 	yq_fix_array_object SearchRequest sort
 	yq_fix_object SearchHit data
 	yq_fix_object CreateOrUpdateCollectionRequest schema
+	yq_fix_object CreateOrUpdateCollectionsRequest schemas.items
 	yq_fix_timestamp ResponseMetadata created_at
 	yq_fix_timestamp ResponseMetadata updated_at
 
@@ -90,7 +91,7 @@ main() {
 		BeginTransactionRequest CommitTransactionRequest \
 		RollbackTransactionRequest CreateAppKeyRequest \
 		UpdateAppKeyRequest ListAppKeysRequest \
-		DeleteAppKeyRequest; do
+		DeleteAppKeyRequest CreateOrUpdateCollectionsRequest; do
 		yq_del_project_coll $i
 	done
 
@@ -120,7 +121,7 @@ fix_bytes() {
 	# According to the OpenAPI spec format should be "byte",
 	# but protoc-gen-openapi generates it as "bytes".
 	# We fix it here
-	sed -i'' -e 's/format: bytes/format: byte/g' "$IN_FILE"
+	sed -i'.bak' -e 's/format: bytes/format: byte/g' "$IN_FILE"
 }
 
 yq_cmd() {
