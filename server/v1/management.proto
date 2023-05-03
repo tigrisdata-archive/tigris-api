@@ -54,17 +54,28 @@ message DescribeNamespacesData {
 }
 
 message ListNamespacesRequest {
+  // Optionally specify if the description of each namespace is requested
+  optional bool describe = 1;
+  // Optionally filter by specific namespaceId
+  string namespace_id = 2;
 }
 
 message ListNamespacesResponse {
   repeated NamespaceInfo namespaces = 1;
+  optional DescribeNamespacesData data = 2;
+
 }
 
-message DescribeNamespacesRequest {
+message DeleteNamespaceRequest {
+  // string namespace id to delete.
+  string namespace_id = 1;
 }
 
-message DescribeNamespacesResponse {
-  DescribeNamespacesData data = 1;
+message DeleteNamespaceResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "deleted".
+  string status = 2;
 }
 
 // Request user metadata
@@ -161,26 +172,30 @@ service Management {
     };
   }
 
-  // Get details for all namespaces
-  rpc DescribeNamespaces(DescribeNamespacesRequest) returns
-      (DescribeNamespacesResponse) {
+  // List all namespace and optionally lists specific namespace by namespaceId filter, also supports `describe` request.
+  rpc ListNamespaces(ListNamespacesRequest) returns
+      (ListNamespacesResponse) {
     option (google.api.http) = {
-      post : "/v1/management/namespaces/describe"
+      get : "/v1/management/namespaces/{namespace_id}"
+      additional_bindings {
+        get : "/v1/management/namespaces"
+      }
     };
+
     option(openapi.v3.operation) = {
-      summary: "Describe the details of all namespaces"
+      summary: "Lists all Namespaces"
       tags: "Management"
     };
   }
 
-  // List all namespace
-  rpc ListNamespaces(ListNamespacesRequest) returns
-      (ListNamespacesResponse) {
+  // DeleteNamespace deletes the namespace and all the data inside it
+  rpc DeleteNamespace(DeleteNamespaceRequest) returns
+      (DeleteNamespaceResponse) {
     option (google.api.http) = {
-      post : "/v1/management/namespaces/list"
+      delete : "/v1/management/namespaces/{namespace_id}"
     };
     option(openapi.v3.operation) = {
-      summary: "Lists all Namespaces"
+      summary: "Deletes the namespace"
       tags: "Management"
     };
   }

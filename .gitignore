@@ -4,3 +4,4 @@
 
 # Misc
 .DS_Store
+*.yaml.bak

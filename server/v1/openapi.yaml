@@ -15,15 +15,141 @@ servers:
     - url: http://localhost:8081
       description: Localhost
 paths:
+    /v1/auth/namespace/invitations/create:
+        post:
+            tags:
+                - Management
+            summary: Creates invitations to join the namespace
+            description: Creates invitations to the namespace
+            operationId: Auth_CreateInvitations
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateInvitationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateInvitationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/auth/namespace/invitations/delete:
+        delete:
+            tags:
+                - Management
+            summary: Deletes invitations to join the namespace
+            description: Deletes invitations to the namespace
+            operationId: Auth_DeleteInvitations
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteInvitationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteInvitationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/auth/namespace/invitations/list:
+        get:
+            tags:
+                - Management
+            summary: Lists all the invitations to join the namespace
+            description: Lists all the invitations to the namespace
+            operationId: Auth_ListInvitations
+            parameters:
+                - name: status
+                  in: query
+                  description: optional status - an enum [PENDING, EXPIRED, ACCEPTED]
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListInvitationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/auth/namespace/invitations/verify:
+        post:
+            tags:
+                - Management
+            summary: Verifies the invitation
+            description: Verify invitation
+            operationId: Auth_VerifyInvitation
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VerifyInvitationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/VerifyInvitationResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/auth/namespace/users:
+        get:
+            tags:
+                - Management
+            summary: Lists the users in current namespace
+            description: List users
+            operationId: Auth_ListUsers
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListUsersResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/auth/token:
         post:
             tags:
                 - Authentication
             summary: Access Token
             description: |-
-                Endpoint for receiving access token from Tigris Server. The endpoint requires Grant Type(`grant_type`) which has
-                 two possible values <i>"REFRESH_TOKEN"</i> or <i>"CLIENT_CREDENTIALS"</i> based on which either Refresh token(`refresh_token`)
-                 needs to be set or client credentials(`client_id`, `client_secret`).
+                Endpoint for receiving access token from Tigris Server. The endpoint
+                 requires Grant Type(`grant_type`) which has two possible values
+                 <i>"REFRESH_TOKEN"</i> or <i>"CLIENT_CREDENTIALS"</i> based on which either
+                 Refresh token(`refresh_token`) needs to be set or client
+                 credentials(`client_id`, `client_secret`).
             operationId: Auth_GetAccessToken
             requestBody:
                 content:
@@ -38,6 +164,67 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/GetAccessTokenResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/billing/invoices:
+        get:
+            tags:
+                - Billing
+            summary: Lists all invoices for the user
+            description: ListInvoices fetches past invoices for this user
+            operationId: Billing_ListInvoices
+            parameters:
+                - name: starting_on.seconds
+                  in: query
+                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
+                  schema:
+                    type: integer
+                    format: int64
+                - name: starting_on.nanos
+                  in: query
+                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: ending_before.seconds
+                  in: query
+                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
+                  schema:
+                    type: integer
+                    format: int64
+                - name: ending_before.nanos
+                  in: query
+                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: invoice_id
+                  in: query
+                  description: optionally filter by a specific invoice_id
+                  schema:
+                    type: string
+                - name: page_size
+                  in: query
+                  description: maximum number of items to include in result set
+                  schema:
+                    type: integer
+                    format: int32
+                - name: next_page
+                  in: query
+                  description: pagination token for fetching a particular result page, first page will be fetched if `null`
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListInvoicesResponse'
                 default:
                     description: Default error response
                     content:
@@ -187,33 +374,25 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /v1/management/namespaces/describe:
-        post:
-            tags:
-                - Management
-            summary: Describe the details of all namespaces
-            description: Get details for all namespaces
-            operationId: Management_DescribeNamespaces
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DescribeNamespacesResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/management/namespaces/list:
-        post:
+    /v1/management/namespaces/{namespace_id}:
+        get:
             tags:
                 - Management
             summary: Lists all Namespaces
-            description: List all namespace
+            description: List all namespace and optionally lists specific namespace by namespaceId filter, also supports `describe` request.
             operationId: Management_ListNamespaces
+            parameters:
+                - name: namespace_id
+                  in: path
+                  description: Optionally filter by specific namespaceId
+                  required: true
+                  schema:
+                    type: string
+                - name: describe
+                  in: query
+                  description: Optionally specify if the description of each namespace is requested
+                  schema:
+                    type: boolean
             responses:
                 "200":
                     description: OK
@@ -221,6 +400,32 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListNamespacesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - Management
+            summary: Deletes the namespace
+            description: DeleteNamespace deletes the namespace and all the data inside it
+            operationId: Management_DeleteNamespace
+            parameters:
+                - name: namespace_id
+                  in: path
+                  description: string namespace id to delete.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteNamespaceResponse'
                 default:
                     description: Default error response
                     content:
@@ -1093,6 +1298,38 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/collections/createOrUpdate:
+        post:
+            tags:
+                - Collections
+            summary: Create or update a batch of collections
+            operationId: Tigris_CreateOrUpdateCollections
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to create or update collection.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateOrUpdateCollectionsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateOrUpdateCollectionsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/database/collections/{collection}/createOrUpdate:
         post:
             tags:
@@ -1176,6 +1413,48 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/collections/{collection}/documents/count:
+        post:
+            tags:
+                - Collections
+            summary: Count Documents
+            description: |-
+                Count returns the number of documents in the collection. The filter parameter
+                 can be used to select which documents contribute to the count. An empty filter means
+                 count all documents in the collection.
+            operationId: Tigris_Count
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to count documents from.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name to count documents from.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CountRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CountResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects/{project}/database/collections/{collection}/documents/delete:
         delete:
             tags:
@@ -1209,6 +1488,47 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DeleteResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/collections/{collection}/documents/explain:
+        post:
+            tags:
+                - Collections
+            summary: Explain Read Documents
+            description: |-
+                Explain takes the same parameters as Read and returns how the Tigris Query Planner would process the
+                 response
+            operationId: Tigris_Explain
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to read documents from.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Collection name to read documents from.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReadRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ExplainResponse'
                 default:
                     description: Default error response
                     content:
@@ -1254,6 +1574,47 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ImportResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/collections/{collection}/documents/index:
+        post:
+            tags:
+                - Collections
+            summary: Build Index
+            description: |-
+                Index Collection will do a full scan off all documents in the collection and rebuild
+                 all indexes in the collection
+            operationId: Tigris_BuildCollectionIndex
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to index documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Name of the collection.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BuildCollectionIndexRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BuildCollectionIndexResponse'
                 default:
                     description: Default error response
                     content:
@@ -1390,7 +1751,7 @@ paths:
         post:
             tags:
                 - Collections
-            summary: Search Documents.
+            summary: Search Documents
             description: |-
                 Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
                  a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
@@ -1423,6 +1784,47 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/StreamingSearchResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/database/collections/{collection}/documents/search/index:
+        post:
+            tags:
+                - Collections
+            summary: Build Search Index
+            description: |-
+                Build search index for a collection will do a full scan off all documents in the collection and rebuild
+                 the search index for this collection
+            operationId: Tigris_BuildSearchIndex
+            parameters:
+                - name: project
+                  in: path
+                  description: Project name whose db is under target to index documents.
+                  required: true
+                  schema:
+                    type: string
+                - name: collection
+                  in: path
+                  description: Name of the collection.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BuildCollectionSearchIndexRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BuildCollectionSearchIndexResponse'
                 default:
                     description: Default error response
                     content:
@@ -2110,7 +2512,6 @@ paths:
         patch:
             tags:
                 - Search
-                - Search
             summary: Update documents in an index
             description: |-
                 Updates one or more documents by "id". Each document is required to have the
@@ -2457,6 +2858,42 @@ components:
         BranchMetadata:
             type: object
             properties: {}
+        BuildCollectionIndexRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Project name whose db is under target to index documents.
+                collection:
+                    type: string
+                    description: Name of the collection.
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
+        BuildCollectionIndexResponse:
+            type: object
+            properties:
+                indexes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CollectionIndex'
+        BuildCollectionSearchIndexRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Project name whose db is under target to index documents.
+                collection:
+                    type: string
+                    description: Name of the collection.
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
+        BuildCollectionSearchIndexResponse:
+            type: object
+            properties:
+                status:
+                    type: string
         CacheMetadata:
             type: object
             properties:
@@ -2468,6 +2905,39 @@ components:
             properties:
                 channel:
                     type: string
+        Charge:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Charge name
+                quantity:
+                    type: number
+                    format: float
+                subtotal:
+                    type: number
+                    format: float
+                tiers:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ChargeTier'
+                    description: Tiered charges, if any
+        ChargeTier:
+            type: object
+            properties:
+                starting_at:
+                    type: number
+                    description: Starting point where this Tier is applicable. Ex - A charge could be tiered as "Tier 1 (0-5)", "Tier 2 (5-10)"; starting_at will be 0, 5 etc.
+                    format: float
+                quantity:
+                    type: number
+                    format: float
+                price:
+                    type: number
+                    format: float
+                subtotal:
+                    type: number
+                    format: float
         Collation:
             type: object
             properties:
@@ -2489,6 +2959,22 @@ components:
                     type: integer
                     description: Collection size in bytes
                     format: int64
+                indexes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CollectionIndex'
+                    description: The index infromation
+        CollectionIndex:
+            type: object
+            properties:
+                name:
+                    type: string
+                state:
+                    type: string
+                fields:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Field'
         CollectionInfo:
             type: object
             properties:
@@ -2517,6 +3003,29 @@ components:
                 status:
                     type: string
                     description: Status of commit transaction operation.
+        CountRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Project name whose db is under target to count documents from.
+                collection:
+                    type: string
+                    description: Collection name to count documents from.
+                filter:
+                    type: string
+                    description: Count documents matching this filter. An empty filter means count all documents. A filter can simply be a key, value pair where a key is the field name and the value would be the value for this field. Tigris also allows complex filtering by passing logical expressions. Logical filters are applied on two or more fields using `$or` and `$and`. The detailed documentation of the filter is <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
+                    format: byte
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
+        CountResponse:
+            type: object
+            properties:
+                count:
+                    type: integer
+                    description: Count of documents.
+                    format: int64
         CreateAppKeyRequest:
             type: object
             properties:
@@ -2558,9 +3067,8 @@ components:
                     type: string
                     description: document id.
                 document:
-                    type: string
+                    type: object
                     description: A JSON document that needs to be indexed.
-                    format: byte
         CreateByIdResponse:
             type: object
             properties:
@@ -2587,6 +3095,12 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created"
+        CreateCollectionStatus:
+            type: object
+            properties:
+                status:
+                    type: string
+                    description: An enum with value set as "created" or "updated"
         CreateDocumentRequest:
             type: object
             properties:
@@ -2599,8 +3113,7 @@ components:
                 documents:
                     type: array
                     items:
-                        type: string
-                        format: byte
+                        type: object
                     description: An array of documents to be created or replaced. Each document is a JSON object.
         CreateDocumentResponse:
             type: object
@@ -2610,6 +3123,16 @@ components:
                     items:
                         $ref: '#/components/schemas/DocStatus'
                     description: An array of statuses of all the documents received in the request. Order is same as it is received in the request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null in case of success, otherwise error is set with an error code and message.
+        CreateInvitationsRequest:
+            type: object
+            properties:
+                invitations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/InvitationInfo'
+        CreateInvitationsResponse:
+            type: object
+            properties: {}
         CreateNamespaceRequest:
             type: object
             properties:
@@ -2646,8 +3169,7 @@ components:
                 documents:
                     type: array
                     items:
-                        type: string
-                        format: byte
+                        type: object
                     description: An array of documents to create. Each document is a JSON object. In case an id is missing then the server will automatically generate it for you and create the document and in case an id is provided in the document and the document already exists then that document will not index and in the response there will be an error corresponding to that document id other documents will succeed.
         CreateOrReplaceDocumentResponse:
             type: object
@@ -2680,6 +3202,35 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created" or "updated"
+        CreateOrUpdateCollectionsRequest:
+            type: object
+            properties:
+                branch:
+                    type: string
+                    description: Optionally specify a database branch name to perform operation on
+                schemas:
+                    type: array
+                    items:
+                        type: object
+                    description: collections to create.
+                only_create:
+                    type: boolean
+                options:
+                    $ref: '#/components/schemas/CollectionOptions'
+        CreateOrUpdateCollectionsResponse:
+            type: object
+            properties:
+                resp:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CreateCollectionStatus'
+                    description: A detailed response message.
+                failedAtIndex:
+                    type: integer
+                    description: In the case, when API returns an error this is an index in the "schemas" field which failed.
+                    format: int32
+                error:
+                    $ref: '#/components/schemas/Error'
         CreateOrUpdateIndexRequest:
             type: object
             properties:
@@ -2690,9 +3241,8 @@ components:
                     type: string
                     description: search index name.
                 schema:
-                    type: string
+                    type: object
                     description: 'schema of the index. The schema specifications are same as JSON schema specification defined <a href="https://json-schema.org/specification.html" title="here">here</a>.<p></p> Schema example: `{  "title": "ecommerce_index",  "description": "an ecommerce store search index",  "properties": {    "name": {      "description": "Name of the product",      "type": "string",      "maxLength": 128    },    "brand": {      "description": "Brand of the product",      "type": "string"    },    "price": {      "description": "Price of the product",      "type": "number"    }  } }`'
-                    format: byte
                 only_create:
                     type: boolean
                     description: If set to `true` then a conflict with HTTP Status code 409 is returned if an index already exists. The default is false.
@@ -2778,9 +3328,8 @@ components:
                     type: string
                     description: The index name of the documents that needs deletion.
                 filter:
-                    type: string
+                    type: object
                     description: 'A filter is required to delete matching documents. To delete document by id, you can pass the filter as follows ```{"id": "test"}```'
-                    format: byte
         DeleteByQueryResponse:
             type: object
             properties:
@@ -2832,6 +3381,25 @@ components:
                     type: string
                     description: index name.
         DeleteIndexResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "deleted".
+        DeleteInvitationsRequest:
+            type: object
+            properties:
+                email:
+                    type: string
+                status:
+                    type: string
+        DeleteInvitationsResponse:
+            type: object
+            properties: {}
+        DeleteNamespaceResponse:
             type: object
             properties:
                 message:
@@ -2919,6 +3487,11 @@ components:
                     type: integer
                     description: The size of this collection in bytes.
                     format: int64
+                indexes:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CollectionIndex'
+                    description: The index infromation
             description: A detailed description of the collection. The description returns collection metadata and the schema.
         DescribeDatabaseRequest:
             type: object
@@ -2957,11 +3530,6 @@ components:
             properties:
                 details:
                     type: string
-        DescribeNamespacesResponse:
-            type: object
-            properties:
-                data:
-                    $ref: '#/components/schemas/DescribeNamespacesData'
         DocStatus:
             type: object
             properties:
@@ -3020,6 +3588,29 @@ components:
                     type: string
                     description: A developer-facing descriptive error message
             description: The Error type defines a logical error model
+        ExplainResponse:
+            type: object
+            properties:
+                collection:
+                    type: string
+                    description: The collection that the explain response is run against
+                read_type:
+                    type: string
+                    description: The Type of read can be either Scan or Secondary Index
+                filter:
+                    type: string
+                    description: The filter used in the query
+                sorting:
+                    type: string
+                    description: The type of sort used
+                key_range:
+                    type: array
+                    items:
+                        type: string
+                    description: the key range
+                field:
+                    type: string
+                    description: the name of the field
         FacetCount:
             type: object
             properties:
@@ -3052,6 +3643,11 @@ components:
                     description: Total number of values in a field
                     format: int64
             description: Additional stats for faceted field
+        Field:
+            type: object
+            properties:
+                name:
+                    type: string
         GetAccessTokenRequest:
             type: object
             properties:
@@ -3256,9 +3852,8 @@ components:
                     type: string
                     description: Name of the index.
                 schema:
-                    type: string
+                    type: object
                     description: Schema of the index.
-                    format: byte
         InsertNamespaceMetadataRequest:
             type: object
             properties:
@@ -3332,6 +3927,95 @@ components:
                 value:
                     type: object
             description: Insertion of user metadata response
+        Invitation:
+            type: object
+            properties:
+                email:
+                    type: string
+                    description: invited email address
+                role:
+                    type: string
+                    description: invited user's role
+                status:
+                    type: string
+                    description: status of invitation
+                tigris_namespace:
+                    type: string
+                    description: invited namespace
+                tigris_namespace_name:
+                    type: string
+                    description: invited namespace (display friendly)
+                created_by:
+                    type: string
+                    description: created by sub
+                created_by_name:
+                    type: string
+                    description: created by name (display friendly)
+                expiration_time:
+                    type: integer
+                    description: expiration time
+                    format: int64
+        InvitationInfo:
+            type: object
+            properties:
+                email:
+                    type: string
+                    description: 'Required: Email address to invite'
+                role:
+                    type: string
+                    description: 'Required: Role to associate this user to'
+                invitation_sent_by_name:
+                    type: string
+                    description: Invitation sender name
+        Invoice:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: unique identifier for this invoice
+                entries:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/InvoiceLineItem'
+                    description: entries that make up the invoice
+                start_time:
+                    type: string
+                    description: RFC 3339 starting time for usage period during which items were added to this invoice
+                    format: date-time
+                end_time:
+                    type: string
+                    description: RFC 3339 ending time for usage period during which items were added to this invoice
+                    format: date-time
+                subtotal:
+                    type: number
+                    description: invoice subtotal
+                    format: float
+                total:
+                    type: number
+                    description: total invoice amount
+                    format: float
+                plan_name:
+                    type: string
+                    description: Tigris price plan name
+        InvoiceLineItem:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Product name
+                quantity:
+                    type: number
+                    description: Quantity
+                    format: float
+                total:
+                    type: number
+                    description: Total amount for the product
+                    format: float
+                charges:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Charge'
+                    description: Broken down charges
         KeysResponse:
             type: object
             properties:
@@ -3384,6 +4068,24 @@ components:
                     items:
                         $ref: '#/components/schemas/IndexInfo'
                     description: List of indexes.
+        ListInvitationsResponse:
+            type: object
+            properties:
+                invitations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Invitation'
+        ListInvoicesResponse:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Invoice'
+                    description: Array of invoices
+                next_page:
+                    type: string
+                    description: token for next page if it exists, else `null`
         ListNamespacesResponse:
             type: object
             properties:
@@ -3391,6 +4093,8 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/NamespaceInfo'
+                data:
+                    $ref: '#/components/schemas/DescribeNamespacesData'
         ListProjectsResponse:
             type: object
             properties:
@@ -3406,6 +4110,13 @@ components:
                     type: array
                     items:
                         type: string
+        ListUsersResponse:
+            type: object
+            properties:
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/User'
         Match:
             type: object
             properties:
@@ -3415,6 +4126,9 @@ components:
                         $ref: '#/components/schemas/MatchField'
                 score:
                     type: string
+                vector_distance:
+                    type: number
+                    format: double
         MatchField:
             type: object
             properties:
@@ -3649,9 +4363,10 @@ components:
                 options:
                     $ref: '#/components/schemas/ReadRequestOptions'
                 sort:
-                    type: string
+                    type: array
                     description: 'Array of fields and corresponding sort orders to order the results. Ex: 1 `[{ "salary": "$desc" }]`, Ex: 2  `[{ "salary": "$asc"}]`'
-                    format: byte
+                    items:
+                        type: object
                 branch:
                     type: string
                     description: Optionally specify a database branch name to perform operation on
@@ -3828,17 +4543,16 @@ components:
                         type: string
                     description: Array of fields to project search query against
                 filter:
-                    type: string
+                    type: object
                     description: Filter stacks on top of query results to further narrow down the results. Similar to `ReadRequest.filter`
-                    format: byte
                 facet:
-                    type: string
+                    type: object
                     description: 'Facet query to aggregate results on given fields. The field name for the facet search can be passed like this `{"brand": { "size": 10 }}` where the size controls the total facets for this field.'
-                    format: byte
                 sort:
-                    type: string
+                    type: array
                     description: 'Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`'
-                    format: byte
+                    items:
+                        type: object
                 include_fields:
                     type: array
                     items:
@@ -3862,6 +4576,10 @@ components:
                 group_by:
                     type: string
                     description: 'Group by can be used to group search results. For example, to group by city field the syntax would be: `{ "fields": ["city"]}`. Optionally a grouping limit can be set. By default it is 3 per group.'
+                    format: byte
+                vector:
+                    type: string
+                    description: 'Vector is an object that is used for vector search. For example, to vector search on a "vec" field the syntax would be: `{ "vec": [0.34, 0.12, 0.95], "top_k": 10}`.'
                     format: byte
         SearchIndexResponse:
             type: object
@@ -3916,8 +4634,10 @@ components:
                     type: object
                     description: 'Facet query to aggregate results on given fields. The field name for the facet search can be passed like this `{"brand": { "size": 10 }}` where the size controls the total facets for this field.'
                 sort:
-                    type: object
+                    type: array
                     description: 'Array of fields and corresponding sort orders to order the results `[{ "salary": "$desc" }]`'
+                    items:
+                        type: object
                 include_fields:
                     type: array
                     items:
@@ -3941,6 +4661,14 @@ components:
                 branch:
                     type: string
                     description: Optionally specify a database branch name to perform operation on
+                group_by:
+                    type: string
+                    description: 'Group by can be used to group search results. For example, to group by city field the syntax would be: `{ "fields": ["city"]}`. Optionally a grouping limit can be set. By default it is 3 per group.'
+                    format: byte
+                vector:
+                    type: string
+                    description: 'Vector is an object that is used for vector search. For example, to vector search on a "vec" field the syntax would be: `{ "vec": [0.34, 0.12, 0.95], "top_k": 10}`.'
+                    format: byte
                 fields:
                     type: object
         SearchResponse:
@@ -3956,6 +4684,11 @@ components:
                         $ref: '#/components/schemas/SearchFacet'
                 meta:
                     $ref: '#/components/schemas/SearchMetadata'
+                group:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GroupedSearchHits'
+                    description: Group is returned when group_by is used in the search request. In this case the above hits will be empty and hits are returned by the group keys.
             description: Response struct for search
         SetRequest:
             type: object
@@ -4032,8 +4765,7 @@ components:
                 documents:
                     type: array
                     items:
-                        type: string
-                        format: byte
+                        type: object
                     description: An array of documents. Each document should have "id" present which will be used by Tigris for updating the document.
         UpdateDocumentResponse:
             type: object
@@ -4121,6 +4853,41 @@ components:
                 value:
                     type: object
             description: Update of user metadata response
+        User:
+            type: object
+            properties:
+                email:
+                    type: string
+                name:
+                    type: string
+                created_at:
+                    type: integer
+                    format: int64
+                picture:
+                    type: string
+                role:
+                    type: string
+        VerifyInvitationRequest:
+            type: object
+            properties:
+                email:
+                    type: string
+                    description: invited email address
+                code:
+                    type: string
+                    description: code
+        VerifyInvitationResponse:
+            type: object
+            properties:
+                tigris_namespace:
+                    type: string
+                    description: if successful - which namespace this user belongs to
+                tigris_namespace_name:
+                    type: string
+                    description: if successful - which namespace this user belongs to
+                role:
+                    type: string
+                    description: if successful - which role this user should be assigned to
         WriteOptions:
             type: object
             properties: {}
@@ -4155,6 +4922,9 @@ tags:
       description: The application keys section provide APIs that can be used to manage application keys for your project. A single project can have one or more application keys.
     - name: Authentication
       description: 'The auth section of API provides OAuth 2.0 APIs. Tigris supports pluggable OAuth provider. Pass the token in the headers for authentication, as an example `-H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6I"`(replace it with your token). All API requests must be made over HTTPS. Calls made over plain HTTP will fail. API requests without authentication will also fail.'
+    - name: Billing
+    - name: Billing
+      description: The billing section provides APIs for managing invoices and payments infrastructure.
     - name: Cache
       description: The cache section provide APIs that can be used to perform cache operations.
     - name: Collections

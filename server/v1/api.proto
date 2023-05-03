@@ -18,6 +18,7 @@ package tigrisdata.v1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "server/v1/observability.proto";
 import "openapiv3/annotations.proto";
 
 option go_package = "github.com/tigrisdata/tigris/api";
@@ -71,6 +72,9 @@ option (openapi.v3.document) = {
   }, {
     name: "Search"
     description: "The search section provides you APIs that can be used to implement powerful apps with search experiences. You can manage storing documents on your own or you can simply integrate it with your database."
+  }, {
+    name: "Billing"
+    description: "The billing section provides APIs for managing invoices and payments infrastructure."
   }]
   components: {
     security_schemes: {
@@ -392,6 +396,41 @@ message ReadResponse {
   ResponseMetadata metadata = 3;
 }
 
+message CountRequest {
+  // Project name whose db is under target to count documents from.
+  string project = 1;
+  // Collection name to count documents from.
+  string collection = 2;
+  // Count documents matching this filter. An empty filter means count all documents. A filter can simply
+  // be a key, value pair where a key is the field name and the value would be the value for this field.
+  // Tigris also allows complex filtering by passing logical expressions. Logical filters are applied on
+  // two or more fields using `$or` and `$and`. The detailed documentation of the filter
+  // is <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
+  bytes filter = 3;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 4;
+}
+
+message CountResponse {
+  // Count of documents.
+  int64 count = 1;
+}
+
+message ExplainResponse {
+  // The collection that the explain response is run against
+  string collection = 1;
+  // The Type of read can be either Scan or Secondary Index
+  string read_type  = 2;
+  // The filter used in the query
+  string filter = 3;
+  // The type of sort used
+  string sorting = 4;
+  // the key range
+  repeated string key_range = 5;
+  // the name of the field
+  string field = 6;
+}
+
 message SearchRequest {
   // Project name whose db is under target to search documents from.
   string project = 1;
@@ -421,6 +460,12 @@ message SearchRequest {
   Collation collation = 12;
   // Optionally specify a database branch name to perform operation on
   string branch = 13;
+  // Group by can be used to group search results. For example, to group by city field the
+  // syntax would be: `{ "fields": ["city"]}`. Optionally a grouping limit can be set. By default it is 3 per group.
+  bytes group_by = 14;
+  // Vector is an object that is used for vector search. For example, to vector search on a "vec" field the
+  // syntax would be: `{ "vec": [0.34, 0.12, 0.95], "top_k": 10}`.
+  bytes vector = 15;
 }
 
 // Response struct for search
@@ -428,6 +473,9 @@ message SearchResponse {
   repeated SearchHit hits = 1;
   map<string, SearchFacet> facets = 2;
   SearchMetadata meta = 3;
+  // Group is returned when group_by is used in the search request. In this case the above hits will be empty and
+  // hits are returned by the group keys.
+  repeated GroupedSearchHits group = 4;
 }
 
 message SearchHit {
@@ -487,6 +535,7 @@ message MatchField {
 message Match {
   repeated MatchField fields = 1;
   string score = 2;
+  optional double vector_distance = 3;
 }
 
 message GroupedSearchHits {
@@ -613,6 +662,31 @@ message CreateOrUpdateCollectionResponse {
   string status = 2;
 }
 
+message CreateOrUpdateCollectionsRequest {
+  // Project name whose db is under target to create or update collection.
+  string project = 1;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 2;
+  // collections to create.
+  repeated bytes schemas = 3;
+  bool only_create = 4;
+  CollectionOptions options = 5;
+}
+
+message CreateCollectionStatus {
+  // An enum with value set as "created" or "updated"
+  string status = 1;
+}
+
+message CreateOrUpdateCollectionsResponse {
+  // A detailed response message.
+  repeated CreateCollectionStatus resp = 1;
+  // In the case, when API returns an error this is an index
+  // in the "schemas" field which failed.
+  int32 failedAtIndex = 2;
+  tigrisdata.observability.v1.Error error = 3;
+}
+
 message DropCollectionRequest {
   // Project name whose db is under target to delete collection.
   string project = 1;
@@ -734,6 +808,8 @@ message DescribeCollectionResponse {
   bytes schema = 3;
   // The size of this collection in bytes.
   int64 size = 4;
+  // The index infromation
+  repeated CollectionIndex indexes = 5;
 }
 
 message ProjectDescription {
@@ -750,6 +826,8 @@ message CollectionDescription {
   bytes schema = 3;
   // Collection size in bytes
   int64 size = 4;
+  // The index infromation
+  repeated CollectionIndex indexes = 5;
 }
 
 message ProjectMetadata {
@@ -759,6 +837,43 @@ message DatabaseMetadata {
 }
 
 message CollectionMetadata {
+}
+
+message CollectionIndex {
+  string name = 1;
+  string state = 2;
+  repeated Field fields = 3;
+}
+
+message Field {
+  string name = 1;
+}
+
+message BuildCollectionIndexRequest {
+  // Project name whose db is under target to index documents.
+  string project = 1;
+  // Name of the collection.
+  string collection = 2;
+
+  // Optionally specify a database branch name to perform operation on
+  string branch = 3;
+}
+
+message BuildCollectionIndexResponse {
+  repeated CollectionIndex indexes = 1;
+}
+
+message BuildCollectionSearchIndexRequest {
+  // Project name whose db is under target to index documents.
+  string project = 1;
+  // Name of the collection.
+  string collection = 2;
+  // Optionally specify a database branch name to perform operation on
+  string branch = 3;
+}
+
+message BuildCollectionSearchIndexResponse {
+  string status = 1;
 }
 
 message BranchMetadata {
@@ -960,6 +1075,55 @@ service Tigris {
       tags: "Collections"
     };
   }
+  // Count returns the number of documents in the collection. The filter parameter
+  // can be used to select which documents contribute to the count. An empty filter means
+  // count all documents in the collection.
+  rpc Count(CountRequest) returns (CountResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/database/collections/{collection}/documents/count"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Count Documents"
+      tags: "Collections"
+    };
+  }
+  // Index Collection will do a full scan off all documents in the collection and rebuild
+  // all indexes in the collection
+  rpc BuildCollectionIndex(BuildCollectionIndexRequest) returns (BuildCollectionIndexResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/database/collections/{collection}/documents/index"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Build Index"
+      tags: "Collections"
+    };
+  }
+  // Build search index for a collection will do a full scan off all documents in the collection and rebuild
+  // the search index for this collection
+  rpc BuildSearchIndex(BuildCollectionSearchIndexRequest) returns (BuildCollectionSearchIndexResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/database/collections/{collection}/documents/search/index"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Build Search Index"
+      tags: "Collections"
+    };
+  }
+  // Explain takes the same parameters as Read and returns how the Tigris Query Planner would process the
+  // response
+  rpc Explain(ReadRequest) returns (ExplainResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/database/collections/{collection}/documents/explain"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Explain Read Documents"
+      tags: "Collections"
+    };
+  }
 
   // Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
   // a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
@@ -971,7 +1135,7 @@ service Tigris {
       body : "*"
     };
     option(openapi.v3.operation) = {
-      summary: "Search Documents."
+      summary: "Search Documents"
       tags: "Collections"
     };
   }
@@ -1003,6 +1167,17 @@ service Tigris {
     };
     option(openapi.v3.operation) = {
       summary: "Create or update a collection"
+      tags: "Collections"
+    };
+  }
+
+  rpc CreateOrUpdateCollections(CreateOrUpdateCollectionsRequest) returns (CreateOrUpdateCollectionsResponse) {
+    option (google.api.http) = {
+      post : "/v1/projects/{project}/database/collections/createOrUpdate"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Create or update a batch of collections"
       tags: "Collections"
     };
   }

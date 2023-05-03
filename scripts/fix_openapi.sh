@@ -54,17 +54,33 @@ main() {
 	yq_fix_object ReplaceRequest documents.items
 	yq_fix_object UpdateRequest fields
 	yq_fix_object ReadRequest fields
+	yq_fix_array_object ReadRequest sort
 	yq_fix_object ReadResponse data
 	yq_fix_object SearchRequest fields
 	yq_fix_object SearchRequest facet
-	yq_fix_object SearchRequest sort
+	yq_fix_array_object SearchRequest sort
 	yq_fix_object SearchHit data
 	yq_fix_object CreateOrUpdateCollectionRequest schema
+	yq_fix_object CreateOrUpdateCollectionsRequest schemas.items
 	yq_fix_timestamp ResponseMetadata created_at
 	yq_fix_timestamp ResponseMetadata updated_at
 
 	yq_fix_object DescribeCollectionResponse schema
 	yq_fix_object CollectionDescription schema
+
+	yq_fix_object CreateByIdRequest document
+ 	yq_fix_object DeleteByQueryRequest filter
+
+ 	yq_fix_object CreateOrUpdateIndexRequest schema
+ 	yq_fix_object IndexInfo schema
+
+ 	yq_fix_object UpdateDocumentRequest documents.items
+ 	yq_fix_object CreateOrReplaceDocumentRequest documents.items
+ 	yq_fix_object CreateDocumentRequest documents.items
+
+ 	yq_fix_object SearchIndexRequest filter
+ 	yq_fix_object SearchIndexRequest facet
+ 	yq_fix_array_object SearchIndexRequest sort
 
 	yq_del_service_tags
 
@@ -75,7 +91,7 @@ main() {
 		BeginTransactionRequest CommitTransactionRequest \
 		RollbackTransactionRequest CreateAppKeyRequest \
 		UpdateAppKeyRequest ListAppKeysRequest \
-		DeleteAppKeyRequest; do
+		DeleteAppKeyRequest CreateOrUpdateCollectionsRequest; do
 		yq_del_project_coll $i
 	done
 
@@ -98,13 +114,14 @@ main() {
 	for i in SetRequest GetSetRequest GetRequest DelRequest; do
 		yq_del_project_cache_key $i
 	done
+
 }
 
 fix_bytes() {
 	# According to the OpenAPI spec format should be "byte",
 	# but protoc-gen-openapi generates it as "bytes".
 	# We fix it here
-	sed -i'' -e 's/format: bytes/format: byte/g' "$IN_FILE"
+	sed -i'.bak' -e 's/format: bytes/format: byte/g' "$IN_FILE"
 }
 
 yq_cmd() {
@@ -117,6 +134,12 @@ yq_cmd() {
 yq_fix_object() {
 	yq_cmd "del(.components.schemas.$1.properties.$2.format)"
 	yq_cmd ".components.schemas.$1.properties.$2.type=\"object\""
+}
+
+yq_fix_array_object() {
+	yq_cmd "del(.components.schemas.$1.properties.$2.format)"
+	yq_cmd ".components.schemas.$1.properties.$2.type=\"array\""
+	yq_cmd ".components.schemas.$1.properties.$2.items.type=\"object\""
 }
 
 yq_fix_timestamp() {
@@ -139,6 +162,7 @@ yq_del_service_tags() {
 	yq_cmd "del(.paths[] | .get.tags[0])"
 	yq_cmd "del(.paths[] | .post.tags[0])"
 	yq_cmd "del(.paths[] | .put.tags[0])"
+	yq_cmd "del(.paths[] | .patch.tags[0])"
 	yq_cmd "del(.paths[] | .delete.tags[0])"
 	yq_cmd "del(.tags[] | select(.name == \"Tigris\"))"
 	yq_cmd "del(.tags[] | select(.name == \"HealthAPI\"))"
@@ -211,5 +235,6 @@ yq_del_project_cache_key() {
   yq_del_project_cache "$1"
 	yq_cmd "del(.components.schemas.$1.properties.key)"
 }
+
 
 main

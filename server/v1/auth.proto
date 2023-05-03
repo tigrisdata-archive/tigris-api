@@ -22,26 +22,28 @@ import "openapiv3/annotations.proto";
 option go_package = "github.com/tigrisdata/tigris/api";
 option java_package = "com.tigrisdata.db.api.v1.grpc";
 
-
-// The Request message for the GetAccessToken. The grant type is a required field and based on the grant type
-// the other fields are used as mentioned below.
-message GetAccessTokenRequest{
+// The Request message for the GetAccessToken. The grant type is a required
+// field and based on the grant type the other fields are used as mentioned
+// below.
+message GetAccessTokenRequest {
   GrantType grant_type = 1;
   // Refresh token is required when grant type is set as `REFRESH_TOKEN`.
   string refresh_token = 2;
   // Client Id is required when grant type is set as `CLIENT_CREDENTIALS`.
   string client_id = 3;
-  // Your Tigris API Key is required when grant type is set as `CLIENT_CREDENTIALS`.
+  // Your Tigris API Key is required when grant type is set as
+  // `CLIENT_CREDENTIALS`.
   string client_secret = 4;
 }
 
-enum GrantType{
+enum GrantType {
   REFRESH_TOKEN = 0;
   CLIENT_CREDENTIALS = 1;
 }
 
-// The response of GetAccessToken which contains access_token and optionally refresh_token.
-message GetAccessTokenResponse{
+// The response of GetAccessToken which contains access_token and optionally
+// refresh_token.
+message GetAccessTokenResponse {
   // An Access Token.
   string access_token = 1;
   // The Refresh Token.
@@ -50,19 +52,167 @@ message GetAccessTokenResponse{
   int32 expires_in = 3;
 }
 
+message InvitationInfo {
+  // Required: Email address to invite
+  string email = 1;
+
+  // Required: Role to associate this user to
+  string role = 2;
+
+  // Invitation sender name
+  string invitation_sent_by_name = 3;
+}
+
+message CreateInvitationsRequest {
+  repeated InvitationInfo invitations = 1;
+}
+
+message CreateInvitationsResponse {
+}
+
+message DeleteInvitationsRequest {
+  string email = 1;
+  optional string status = 2;
+}
+
+message DeleteInvitationsResponse {}
+
+message Invitation {
+  // invited email address
+  string email = 1;
+  // invited user's role
+  string role = 2;
+  // status of invitation
+  string status = 3;
+  // invited namespace
+  string tigris_namespace = 4;
+  // invited namespace (display friendly)
+  string tigris_namespace_name = 5;
+  // created by sub
+  string created_by = 6;
+  // created by name (display friendly)
+  string created_by_name = 7;
+  // expiration time
+  int64 expiration_time = 8;
+}
+
+message ListInvitationsRequest {
+  // optional status - an enum [PENDING, EXPIRED, ACCEPTED]
+  optional string status = 1;
+}
+
+message ListInvitationsResponse {
+  repeated Invitation invitations = 1;
+}
+
+message VerifyInvitationRequest {
+  // invited email address
+  string email = 1;
+  // code
+  string code = 2;
+}
+
+message VerifyInvitationResponse {
+  // if successful - which namespace this user belongs to
+  string tigris_namespace = 1;
+  // if successful - which namespace this user belongs to
+  string tigris_namespace_name = 2;
+  // if successful - which role this user should be assigned to
+  string role = 3;
+}
+
+message ListUsersRequest {
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+}
+
+message User {
+  string email = 1;
+  string name = 2;
+  int64 created_at = 3;
+  string picture = 4;
+  string role = 5;
+}
+
 service Auth {
-  // Endpoint for receiving access token from Tigris Server. The endpoint requires Grant Type(`grant_type`) which has
-  // two possible values <i>"REFRESH_TOKEN"</i> or <i>"CLIENT_CREDENTIALS"</i> based on which either Refresh token(`refresh_token`)
-  // needs to be set or client credentials(`client_id`, `client_secret`).
-  rpc GetAccessToken(GetAccessTokenRequest) returns
-      (GetAccessTokenResponse) {
+  // Endpoint for receiving access token from Tigris Server. The endpoint
+  // requires Grant Type(`grant_type`) which has two possible values
+  // <i>"REFRESH_TOKEN"</i> or <i>"CLIENT_CREDENTIALS"</i> based on which either
+  // Refresh token(`refresh_token`) needs to be set or client
+  // credentials(`client_id`, `client_secret`).
+  rpc GetAccessToken(GetAccessTokenRequest) returns (GetAccessTokenResponse) {
     option (google.api.http) = {
-      post : "/v1/auth/token"
-      body : "*"
+      post: "/v1/auth/token"
+      body: "*"
     };
-    option(openapi.v3.operation) = {
+    option (openapi.v3.operation) = {
       summary: "Access Token"
       tags: "Authentication"
+    };
+  }
+
+  // Creates invitations to the namespace
+  rpc CreateInvitations(CreateInvitationsRequest)
+      returns (CreateInvitationsResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/namespace/invitations/create"
+      body: "*"
+    };
+    option (openapi.v3.operation) = {
+      summary: "Creates invitations to join the namespace"
+      tags: "Management"
+    };
+  }
+
+  // Deletes invitations to the namespace
+  rpc DeleteInvitations(DeleteInvitationsRequest)
+      returns (DeleteInvitationsResponse) {
+    option (google.api.http) = {
+      delete: "/v1/auth/namespace/invitations/delete"
+      body: "*"
+    };
+    option (openapi.v3.operation) = {
+      summary: "Deletes invitations to join the namespace"
+      tags: "Management"
+    };
+  }
+
+  // Lists all the invitations to the namespace
+  rpc ListInvitations(ListInvitationsRequest)
+      returns (ListInvitationsResponse) {
+    option (google.api.http) = {
+      get: "/v1/auth/namespace/invitations/list"
+    };
+    option (openapi.v3.operation) = {
+      summary: "Lists all the invitations to join the namespace"
+      tags: "Management"
+    };
+  }
+
+  // Verify invitation
+  rpc VerifyInvitation(VerifyInvitationRequest)
+      returns (VerifyInvitationResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/namespace/invitations/verify",
+      body: "*"
+    };
+    option (openapi.v3.operation) = {
+      summary: "Verifies the invitation"
+      tags: "Management"
+    };
+  }
+
+  // List users
+  rpc ListUsers(ListUsersRequest)
+      returns (ListUsersResponse) {
+    option (google.api.http) = {
+      get: "/v1/auth/namespace/users"
+    };
+    option (openapi.v3.operation) = {
+      summary: "Lists the users in current namespace"
+      tags: "Management"
     };
   }
 }

@@ -13,7 +13,7 @@ all: lint
 
 .PRECIOUS: ${PROTO_DIR}/openapi.yaml ${PROTO_DIR}/%.proto
 
-COMPONENTS = api cache health auth observability management realtime search
+COMPONENTS = api cache health auth observability management realtime search billing
 
 # Generate GRPC client/server, openapi spec, http server
 ${GEN_DIR}/%.pb.go ${GEN_DIR}/%.pb.gw.go: ${PROTO_DIR}/%.proto
@@ -23,7 +23,7 @@ ${GEN_DIR}/%.pb.go ${GEN_DIR}/%.pb.gw.go: ${PROTO_DIR}/%.proto
 		--grpc-gateway_out=${API_DIR} --grpc-gateway_opt=paths=source_relative,allow_delete_body=true \
 		$<
 
-${PROTO_DIR}/openapi.yaml: $(COMPONENTS:%=$(PROTO_DIR)/%.proto)
+${PROTO_DIR}/openapi.yaml: $(COMPONENTS:%=$(PROTO_DIR)/%.proto) scripts/fix_openapi.sh
 	protoc -I. -Iserver/v1 --openapi_out=${PROTO_DIR} --openapi_opt=naming=proto,enum_type=string $(COMPONENTS:%=$(PROTO_DIR)/%.proto)
 	/bin/bash scripts/fix_openapi.sh ${PROTO_DIR}/openapi.yaml
 
