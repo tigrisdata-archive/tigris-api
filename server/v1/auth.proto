@@ -68,14 +68,26 @@ message CreateInvitationsRequest {
 }
 
 message CreateInvitationsResponse {
+  // machine friendly status = created
+  string status = 1;
+  // human friendly message
+  string message = 2;
+  // number of invitations created
+  int32 count = 3;
 }
 
 message DeleteInvitationsRequest {
   string email = 1;
   optional string status = 2;
+
 }
 
-message DeleteInvitationsResponse {}
+message DeleteInvitationsResponse {
+  // machine friendly status = deleted
+  string status = 1;
+  // human friendly message
+  string message = 2;
+}
 
 message Invitation {
   // invited email address
