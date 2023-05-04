@@ -3132,7 +3132,17 @@ components:
                         $ref: '#/components/schemas/InvitationInfo'
         CreateInvitationsResponse:
             type: object
-            properties: {}
+            properties:
+                status:
+                    type: string
+                    description: machine friendly status = created
+                message:
+                    type: string
+                    description: human friendly message
+                count:
+                    type: integer
+                    description: number of invitations created
+                    format: int32
         CreateNamespaceRequest:
             type: object
             properties:
@@ -3398,7 +3408,13 @@ components:
                     type: string
         DeleteInvitationsResponse:
             type: object
-            properties: {}
+            properties:
+                status:
+                    type: string
+                    description: machine friendly status = deleted
+                message:
+                    type: string
+                    description: human friendly message
         DeleteNamespaceResponse:
             type: object
             properties:
