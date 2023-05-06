@@ -969,9 +969,92 @@ message RotateAppKeyRequest {
 }
 
 // RotateAppKeyResponse returns the new app key with rotated secret
-message RotateAppKeyResponse{
+message RotateAppKeyResponse {
   // A new app key with rotated secret.
   AppKey app_key = 1;
+}
+
+// Request creation of global app key
+message CreateGlobalAppKeyRequest {
+  // A human readable app name
+  string name = 1;
+  // A human readable app description
+  string description = 2;
+}
+
+// CreateGlobalAppKeyResponse returns created global app key
+message CreateGlobalAppKeyResponse {
+  // created app object
+  GlobalAppKey created_app_key = 1;
+}
+
+// To update the description of the global app key
+message UpdateGlobalAppKeyRequest {
+  // app key id - this is not allowed to update
+  string id = 1;
+  // A new human readable app name
+  string name = 2;
+  // A new human readable app description
+  string description = 3;
+}
+
+// Returns response for updating the global app key description
+message UpdateGlobalAppKeyResponse {
+  // updated global app key object
+  GlobalAppKey updated_app_key = 1;
+}
+
+// The global AppKey
+message GlobalAppKey {
+  // Generated client id
+  string id = 1;
+  // A human readable app name
+  string name = 2;
+  // A human readable app description
+  string description = 3;
+  // Generated app secret
+  string secret = 4;
+  // Created at
+  int64 created_at = 5;
+  // Created by
+  string created_by = 6;
+  // Updated at
+  int64 updated_at = 7;
+  // Updated by
+  string updated_by = 8;
+}
+
+// Request listing of all the global app keys those are visible to requesting actor
+message ListGlobalAppKeysRequest {
+}
+
+// ListGlobalAppKeysResponse returns one or more visible global app keys to user
+message ListGlobalAppKeysResponse {
+  repeated GlobalAppKey app_keys = 1;
+}
+
+// Request deletion of an global app key
+message DeleteGlobalAppKeyRequest {
+  // app_key id
+  string id = 1;
+}
+
+// AppKeys returns the flag to convey if global app key was deleted
+message DeleteGlobalAppKeyResponse {
+  // status flag for delete operation
+  bool deleted = 1;
+}
+
+// Request rotation of an app key secret
+message RotateGlobalAppKeySecretRequest {
+  // global app key id
+  string id = 1;
+}
+
+// RotateGlobalAppKeySecretResponse returns the new app key with rotated secret
+message RotateGlobalAppKeySecretResponse{
+  // A new global app key with rotated secret.
+  GlobalAppKey app_key = 1;
 }
 
 service Tigris {
@@ -1297,6 +1380,71 @@ service Tigris {
     option(openapi.v3.operation) = {
       summary: "Describe Collection"
       tags: "Collections"
+    };
+  }
+
+
+  // Create a global app key.
+  rpc CreateGlobalAppKey(CreateGlobalAppKeyRequest) returns
+      (CreateGlobalAppKeyResponse) {
+    option (google.api.http) = {
+      post : "/v1/apps/keys/create"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Creates the global app key"
+      tags: "Application Keys"
+    };
+  }
+
+
+  // Update the description of the global app key.
+  rpc UpdateGlobalAppKey(UpdateGlobalAppKeyRequest) returns
+      (UpdateGlobalAppKeyResponse) {
+    option (google.api.http) = {
+      put : "/v1/apps/keys/update"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Updates the description of the global app key"
+      tags: "Application Keys"
+    };
+  }
+
+  // Delete an global app key.
+  rpc DeleteGlobalAppKey(DeleteGlobalAppKeyRequest) returns (DeleteGlobalAppKeyResponse) {
+    option (google.api.http) = {
+      delete : "/v1/apps/keys/delete"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Deletes the global app key"
+      tags: "Application Keys"
+    };
+  }
+
+  // Lists all the global app keys visible to requesting actor.
+  rpc ListGlobalAppKeys(ListGlobalAppKeysRequest) returns
+      (ListGlobalAppKeysResponse) {
+    option (google.api.http) = {
+      get : "/v1/apps/keys"
+    };
+    option(openapi.v3.operation) = {
+      summary: "List all the global app keys"
+      tags: "Application Keys"
+    };
+  }
+
+  // Endpoint is used to rotate the secret for the app key.
+  rpc RotateGlobalAppKeySecret(RotateGlobalAppKeySecretRequest) returns
+      (RotateGlobalAppKeySecretResponse) {
+    option (google.api.http) = {
+      post : "/v1/apps/keys/rotate"
+      body : "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Rotates the global app key secret"
+      tags: "Application Keys"
     };
   }
 
