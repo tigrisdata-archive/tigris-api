@@ -15,6 +15,130 @@ servers:
     - url: http://localhost:8081
       description: Localhost
 paths:
+    /v1/apps/keys:
+        get:
+            tags:
+                - Application Keys
+            summary: List all the global app keys
+            description: Lists all the global app keys visible to requesting actor.
+            operationId: Tigris_ListGlobalAppKeys
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListGlobalAppKeysResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/apps/keys/create:
+        post:
+            tags:
+                - Application Keys
+            summary: Creates the global app key
+            description: Create a global app key.
+            operationId: Tigris_CreateGlobalAppKey
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateGlobalAppKeyRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateGlobalAppKeyResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/apps/keys/delete:
+        delete:
+            tags:
+                - Application Keys
+            summary: Deletes the global app key
+            description: Delete an global app key.
+            operationId: Tigris_DeleteGlobalAppKey
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteGlobalAppKeyRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteGlobalAppKeyResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/apps/keys/rotate:
+        post:
+            tags:
+                - Application Keys
+            summary: Rotates the global app key secret
+            description: Endpoint is used to rotate the secret for the app key.
+            operationId: Tigris_RotateGlobalAppKeySecret
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RotateGlobalAppKeySecretRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RotateGlobalAppKeySecretResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/apps/keys/update:
+        put:
+            tags:
+                - Application Keys
+            summary: Updates the description of the global app key
+            description: Update the description of the global app key.
+            operationId: Tigris_UpdateGlobalAppKey
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateGlobalAppKeyRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateGlobalAppKeyResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/auth/namespace/invitations/create:
         post:
             tags:
@@ -3123,6 +3247,22 @@ components:
                     items:
                         $ref: '#/components/schemas/DocStatus'
                     description: An array of statuses of all the documents received in the request. Order is same as it is received in the request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null in case of success, otherwise error is set with an error code and message.
+        CreateGlobalAppKeyRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: A human readable app name
+                description:
+                    type: string
+                    description: A human readable app description
+            description: Request creation of global app key
+        CreateGlobalAppKeyResponse:
+            type: object
+            properties:
+                created_app_key:
+                    $ref: '#/components/schemas/GlobalAppKey'
+            description: CreateGlobalAppKeyResponse returns created global app key
         CreateInvitationsRequest:
             type: object
             properties:
@@ -3381,6 +3521,20 @@ components:
                     items:
                         $ref: '#/components/schemas/DocStatus'
                     description: An array of statuses of all the documents received in the request. Order is same as it is received in the request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null in case of success, otherwise error is set with an error code and message.
+        DeleteGlobalAppKeyRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: app_key id
+            description: Request deletion of an global app key
+        DeleteGlobalAppKeyResponse:
+            type: object
+            properties:
+                deleted:
+                    type: boolean
+                    description: status flag for delete operation
+            description: AppKeys returns the flag to convey if global app key was deleted
         DeleteIndexRequest:
             type: object
             properties:
@@ -3799,6 +3953,36 @@ components:
                     type: string
                     format: byte
             description: User metadata response
+        GlobalAppKey:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Generated client id
+                name:
+                    type: string
+                    description: A human readable app name
+                description:
+                    type: string
+                    description: A human readable app description
+                secret:
+                    type: string
+                    description: Generated app secret
+                created_at:
+                    type: integer
+                    description: Created at
+                    format: int64
+                created_by:
+                    type: string
+                    description: Created by
+                updated_at:
+                    type: integer
+                    description: Updated at
+                    format: int64
+                updated_by:
+                    type: string
+                    description: Updated by
+            description: The global AppKey
         GroupedSearchHits:
             type: object
             properties:
@@ -4076,6 +4260,14 @@ components:
                     items:
                         $ref: '#/components/schemas/CollectionInfo'
                     description: List of the collections info in the database.
+        ListGlobalAppKeysResponse:
+            type: object
+            properties:
+                app_keys:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GlobalAppKey'
+            description: ListGlobalAppKeysResponse returns one or more visible global app keys to user
         ListIndexesResponse:
             type: object
             properties:
@@ -4510,6 +4702,19 @@ components:
                 app_key:
                     $ref: '#/components/schemas/AppKey'
             description: RotateAppKeyResponse returns the new app key with rotated secret
+        RotateGlobalAppKeySecretRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: global app key id
+            description: Request rotation of an app key secret
+        RotateGlobalAppKeySecretResponse:
+            type: object
+            properties:
+                app_key:
+                    $ref: '#/components/schemas/GlobalAppKey'
+            description: RotateGlobalAppKeySecretResponse returns the new app key with rotated secret
         SearchFacet:
             type: object
             properties:
@@ -4791,6 +4996,25 @@ components:
                     items:
                         $ref: '#/components/schemas/DocStatus'
                     description: An array of statuses of all the documents received in the request. Order is same as it is received in the request. Each item of this array has an “id” and “error” key. Id is set as document id and error will be null in case of success, otherwise error is set with an error code and message.
+        UpdateGlobalAppKeyRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: app key id - this is not allowed to update
+                name:
+                    type: string
+                    description: A new human readable app name
+                description:
+                    type: string
+                    description: A new human readable app description
+            description: To update the description of the global app key
+        UpdateGlobalAppKeyResponse:
+            type: object
+            properties:
+                updated_app_key:
+                    $ref: '#/components/schemas/GlobalAppKey'
+            description: Returns response for updating the global app key description
         UpdateNamespaceMetadataRequest:
             type: object
             properties:
