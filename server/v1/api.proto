@@ -707,7 +707,6 @@ message DropCollectionResponse {
 message ProjectInfo {
   // Project name.
   string project = 1;
-
   // Metadata about the Project.
   ProjectMetadata metadata = 2;
 }
@@ -715,7 +714,6 @@ message ProjectInfo {
 message CollectionInfo {
   // Collection name.
   string collection = 1;
-
   // Metadata about the collection.
   CollectionMetadata metadata = 2;
 }
@@ -723,7 +721,6 @@ message CollectionInfo {
 message BranchInfo {
   // Branch name
   string branch = 1;
-
   // Metadata about the branch
   BranchMetadata metadata = 2;
 }
@@ -752,7 +749,6 @@ message ListCollectionsResponse {
 message DescribeDatabaseRequest {
   // Project name whose db is under target to get description.
   string project = 1;
-
   // Return schema in the requested format.
   // Format can be JSON, Go, TypeScript, Java.
   // Default is JSON.
@@ -764,15 +760,12 @@ message DescribeDatabaseRequest {
 message DescribeCollectionRequest {
   // Project name whose db is under target to get description of its collection.
   string project = 1;
-
   // Name of the collection.
   string collection = 2;
-
   // Return schema in the requested format.
   // Format can be JSON, Go, TypeScript, Java.
   // Default is JSON.
   string schema_format = 3;
-
   // Collection options.
   CollectionOptions options = 4;
   // Optionally specify a database branch name to perform operation on
@@ -784,14 +777,12 @@ message DescribeCollectionRequest {
 message DescribeDatabaseResponse {
   // Metadata about the database.
   DatabaseMetadata metadata = 1;
-
   // A detailed description about all the collections.
   // The description returns collection metadata and the schema.
   repeated CollectionDescription collections = 2;
-
-  // Sum of all the collections sizes present in this database
+  // Sum of all the collections sizes present in this database.
   int64 size = 3;
-  // List of all the branches in this database
+  // List of all the branches in this database.
   repeated string branches = 4;
 }
 
@@ -800,15 +791,13 @@ message DescribeDatabaseResponse {
 message DescribeCollectionResponse {
   // Name of the collection.
   string collection = 1;
-
   // Metadata about the collection.
   CollectionMetadata metadata = 2;
-
   // Schema of this collection.
   bytes schema = 3;
   // The size of this collection in bytes.
   int64 size = 4;
-  // The index infromation
+  // The index information.
   repeated CollectionIndex indexes = 5;
 }
 
@@ -818,15 +807,13 @@ message ProjectDescription {
 message CollectionDescription {
   // Name of the collection.
   string collection = 1;
-
   // Metadata about the collection.
   CollectionMetadata metadata = 2;
-
-  // Collections schema
+  // Collections schema.
   bytes schema = 3;
-  // Collection size in bytes
+  // Collection size in bytes.
   int64 size = 4;
-  // The index infromation
+  // The index information.
   repeated CollectionIndex indexes = 5;
 }
 
@@ -854,8 +841,7 @@ message BuildCollectionIndexRequest {
   string project = 1;
   // Name of the collection.
   string collection = 2;
-
-  // Optionally specify a database branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on.
   string branch = 3;
 }
 
@@ -868,7 +854,7 @@ message BuildCollectionSearchIndexRequest {
   string project = 1;
   // Name of the collection.
   string collection = 2;
-  // Optionally specify a database branch name to perform operation on
+  // Optionally specify a database branch name to perform operation on.
   string branch = 3;
 }
 
@@ -1109,7 +1095,8 @@ service Tigris {
       tags: "Collections"
     };
   }
-  // Inserts the documents or replaces the existing documents in the collections.
+  // Inserts the documents or replaces the existing documents in the collections. All the operations
+  // are executed in the context of a transaction and provides all-or-nothing semantics.
   rpc Replace(ReplaceRequest) returns (ReplaceResponse) {
     option (google.api.http) = {
       put : "/v1/projects/{project}/database/collections/{collection}/documents/replace"
@@ -1120,7 +1107,8 @@ service Tigris {
       tags: "Collections"
     };
   }
-  // Delete a range of documents in the collection using the condition provided in the filter.
+  // Delete a range of documents in the collection using the condition provided in the filter. No partial deletes
+  // are possible as the API provides ACID semantics.
   rpc Delete(DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
       delete : "/v1/projects/{project}/database/collections/{collection}/documents/delete"
@@ -1131,7 +1119,8 @@ service Tigris {
       tags: "Collections"
     };
   }
-  // Update a range of documents in the collection using the condition provided in the filter.
+  // Update a range of documents in the collection using the condition provided in the filter. No partial updates
+  // are possible as the API provides ACID semantics.
   rpc Update(UpdateRequest) returns (UpdateResponse) {
     option (google.api.http) = {
       put : "/v1/projects/{project}/database/collections/{collection}/documents/update"
@@ -1142,12 +1131,13 @@ service Tigris {
       tags: "Collections"
     };
   }
-  // Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
-  // index any fields and automatically index all the fields which means you can filter by any field in the document.
-  // An empty filter will trigger reading all the documents inside this collection. The API supports pagination that
-  // can be used by passing `Limit/Skip` parameters. The `skip` parameter skips the number of documents from the start and
-  // the `limit` parameter is used to specify the number of documents to read. You can find more detailed documentation
-  // of the Read API <a href="https://docs.tigrisdata.com/overview/query" title="here">here</a>.
+  // Reads a range of documents from the collection. An empty filter will trigger reading all the documents
+  // inside this collection. The API supports pagination that can be used by passing `Limit/Skip` parameters.
+  // The `skip` parameter skips the number of documents from the start and the `limit` parameter is used to
+  // specify the number of documents to read. You can find more detailed documentations of the Read API
+  // <a href="https://docs.tigrisdata.com/overview/query" title="here">here</a>. This API is streaming
+  // as it allows continuous transmission of documents between the server and the client, with no need for
+  // the client to wait for a complete response before processing the data.
   rpc Read(ReadRequest) returns (stream ReadResponse) {
     option (google.api.http) = {
       post : "/v1/projects/{project}/database/collections/{collection}/documents/read"
@@ -1171,8 +1161,7 @@ service Tigris {
       tags: "Collections"
     };
   }
-  // Index Collection will do a full scan off all documents in the collection and rebuild
-  // all indexes in the collection
+  // Reads all the documents in the collection and rebuild the secondary indexes for this collection.
   rpc BuildCollectionIndex(BuildCollectionIndexRequest) returns (BuildCollectionIndexResponse) {
     option (google.api.http) = {
       post : "/v1/projects/{project}/database/collections/{collection}/documents/index"
@@ -1183,8 +1172,7 @@ service Tigris {
       tags: "Collections"
     };
   }
-  // Build search index for a collection will do a full scan off all documents in the collection and rebuild
-  // the search index for this collection
+  // Reads all the documents in the collection and rebuild the search index for this collection.
   rpc BuildSearchIndex(BuildCollectionSearchIndexRequest) returns (BuildCollectionSearchIndexResponse) {
     option (google.api.http) = {
       post : "/v1/projects/{project}/database/collections/{collection}/documents/search/index"
@@ -1208,10 +1196,12 @@ service Tigris {
     };
   }
 
-  // Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
-  // a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
-  // You can also perform a faceted search by passing the fields in the facet parameter.
-  // You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
+  // Searches a collection for the documents matching the query. A search can be a term search, phrase search
+  // or a vector search. Search API allows filtering the result set using filters as documented
+  // <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>. You can also
+  // perform a faceted search by passing the fields in the facet parameter. You can find more detailed documentation
+  // of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
+  // This API is streaming which means a page as soon as it is processed is pushed to the client immediately.
   rpc Search(SearchRequest) returns (stream SearchResponse) {
     option (google.api.http) = {
       post : "/v1/projects/{project}/database/collections/{collection}/documents/search"
@@ -1240,9 +1230,6 @@ service Tigris {
   }
   // Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
   // Schema changes are applied atomically and immediately without any downtime.
-  // Tigris Offers two types of collections: <p></p>
-  //    <li> `DOCUMENTS`: Offers rich CRUD APIs.
-  //    <li> `MESSAGES`: Offers event streaming APIs.
   rpc CreateOrUpdateCollection(CreateOrUpdateCollectionRequest) returns (CreateOrUpdateCollectionResponse) {
     option (google.api.http) = {
       post : "/v1/projects/{project}/database/collections/{collection}/createOrUpdate"
@@ -1253,7 +1240,9 @@ service Tigris {
       tags: "Collections"
     };
   }
-
+  // Similar to creating a single collection, this API performs batch creation or upgrade of collections. An error is
+  // returned as soon as first operation in the batch fails. This API is not atomic i.e. each operation is performed
+  // individually and in the serial order.
   rpc CreateOrUpdateCollections(CreateOrUpdateCollectionsRequest) returns (CreateOrUpdateCollectionsResponse) {
     option (google.api.http) = {
       post : "/v1/projects/{project}/database/collections/createOrUpdate"
@@ -1297,7 +1286,7 @@ service Tigris {
       tags: "Database"
     };
   }
-  // Creates a new project. Returns an AlreadyExists error with a status code 409 if the project already exists.
+  // Creates a new project. An AlreadyExists error with a status code 409 is returned if the project already exists.
   rpc CreateProject(CreateProjectRequest) returns (CreateProjectResponse) {
     option (google.api.http) = {
       post : "/v1/projects/{project}/create"
@@ -1309,7 +1298,8 @@ service Tigris {
     };
   }
 
-  // Delete Project deletes all the collections in this project along with all of the documents, and associated metadata for these collections.
+  // Delete Project deletes all the collections in this project along with all of the documents,
+  // and associated metadata for these collections.
   rpc DeleteProject(DeleteProjectRequest) returns (DeleteProjectResponse) {
     option (google.api.http) = {
       delete : "/v1/projects/{project}/delete"
@@ -1322,7 +1312,8 @@ service Tigris {
   }
 
   // This API returns information related to the project along with all the collections inside the project.
-  // This can be used to retrieve the size of the project or to retrieve schemas, branches and the size of all the collections present in this project.
+  // This can be used to retrieve the schemas or the size of the project which means size of all the database
+  // branches and the size of all the collections present in this project.
   rpc DescribeDatabase(DescribeDatabaseRequest) returns
       (DescribeDatabaseResponse) {
     option (google.api.http) = {
@@ -1384,7 +1375,7 @@ service Tigris {
   }
 
 
-  // Create a global app key.
+  // Create a global app key. These keys can be used to operate on any project inside your account.
   rpc CreateGlobalAppKey(CreateGlobalAppKeyRequest) returns
       (CreateGlobalAppKeyResponse) {
     option (google.api.http) = {
@@ -1411,7 +1402,7 @@ service Tigris {
     };
   }
 
-  // Delete an global app key.
+  // Delete the global app key.
   rpc DeleteGlobalAppKey(DeleteGlobalAppKeyRequest) returns (DeleteGlobalAppKeyResponse) {
     option (google.api.http) = {
       delete : "/v1/apps/keys/delete"

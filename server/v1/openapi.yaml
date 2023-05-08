@@ -40,7 +40,7 @@ paths:
             tags:
                 - Application Keys
             summary: Creates the global app key
-            description: Create a global app key.
+            description: Create a global app key. These keys can be used to operate on any project inside your account.
             operationId: Tigris_CreateGlobalAppKey
             requestBody:
                 content:
@@ -66,7 +66,7 @@ paths:
             tags:
                 - Application Keys
             summary: Deletes the global app key
-            description: Delete an global app key.
+            description: Delete the global app key.
             operationId: Tigris_DeleteGlobalAppKey
             requestBody:
                 content:
@@ -1255,7 +1255,7 @@ paths:
             tags:
                 - Projects
             summary: Create Project
-            description: Creates a new project. Returns an AlreadyExists error with a status code 409 if the project already exists.
+            description: Creates a new project. An AlreadyExists error with a status code 409 is returned if the project already exists.
             operationId: Tigris_CreateProject
             parameters:
                 - name: project
@@ -1427,6 +1427,10 @@ paths:
             tags:
                 - Collections
             summary: Create or update a batch of collections
+            description: |-
+                Similar to creating a single collection, this API performs batch creation or upgrade of collections. An error is
+                 returned as soon as first operation in the batch fails. This API is not atomic i.e. each operation is performed
+                 individually and in the serial order.
             operationId: Tigris_CreateOrUpdateCollections
             parameters:
                 - name: project
@@ -1462,9 +1466,6 @@ paths:
             description: |-
                 Creates a new collection or atomically upgrades the collection to the new schema provided in the request.
                  Schema changes are applied atomically and immediately without any downtime.
-                 Tigris Offers two types of collections: <p></p>
-                    <li> `DOCUMENTS`: Offers rich CRUD APIs.
-                    <li> `MESSAGES`: Offers event streaming APIs.
             operationId: Tigris_CreateOrUpdateCollection
             parameters:
                 - name: project
@@ -1584,7 +1585,9 @@ paths:
             tags:
                 - Collections
             summary: Delete Documents
-            description: Delete a range of documents in the collection using the condition provided in the filter.
+            description: |-
+                Delete a range of documents in the collection using the condition provided in the filter. No partial deletes
+                 are possible as the API provides ACID semantics.
             operationId: Tigris_Delete
             parameters:
                 - name: project
@@ -1709,9 +1712,7 @@ paths:
             tags:
                 - Collections
             summary: Build Index
-            description: |-
-                Index Collection will do a full scan off all documents in the collection and rebuild
-                 all indexes in the collection
+            description: Reads all the documents in the collection and rebuild the secondary indexes for this collection.
             operationId: Tigris_BuildCollectionIndex
             parameters:
                 - name: project
@@ -1793,12 +1794,13 @@ paths:
                 - Collections
             summary: Read Documents
             description: |-
-                Reads a range of documents from the collection, or messages from a collection in case of event streaming. Tigris does not require you to
-                 index any fields and automatically index all the fields which means you can filter by any field in the document.
-                 An empty filter will trigger reading all the documents inside this collection. The API supports pagination that
-                 can be used by passing `Limit/Skip` parameters. The `skip` parameter skips the number of documents from the start and
-                 the `limit` parameter is used to specify the number of documents to read. You can find more detailed documentation
-                 of the Read API <a href="https://docs.tigrisdata.com/overview/query" title="here">here</a>.
+                Reads a range of documents from the collection. An empty filter will trigger reading all the documents
+                 inside this collection. The API supports pagination that can be used by passing `Limit/Skip` parameters.
+                 The `skip` parameter skips the number of documents from the start and the `limit` parameter is used to
+                 specify the number of documents to read. You can find more detailed documentations of the Read API
+                 <a href="https://docs.tigrisdata.com/overview/query" title="here">here</a>. This API is streaming
+                 as it allows continuous transmission of documents between the server and the client, with no need for
+                 the client to wait for a complete response before processing the data.
             operationId: Tigris_Read
             parameters:
                 - name: project
@@ -1837,7 +1839,9 @@ paths:
             tags:
                 - Collections
             summary: Insert or Replace Documents
-            description: Inserts the documents or replaces the existing documents in the collections.
+            description: |-
+                Inserts the documents or replaces the existing documents in the collections. All the operations
+                 are executed in the context of a transaction and provides all-or-nothing semantics.
             operationId: Tigris_Replace
             parameters:
                 - name: project
@@ -1877,10 +1881,12 @@ paths:
                 - Collections
             summary: Search Documents
             description: |-
-                Searches a collection for the documents matching the query, or messages in case of event streaming. A search can be
-                 a term search or a phrase search. Search API allows filtering the result set using filters as documented <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>.
-                 You can also perform a faceted search by passing the fields in the facet parameter.
-                 You can find more detailed documentation of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
+                Searches a collection for the documents matching the query. A search can be a term search, phrase search
+                 or a vector search. Search API allows filtering the result set using filters as documented
+                 <a href="https://docs.tigrisdata.com/overview/query#specification-1" title="here">here</a>. You can also
+                 perform a faceted search by passing the fields in the facet parameter. You can find more detailed documentation
+                 of the Search API with multiple examples <a href="https://docs.tigrisdata.com/overview/search" title="here">here</a>.
+                 This API is streaming which means a page as soon as it is processed is pushed to the client immediately.
             operationId: Tigris_Search
             parameters:
                 - name: project
@@ -1919,9 +1925,7 @@ paths:
             tags:
                 - Collections
             summary: Build Search Index
-            description: |-
-                Build search index for a collection will do a full scan off all documents in the collection and rebuild
-                 the search index for this collection
+            description: Reads all the documents in the collection and rebuild the search index for this collection.
             operationId: Tigris_BuildSearchIndex
             parameters:
                 - name: project
@@ -1960,7 +1964,9 @@ paths:
             tags:
                 - Collections
             summary: Update Documents.
-            description: Update a range of documents in the collection using the condition provided in the filter.
+            description: |-
+                Update a range of documents in the collection using the condition provided in the filter. No partial updates
+                 are possible as the API provides ACID semantics.
             operationId: Tigris_Update
             parameters:
                 - name: project
@@ -2042,7 +2048,8 @@ paths:
             summary: Describe database
             description: |-
                 This API returns information related to the project along with all the collections inside the project.
-                 This can be used to retrieve the size of the project or to retrieve schemas, branches and the size of all the collections present in this project.
+                 This can be used to retrieve the schemas or the size of the project which means size of all the database
+                 branches and the size of all the collections present in this project.
             operationId: Tigris_DescribeDatabase
             parameters:
                 - name: project
@@ -2181,7 +2188,9 @@ paths:
             tags:
                 - Projects
             summary: Delete Project and all resources under project
-            description: Delete Project deletes all the collections in this project along with all of the documents, and associated metadata for these collections.
+            description: |-
+                Delete Project deletes all the collections in this project along with all of the documents,
+                 and associated metadata for these collections.
             operationId: Tigris_DeleteProject
             parameters:
                 - name: project
@@ -2993,7 +3002,7 @@ components:
                     description: Name of the collection.
                 branch:
                     type: string
-                    description: Optionally specify a database branch name to perform operation on
+                    description: Optionally specify a database branch name to perform operation on.
         BuildCollectionIndexResponse:
             type: object
             properties:
@@ -3012,7 +3021,7 @@ components:
                     description: Name of the collection.
                 branch:
                     type: string
-                    description: Optionally specify a database branch name to perform operation on
+                    description: Optionally specify a database branch name to perform operation on.
         BuildCollectionSearchIndexResponse:
             type: object
             properties:
@@ -3078,16 +3087,16 @@ components:
                     $ref: '#/components/schemas/CollectionMetadata'
                 schema:
                     type: object
-                    description: Collections schema
+                    description: Collections schema.
                 size:
                     type: integer
-                    description: Collection size in bytes
+                    description: Collection size in bytes.
                     format: int64
                 indexes:
                     type: array
                     items:
                         $ref: '#/components/schemas/CollectionIndex'
-                    description: The index infromation
+                    description: The index information.
         CollectionIndex:
             type: object
             properties:
@@ -3661,7 +3670,7 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/CollectionIndex'
-                    description: The index infromation
+                    description: The index information.
             description: A detailed description of the collection. The description returns collection metadata and the schema.
         DescribeDatabaseRequest:
             type: object
@@ -3687,13 +3696,13 @@ components:
                     description: A detailed description about all the collections. The description returns collection metadata and the schema.
                 size:
                     type: integer
-                    description: Sum of all the collections sizes present in this database
+                    description: Sum of all the collections sizes present in this database.
                     format: int64
                 branches:
                     type: array
                     items:
                         type: string
-                    description: List of all the branches in this database
+                    description: List of all the branches in this database.
             description: A detailed description of the database and all the associated collections. Description of the collection includes schema details as well.
         DescribeNamespacesData:
             type: object
