@@ -3671,6 +3671,9 @@ components:
                     items:
                         $ref: '#/components/schemas/CollectionIndex'
                     description: The index information.
+                search_status:
+                    type: string
+                    description: search index status
             description: A detailed description of the collection. The description returns collection metadata and the schema.
         DescribeDatabaseRequest:
             type: object
