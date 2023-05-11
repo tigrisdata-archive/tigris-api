@@ -799,6 +799,8 @@ message DescribeCollectionResponse {
   int64 size = 4;
   // The index information.
   repeated CollectionIndex indexes = 5;
+  // search index status
+  string search_status = 6;
 }
 
 message ProjectDescription {
