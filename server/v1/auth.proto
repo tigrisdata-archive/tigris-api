@@ -122,6 +122,8 @@ message VerifyInvitationRequest {
   string email = 1;
   // code
   string code = 2;
+  // dry
+  optional bool dry = 3;
 }
 
 message VerifyInvitationResponse {

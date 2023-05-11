@@ -5128,6 +5128,9 @@ components:
                 code:
                     type: string
                     description: code
+                dry:
+                    type: boolean
+                    description: dry
         VerifyInvitationResponse:
             type: object
             properties:
