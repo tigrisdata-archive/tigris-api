@@ -2964,6 +2964,9 @@ components:
                 project:
                     type: string
                     description: Project it belongs to
+                role:
+                    type: string
+                    description: Role associated with the key
             description: An user AppKey
         BeginTransactionRequest:
             type: object
@@ -3168,6 +3171,9 @@ components:
                 description:
                     type: string
                     description: A human readable app description
+                role:
+                    type: string
+                    description: role name
             description: Request creation of user app key
         CreateAppKeyResponse:
             type: object
