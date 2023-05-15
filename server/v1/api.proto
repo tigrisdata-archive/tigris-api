@@ -875,6 +875,8 @@ message CreateAppKeyRequest {
   string description = 2;
   // Project name
   string project = 3;
+  // role name
+  string role = 4;
 }
 
 // CreateAppKeyResponse returns created app keys
@@ -921,6 +923,8 @@ message AppKey {
   string updated_by = 8;
   // Project it belongs to
   string project = 9;
+  // Role associated with the key
+  string role = 10;
 }
 
 // Request listing of all the app keys those are visible to requesting actor
