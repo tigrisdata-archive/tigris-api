@@ -89,6 +89,45 @@ message ChargeTier {
   float subtotal = 4;
 }
 
+message UsageRequest {
+  // RFC 3339 starting time to get usage from
+  google.protobuf.Timestamp start_time = 1;
+  // RFC 3339 ending time to get usage until
+  google.protobuf.Timestamp end_time = 2;
+  // Optionally filter usage data by specific metrics. By default, all metrics are included in usage data
+  repeated string metric = 3;
+  // Optionally aggregate data over a time window. By default, data will be aggregated "hourly"
+  optional AggregationWindow aggregate_by = 4;
+  // Optional pagination token for fetching a particular result page, first page will be fetched if `null`
+  optional string next_page = 5;
+}
+
+enum AggregationWindow {
+  HOUR = 0;
+  DAY = 1;
+}
+
+message UsageResponse {
+  // Series of usage data grouped by usage metric.
+  map<string, UsageTimeSeries> data = 1;
+  // token for next page if it exists, else `null`
+  optional string next_page = 2;
+}
+
+message Usage {
+  // RFC 3339 starting time for this usage period
+  google.protobuf.Timestamp start_time = 1;
+  // RFC 3339 ending time for this usage period
+  google.protobuf.Timestamp end_time = 2;
+  // Usage metric value
+  float value = 3;
+}
+
+message UsageTimeSeries {
+  // Array of usage metric
+  repeated Usage series = 1;
+}
+
 service Billing {
 
   // ListInvoices fetches past invoices for this user
@@ -101,6 +140,18 @@ service Billing {
     };
     option(openapi.v3.operation) = {
       summary: "Lists all invoices for the user",
+      tags: "Billing"
+    };
+  }
+
+  // ListUsage gets the aggregate usage for this user in given time period
+  rpc ListUsages(UsageRequest) returns (UsageResponse) {
+    option (google.api.http) = {
+      post: "/v1/billing/usage",
+      body: "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Get billed usage for the user over a time period",
       tags: "Billing"
     };
   }
