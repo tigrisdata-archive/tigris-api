@@ -62,8 +62,6 @@ main() {
 	yq_fix_object SearchHit data
 	yq_fix_object CreateOrUpdateCollectionRequest schema
 	yq_fix_object CreateOrUpdateCollectionsRequest schemas.items
-	yq_fix_timestamp ResponseMetadata created_at
-	yq_fix_timestamp ResponseMetadata updated_at
 
 	yq_fix_object DescribeCollectionResponse schema
 	yq_fix_object CollectionDescription schema
@@ -140,10 +138,6 @@ yq_fix_array_object() {
 	yq_cmd "del(.components.schemas.$1.properties.$2.format)"
 	yq_cmd ".components.schemas.$1.properties.$2.type=\"array\""
 	yq_cmd ".components.schemas.$1.properties.$2.items.type=\"object\""
-}
-
-yq_fix_timestamp() {
-	yq_cmd ".components.schemas.$1.properties.$2.format=\"date-time\""
 }
 
 # Delete project and collection fields from request body
