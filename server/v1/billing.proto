@@ -95,7 +95,7 @@ message UsageRequest {
   // RFC 3339 ending time to get usage until
   google.protobuf.Timestamp end_time = 2;
   // Optionally filter usage data by specific metrics. By default, all metrics are included in usage data
-  repeated string metric = 3;
+  repeated string metrics = 3;
   // Optionally aggregate data over a time window. By default, data will be aggregated "hourly"
   optional AggregationWindow aggregate_by = 4;
   // Optional pagination token for fetching a particular result page, first page will be fetched if `null`
@@ -145,7 +145,7 @@ service Billing {
   }
 
   // ListUsage gets the aggregate usage for this user in given time period
-  rpc ListUsages(UsageRequest) returns (UsageResponse) {
+  rpc GetUsage(UsageRequest) returns (UsageResponse) {
     option (google.api.http) = {
       post: "/v1/billing/usage",
       body: "*"

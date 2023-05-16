@@ -361,7 +361,7 @@ paths:
                 - Billing
             summary: Get billed usage for the user over a time period
             description: ListUsage gets the aggregate usage for this user in given time period
-            operationId: Billing_ListUsages
+            operationId: Billing_GetUsage
             requestBody:
                 content:
                     application/json:
@@ -5163,7 +5163,7 @@ components:
                     type: string
                     description: RFC 3339 ending time to get usage until
                     format: date-time
-                metric:
+                metrics:
                     type: array
                     items:
                         type: string
