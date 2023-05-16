@@ -89,7 +89,7 @@ message ChargeTier {
   float subtotal = 4;
 }
 
-message UsageRequest {
+message GetUsageRequest {
   // RFC 3339 starting time to get usage from
   google.protobuf.Timestamp start_time = 1;
   // RFC 3339 ending time to get usage until
@@ -107,7 +107,7 @@ enum AggregationWindow {
   DAY = 1;
 }
 
-message UsageResponse {
+message GetUsageResponse {
   // Series of usage data grouped by usage metric.
   map<string, UsageTimeSeries> data = 1;
   // token for next page if it exists, else `null`
@@ -145,7 +145,7 @@ service Billing {
   }
 
   // GetUsage gets the aggregate usage for this user in given time period
-  rpc GetUsage(UsageRequest) returns (UsageResponse) {
+  rpc GetUsage(GetUsageRequest) returns (GetUsageResponse) {
     option (google.api.http) = {
       post: "/v1/billing/usage",
       body: "*"
