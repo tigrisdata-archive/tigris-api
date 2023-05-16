@@ -360,13 +360,13 @@ paths:
             tags:
                 - Billing
             summary: Get billed usage for the user over a time period
-            description: ListUsage gets the aggregate usage for this user in given time period
-            operationId: Billing_ListUsages
+            description: GetUsage gets the aggregate usage for this user in given time period
+            operationId: Billing_GetUsage
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/UsageRequest'
+                            $ref: '#/components/schemas/GetUsageRequest'
                 required: true
             responses:
                 "200":
@@ -374,7 +374,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/UsageResponse'
+                                $ref: '#/components/schemas/GetUsageResponse'
                 default:
                     description: Default error response
                     content:
@@ -3975,6 +3975,43 @@ components:
                     type: string
                     description: An old value if exists
                     format: byte
+        GetUsageRequest:
+            type: object
+            properties:
+                start_time:
+                    type: string
+                    description: RFC 3339 starting time to get usage from
+                    format: date-time
+                end_time:
+                    type: string
+                    description: RFC 3339 ending time to get usage until
+                    format: date-time
+                metrics:
+                    type: array
+                    items:
+                        type: string
+                    description: Optionally filter usage data by specific metrics. By default, all metrics are included in usage data
+                aggregate_by:
+                    enum:
+                        - HOUR
+                        - DAY
+                    type: string
+                    description: Optionally aggregate data over a time window. By default, data will be aggregated "hourly"
+                    format: enum
+                next_page:
+                    type: string
+                    description: Optional pagination token for fetching a particular result page, first page will be fetched if `null`
+        GetUsageResponse:
+            type: object
+            properties:
+                data:
+                    type: object
+                    additionalProperties:
+                        $ref: '#/components/schemas/UsageTimeSeries'
+                    description: Series of usage data grouped by usage metric.
+                next_page:
+                    type: string
+                    description: token for next page if it exists, else `null`
         GetUserMetadataRequest:
             type: object
             properties:
@@ -5152,43 +5189,6 @@ components:
                     type: number
                     description: Usage metric value
                     format: float
-        UsageRequest:
-            type: object
-            properties:
-                start_time:
-                    type: string
-                    description: RFC 3339 starting time to get usage from
-                    format: date-time
-                end_time:
-                    type: string
-                    description: RFC 3339 ending time to get usage until
-                    format: date-time
-                metric:
-                    type: array
-                    items:
-                        type: string
-                    description: Optionally filter usage data by specific metrics. By default, all metrics are included in usage data
-                aggregate_by:
-                    enum:
-                        - HOUR
-                        - DAY
-                    type: string
-                    description: Optionally aggregate data over a time window. By default, data will be aggregated "hourly"
-                    format: enum
-                next_page:
-                    type: string
-                    description: Optional pagination token for fetching a particular result page, first page will be fetched if `null`
-        UsageResponse:
-            type: object
-            properties:
-                data:
-                    type: object
-                    additionalProperties:
-                        $ref: '#/components/schemas/UsageTimeSeries'
-                    description: Series of usage data grouped by usage metric.
-                next_page:
-                    type: string
-                    description: token for next page if it exists, else `null`
         UsageTimeSeries:
             type: object
             properties:
