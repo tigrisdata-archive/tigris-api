@@ -144,7 +144,7 @@ service Billing {
     };
   }
 
-  // ListUsage gets the aggregate usage for this user in given time period
+  // GetUsage gets the aggregate usage for this user in given time period
   rpc GetUsage(UsageRequest) returns (UsageResponse) {
     option (google.api.http) = {
       post: "/v1/billing/usage",

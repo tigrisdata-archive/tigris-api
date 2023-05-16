@@ -360,7 +360,7 @@ paths:
             tags:
                 - Billing
             summary: Get billed usage for the user over a time period
-            description: ListUsage gets the aggregate usage for this user in given time period
+            description: GetUsage gets the aggregate usage for this user in given time period
             operationId: Billing_GetUsage
             requestBody:
                 content:
