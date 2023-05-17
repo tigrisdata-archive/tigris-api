@@ -133,10 +133,8 @@ service Billing {
   // ListInvoices fetches past invoices for this user
   rpc ListInvoices(ListInvoicesRequest) returns (ListInvoicesResponse) {
     option (google.api.http) = {
-      get: "/v1/billing/invoices"
-      additional_bindings {
-        get: "/v1/billing/invoices/{invoice_id}"
-      }
+      post: "/v1/billing/invoices",
+      body: "*"
     };
     option(openapi.v3.operation) = {
       summary: "Lists all invoices for the user",
