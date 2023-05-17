@@ -295,53 +295,18 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/Status'
     /v1/billing/invoices:
-        get:
+        post:
             tags:
                 - Billing
             summary: Lists all invoices for the user
             description: ListInvoices fetches past invoices for this user
             operationId: Billing_ListInvoices
-            parameters:
-                - name: starting_on.seconds
-                  in: query
-                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
-                  schema:
-                    type: integer
-                    format: int64
-                - name: starting_on.nanos
-                  in: query
-                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
-                  schema:
-                    type: integer
-                    format: int32
-                - name: ending_before.seconds
-                  in: query
-                  description: Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z inclusive.
-                  schema:
-                    type: integer
-                    format: int64
-                - name: ending_before.nanos
-                  in: query
-                  description: Non-negative fractions of a second at nanosecond resolution. Negative second values with fractions must still have non-negative nanos values that count forward in time. Must be from 0 to 999,999,999 inclusive.
-                  schema:
-                    type: integer
-                    format: int32
-                - name: invoice_id
-                  in: query
-                  description: optionally filter by a specific invoice_id
-                  schema:
-                    type: string
-                - name: page_size
-                  in: query
-                  description: maximum number of items to include in result set
-                  schema:
-                    type: integer
-                    format: int32
-                - name: next_page
-                  in: query
-                  description: pagination token for fetching a particular result page, first page will be fetched if `null`
-                  schema:
-                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListInvoicesRequest'
+                required: true
             responses:
                 "200":
                     description: OK
@@ -4364,6 +4329,27 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Invitation'
+        ListInvoicesRequest:
+            type: object
+            properties:
+                starting_on:
+                    type: string
+                    description: RFC 3339 timestamp (inclusive). Invoices will only be returned for billing periods that start at or after this time.
+                    format: date-time
+                ending_before:
+                    type: string
+                    description: RFC 3339 timestamp (exclusive). Invoices will only be returned for billing periods that end before this time.
+                    format: date-time
+                invoice_id:
+                    type: string
+                    description: optionally filter by a specific invoice_id
+                page_size:
+                    type: integer
+                    description: maximum number of items to include in result set
+                    format: int32
+                next_page:
+                    type: string
+                    description: pagination token for fetching a particular result page, first page will be fetched if `null`
         ListInvoicesResponse:
             type: object
             properties:
