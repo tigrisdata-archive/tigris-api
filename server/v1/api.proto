@@ -877,6 +877,8 @@ message CreateAppKeyRequest {
   string project = 3;
   // role name
   string role = 4;
+  // key_type [credentials, api-key]
+  string key_type = 5;
 }
 
 // CreateAppKeyResponse returns created app keys
@@ -925,12 +927,16 @@ message AppKey {
   string project = 9;
   // Role associated with the key
   string role = 10;
+  // key type [credentials, api_key]
+  string key_type = 11;
 }
 
 // Request listing of all the app keys those are visible to requesting actor
 message ListAppKeysRequest {
   // Project name filter
   string project = 1;
+  // Optionally the key type one of [credentials, api_key]. Defaults to credentials
+  optional string key_type = 2;
 }
 
 // ListAppKeysResponse returns one or more visible app keys to user
