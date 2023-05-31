@@ -775,6 +775,11 @@ paths:
                   required: true
                   schema:
                     type: string
+                - name: key_type
+                  in: query
+                  description: Optionally the key type one of [credentials, api_key]. Defaults to credentials
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -2958,6 +2963,9 @@ components:
                 role:
                     type: string
                     description: Role associated with the key
+                key_type:
+                    type: string
+                    description: key type [credentials, api_key]
             description: An user AppKey
         BeginTransactionRequest:
             type: object
@@ -3165,6 +3173,9 @@ components:
                 role:
                     type: string
                     description: role name
+                key_type:
+                    type: string
+                    description: key_type [credentials, api-key]
             description: Request creation of user app key
         CreateAppKeyResponse:
             type: object
