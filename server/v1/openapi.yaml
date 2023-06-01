@@ -741,6 +741,25 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/observability/whoami:
+        get:
+            tags:
+                - Observability
+            summary: Information about the current user
+            operationId: Observability_WhoAmI
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/WhoAmIResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/projects:
         get:
             tags:
@@ -3175,7 +3194,7 @@ components:
                     description: role name
                 key_type:
                     type: string
-                    description: key_type [credentials, api-key]
+                    description: key_type [credentials, api_key]
             description: Request creation of user app key
         CreateAppKeyResponse:
             type: object
@@ -5232,6 +5251,19 @@ components:
                 role:
                     type: string
                     description: if successful - which role this user should be assigned to
+        WhoAmIResponse:
+            type: object
+            properties:
+                sub:
+                    type: string
+                namespace:
+                    type: string
+                role:
+                    type: string
+                auth_method:
+                    type: string
+                user_type:
+                    type: string
         WriteOptions:
             type: object
             properties: {}
