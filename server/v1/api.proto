@@ -877,7 +877,7 @@ message CreateAppKeyRequest {
   string project = 3;
   // role name
   string role = 4;
-  // key_type [credentials, api-key]
+  // key_type [credentials, api_key]
   string key_type = 5;
 }
 

@@ -203,6 +203,17 @@ message GetInfoResponse {
   Error error = 2;
 }
 
+message WhoAmIRequest {
+}
+
+message WhoAmIResponse {
+  string sub = 1;
+  string namespace = 2;
+  string role = 3;
+  string auth_method = 4;
+  string user_type = 5;
+}
+
 service Observability {
   // Queries time series metrics
   rpc QueryTimeSeriesMetrics(QueryTimeSeriesMetricsRequest)
@@ -251,6 +262,16 @@ service Observability {
     };
     option(openapi.v3.operation) = {
       summary: "Information about the server"
+      tags: "Observability"
+    };
+  }
+
+  rpc WhoAmI(WhoAmIRequest) returns (WhoAmIResponse) {
+    option (google.api.http) = {
+      get : "/v1/observability/whoami"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Information about the current user"
       tags: "Observability"
     };
   }
