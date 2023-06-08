@@ -3441,9 +3441,16 @@ components:
                 status:
                     type: string
                     description: An enum with value set as "created"
+        CreateProjectOptions:
+            type: object
+            properties:
+                limits:
+                    $ref: '#/components/schemas/ProjectLimits'
         CreateProjectRequest:
             type: object
-            properties: {}
+            properties:
+                options:
+                    $ref: '#/components/schemas/CreateProjectOptions'
         CreateProjectResponse:
             type: object
             properties:
@@ -4528,6 +4535,19 @@ components:
                     description: Project name.
                 metadata:
                     $ref: '#/components/schemas/ProjectMetadata'
+                limits:
+                    $ref: '#/components/schemas/ProjectLimits'
+        ProjectLimits:
+            type: object
+            properties:
+                max_collections:
+                    type: integer
+                    description: maximum number of collections in the Project
+                    format: int32
+                max_search_indexes:
+                    type: integer
+                    description: maximum number of search indexes in the Project
+                    format: int32
         ProjectMetadata:
             type: object
             properties: {}
