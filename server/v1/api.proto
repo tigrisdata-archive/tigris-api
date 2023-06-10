@@ -555,25 +555,39 @@ message CreateProjectRequest {
   // Create project with this name.
   string project = 1;
   // optional configuration for the Project
-  optional CreateProjectOptions options = 2;
+  optional ProjectOptions options = 2;
 }
 
-message CreateProjectOptions {
+message ProjectOptions {
   // optional limits and capacity configuration
   optional ProjectLimits limits = 1;
 }
 
 message ProjectLimits {
   // maximum number of collections in the Project
-  int32 max_collections = 1;
+  optional int32 max_collections = 1;
   // maximum number of search indexes in the Project
-  int32 max_search_indexes = 2;
+  optional int32 max_search_indexes = 2;
 }
 
 message CreateProjectResponse {
   // A detailed response message.
   string message = 1;
   // An enum with value set as "created".
+  string status = 2;
+}
+
+message UpdateProjectRequest {
+  // Update project with this name.
+  string project = 1;
+  // project configuration to update
+  ProjectOptions options = 2;
+}
+
+message UpdateProjectResponse {
+  // A detailed response message.
+  string message = 1;
+  // An enum with value set as "updated".
   string status = 2;
 }
 
@@ -1336,6 +1350,18 @@ service Tigris {
     option(openapi.v3.operation) = {
       summary: "Delete Project and all resources under project"
       tags: "Projects"
+    };
+  }
+
+  // Update Project configuration and metadata
+  rpc UpdateProject(UpdateProjectRequest) returns (UpdateProjectResponse) {
+    option (google.api.http) = {
+      put: "/v1/projects/{project}/update"
+      body: "*"
+    };
+    option(openapi.v3.operation) = {
+      summary: "Update a project configuration and metadata"
+      tags: "Project"
     };
   }
 
