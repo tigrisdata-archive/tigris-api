@@ -2939,6 +2939,39 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /v1/projects/{project}/update:
+        put:
+            tags:
+                - Project
+            summary: Update a project configuration and metadata
+            description: Update Project configuration and metadata
+            operationId: Tigris_UpdateProject
+            parameters:
+                - name: project
+                  in: path
+                  description: Update project with this name.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateProjectRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateProjectResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
         AdditionalFunction:
@@ -3443,7 +3476,9 @@ components:
                     description: An enum with value set as "created"
         CreateProjectRequest:
             type: object
-            properties: {}
+            properties:
+                options:
+                    $ref: '#/components/schemas/ProjectOptions'
         CreateProjectResponse:
             type: object
             properties:
@@ -4528,9 +4563,27 @@ components:
                     description: Project name.
                 metadata:
                     $ref: '#/components/schemas/ProjectMetadata'
+                limits:
+                    $ref: '#/components/schemas/ProjectLimits'
+        ProjectLimits:
+            type: object
+            properties:
+                max_collections:
+                    type: integer
+                    description: maximum number of collections in the Project
+                    format: int32
+                max_search_indexes:
+                    type: integer
+                    description: maximum number of search indexes in the Project
+                    format: int32
         ProjectMetadata:
             type: object
             properties: {}
+        ProjectOptions:
+            type: object
+            properties:
+                limits:
+                    $ref: '#/components/schemas/ProjectLimits'
         QueryTimeSeriesMetricsRequest:
             type: object
             properties:
@@ -5131,6 +5184,23 @@ components:
                 value:
                     type: object
             description: Update of namespace metadata response
+        UpdateProjectRequest:
+            type: object
+            properties:
+                project:
+                    type: string
+                    description: Update project with this name.
+                options:
+                    $ref: '#/components/schemas/ProjectOptions'
+        UpdateProjectResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: A detailed response message.
+                status:
+                    type: string
+                    description: An enum with value set as "updated".
         UpdateRequest:
             type: object
             properties:
