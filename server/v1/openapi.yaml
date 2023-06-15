@@ -2942,7 +2942,7 @@ paths:
     /v1/projects/{project}/update:
         put:
             tags:
-                - Project
+                - Projects
             summary: Update a project configuration and metadata
             description: Update Project configuration and metadata
             operationId: Tigris_UpdateProject
