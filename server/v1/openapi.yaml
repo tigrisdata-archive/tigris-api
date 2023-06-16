@@ -5187,9 +5187,6 @@ components:
         UpdateProjectRequest:
             type: object
             properties:
-                project:
-                    type: string
-                    description: Update project with this name.
                 options:
                     $ref: '#/components/schemas/ProjectOptions'
         UpdateProjectResponse:

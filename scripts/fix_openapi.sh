@@ -86,7 +86,7 @@ main() {
 		CreateOrUpdateCollectionRequest DropCollectionRequest \
 		CreateProjectRequest DeleteProjectRequest ImportRequest \
 		ListProjectsRequest ListCollectionsRequest SearchRequest \
-		BeginTransactionRequest CommitTransactionRequest \
+		UpdateProjectRequest BeginTransactionRequest CommitTransactionRequest \
 		RollbackTransactionRequest CreateAppKeyRequest \
 		UpdateAppKeyRequest ListAppKeysRequest \
 		DeleteAppKeyRequest CreateOrUpdateCollectionsRequest; do
